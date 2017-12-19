@@ -118,6 +118,8 @@ class PackageHelper(Helper):
 
         """
 
+        print('MKDEBUG locate_files')
+
         if err_check and not os.path.isdir(directory):
             self.helper.print_warning('{0} could not be found or is not a '
                                       'directory'.format(directory))

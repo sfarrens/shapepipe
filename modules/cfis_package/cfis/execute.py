@@ -204,7 +204,19 @@ class PackageRunner(object):
 
         """
 
+        print('exec_line')
         os.system(self._exec_line)
+
+        inp = '{}/{}'.format(self._worker.config.get_as_string('BASE_DIR', 'PRIMARY_DATASET'), \
+                             self._worker.config.get_as_string('FILE', 'PRIMARY_DATASET'))
+
+        band     = 'r'
+        img_type = 'tiles'
+
+        images = self._get_image_list(inp, band, img_type, verbose=True)
+
+        print(images)
+
 
     def _get_exec_config_filepath(self):
 
@@ -355,3 +367,99 @@ class PackageRunner(object):
                                                 self._worker.name,
                                                 self._job))
             self._worker.logger.flush()
+
+
+    def _read_list(self, fname):
+
+        """Read list of from ascii file.
+
+        Parameters
+        ----------
+        fname: string
+            ascii file name
+
+        Returns
+        -------
+        file_list: list of strings
+            list of file name
+        """
+
+        f = open(fname, 'rU')
+        file_list = [x.strip() for x in f.readlines()]
+        f.close()
+
+        file_list.sort()
+        return file_list
+
+
+    def _get_file_pattern(self, pattern, band, type):
+        """Return file pattern of CFIS image file.
+        """
+
+        if pattern == '':
+            if type == 'raw':
+                pattern_base = '\d{7}p'
+            else:
+                pattern_base  = 'CFIS.*\.{}'.format(band)
+        else:
+            pattern_base = pattern
+
+        if type == 'raw':
+            pattern  = '{}\.fits.fz'.format(pattern_base)
+        elif type == 'tiles':
+            pattern = '{}\.fits'.format(pattern_base)
+        elif type == 'cat':
+            pattern = '{}\.cat'.format(pattern_base)
+        elif type == 'weight':
+            pattern = '{}\.weight\.fits\.fz'.format(pattern_base)
+        else:
+            mkstuff.error('Invalid type \'{}\''.format(type))
+
+        return pattern
+
+
+    def _get_image_list(self, inp, band, image_type, verbose=False):
+        """Return list of images.
+
+        Parameters
+        ----------
+        input: string
+            file name or direcory path
+        verbose: bool, optional
+            verbose output if True, default=False
+
+        Return
+        ------
+        img_list: list of strings
+            image list
+        """
+
+        # Get file list
+        print('testing {}'.format(inp))
+        if os.path.isfile(inp):
+            inp_type  = 'file'
+            file_list = self._read_list(inp)
+
+        elif os.path.isdir(inp):
+            inp_type  = 'dir'
+            file_list = glob.glob(inp)
+
+        else:
+            print('Input {} not found, neither existing file nor directory'.format(inp))
+
+
+        # Filter file list to match CFIS image pattern
+        img_list = []
+        pattern = self._get_file_pattern('', band, image_type)
+
+        for f in file_list:
+
+            m = re.findall(pattern, f)
+            if len(m) != 0:
+                img_list.append(m[0])
+
+        if verbose == True:
+            print('{} image files found in input {} \'{}\''.format(len(img_list), inp_type, inp))
+
+        return img_list
+

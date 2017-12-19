@@ -42,6 +42,8 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
     def __init__(self, master):
 
+        print('MKDEBUG PackageJobProcessor init')
+
         mpfx_job.MpfxJobProcessor.__init__(self, master)
 
         self._helper = PackageHelper()
@@ -105,6 +107,8 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
         This method is called by MasterSMP.process_jobs() in mp_calc_SMP.py.
 
         """
+
+        print('MKDEBUG process_job')
 
         results_dict = {}
 
