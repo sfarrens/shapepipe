@@ -207,7 +207,7 @@ class PackageRunner(object):
 
         """
 
-        print('exec_line')
+        print('MKDEBUG exec_line')
         os.system(self._exec_line)
 
         inp = '{}/{}'.format(self._worker.config.get_as_string('BASE_DIR', 'PRIMARY_DATASET'), \

@@ -66,8 +66,6 @@ class PackageMasterSMP(mpfx_SMP.MpfxMasterSMP):
 
             print(detail)
 
-        print('MKDEBUG PackageMasterSPM init done')
-
 
     def create_job_processor(self):
 
@@ -81,8 +79,6 @@ class PackageMasterSMP(mpfx_SMP.MpfxMasterSMP):
         class instance of the job processor object
 
         """
-
-        print('MKDEBUG create_job_processor')
 
         return PackageJobProcessor(self)
 

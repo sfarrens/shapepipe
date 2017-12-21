@@ -17,6 +17,7 @@ import sys
 # -- External imports
 from mpfx import mpfx_job
 
+
 # --- Module-specific imports
 from execute import PackageRunner
 from helper import PackageHelper
@@ -42,14 +43,11 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
     def __init__(self, master):
 
-        print('MKDEBUG PackageJobProcessor init')
-
         mpfx_job.MpfxJobProcessor.__init__(self, master)
 
         self._helper = PackageHelper()
         self._master = master
 
-        print('MKDEBUG PackageJobProcessor init done')
 
     def create_dataset(self, master, dataset_name, dataset_type,
                        dataset_base_dir, dataset_dir_list, dataset_recurse):
@@ -83,8 +81,9 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
         """
 
-        print('MKDEBUG commented call of PackageDataSet')
-        #return PackageDataSet(self._master, dataset_name, dataset_base_dir, dataset_dir_list, dataset_recurse)
+        data_set = PackageDataSet(self._master, dataset_name, dataset_base_dir, dataset_dir_list, dataset_recurse)
+        return data_set
+
 
     def process_job(self, job, worker):
 
@@ -109,8 +108,6 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
         This method is called by MasterSMP.process_jobs() in mp_calc_SMP.py.
 
         """
-
-        print('MKDEBUG process_job')
 
         results_dict = {}
 
