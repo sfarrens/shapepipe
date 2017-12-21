@@ -17,6 +17,7 @@ import sys
 # -- External imports
 from mpfx import mpfx_job
 
+
 # --- Module-specific imports
 from execute import PackageRunner
 from helper import PackageHelper
@@ -46,6 +47,7 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
         self._helper = PackageHelper()
         self._master = master
+
 
     def create_dataset(self, master, dataset_name, dataset_type,
                        dataset_base_dir, dataset_dir_list, dataset_recurse):
@@ -79,8 +81,9 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
         """
 
-        return PackageDataSet(self._master, dataset_name, dataset_base_dir,
-                              dataset_dir_list, dataset_recurse)
+        data_set = PackageDataSet(self._master, dataset_name, dataset_base_dir, dataset_dir_list, dataset_recurse)
+        return data_set
+
 
     def process_job(self, job, worker):
 

@@ -66,6 +66,7 @@ class PackageMasterSMP(mpfx_SMP.MpfxMasterSMP):
 
             print(detail)
 
+
     def create_job_processor(self):
 
         """Create Job Processor
@@ -92,7 +93,9 @@ def main():
 
     else:
         try:
+            print('MKDEBUG main run')
             master.run()
+            print('MKDEBUG main run done')
 
         except Exception:
             PackageHelper.print_error("The master process ended unexpectedly")

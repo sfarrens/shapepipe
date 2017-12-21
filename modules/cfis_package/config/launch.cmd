@@ -5,3 +5,4 @@ export PACKAGE_DIR="$HOME/ShapePipe/modules/cfis_package"
 
 # Run package
 python ${PACKAGE_DIR}/cfis/cfis_SMP.py -d ${PACKAGE_DIR}/config -c cfis_smp.cfg
+
