@@ -36,6 +36,7 @@ class PackageRunner(object):
 
     def __init__(self, helper, job, worker):
 
+        print('MKDEEBUG PackageRunner init')
         self._helper = helper
         self._job = job
         self._worker = worker
@@ -76,6 +77,8 @@ class PackageRunner(object):
         This method is called by PackageJobProcessor.process_job() in job.py.
 
         """
+
+        print('MKDEBUG PackageRunner run_exectutable')
 
         # Dictionary of results
         results_dict = {}

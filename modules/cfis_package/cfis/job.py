@@ -49,6 +49,8 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
         self._helper = PackageHelper()
         self._master = master
 
+        print('MKDEBUG PackageJobProcessor init done')
+
     def create_dataset(self, master, dataset_name, dataset_type,
                        dataset_base_dir, dataset_dir_list, dataset_recurse):
 
@@ -81,8 +83,8 @@ class PackageJobProcessor(mpfx_job.MpfxJobProcessor):
 
         """
 
-        return PackageDataSet(self._master, dataset_name, dataset_base_dir,
-                              dataset_dir_list, dataset_recurse)
+        print('MKDEBUG commented call of PackageDataSet')
+        #return PackageDataSet(self._master, dataset_name, dataset_base_dir, dataset_dir_list, dataset_recurse)
 
     def process_job(self, job, worker):
 

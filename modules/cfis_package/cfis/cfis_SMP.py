@@ -56,17 +56,18 @@ class PackageMasterSMP(mpfx_SMP.MpfxMasterSMP):
             self._helper = PackageHelper()
 
             # --- Show config_summary
-            print('MKDEBUG show_config')
             self._helper.show_config_summary(self)
 
             # --- Save a copy of the gfit configuration file to the log dir
             copy(join(args.options['-d'], args.options['-c']),
                  self.log_output_dir)
-            print('MKDEBUG copy done')
 
         except Exception as detail:
 
             print(detail)
+
+        print('MKDEBUG PackageMasterSPM init done')
+
 
     def create_job_processor(self):
 
@@ -96,9 +97,9 @@ def main():
 
     else:
         try:
-            print('main run')
+            print('MKDEBUG main run')
             master.run()
-            print('main run done')
+            print('MKDEBUG main run done')
 
         except Exception:
             PackageHelper.print_error("The master process ended unexpectedly")
