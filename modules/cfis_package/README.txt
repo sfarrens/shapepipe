@@ -1,5 +1,5 @@
 cfis v1.0.0
-===================
+===========
 
 !!! [Parallel] execution of CFIS field selection, book keeping, coordinate management, etc.
 
@@ -28,7 +28,7 @@ Installation:
 
 - Download and unpack the file cfis-1.0.0.tar.gz in the directory of your
   choice
-- mpfcs82 is a pure Python module and can then be installed using the standard
+- cfis is a pure Python module and can then be installed using the standard
   procedure:
 
      1. create a console or terminal session

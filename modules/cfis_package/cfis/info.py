@@ -4,11 +4,11 @@
 
 Set the package information
 
-:Authors: Samuel Farrens
+:Authors: Martin Kilbinger
 
-:Date: 31/10/2017 (Happy Halloween!)
+:Date: 14/12/2017
 
 """
 
 __version__ = "1.0.0"
-__whoami__ = "package_name"
+__whoami__ = "cfis"
