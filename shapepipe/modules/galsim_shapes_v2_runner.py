@@ -18,11 +18,12 @@ import numpy as np
 
 import galsim
 from astropy.wcs import WCS
+import reproject
 
 
-def get_gauss_2D(sigma, center=(0,0), shape=(51,51)):
+def get_gauss_2D(sigma, center=(0, 0), shape=(51, 51)):
 
-    x, y = np.meshgrid(np.linspace(0,shape[0]-1,shape[0]), np.linspace(0,shape[1]-1,shape[1]))
+    x, y = np.meshgrid(np.linspace(0, shape[0]-1, shape[0]), np.linspace(0, shape[1]-1,shape[1]))
     return np.exp(-(((x-center[0])**2. + (y-center[1])**2.))/(2. * sigma**2.)) / (sigma**2. * 2. * np.pi)
 
 

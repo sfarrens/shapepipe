@@ -69,7 +69,7 @@ def save_sextractor_data(final_cat_file, sexcat_path, remove_vignet=True):
 
     cat_size = len(data)
 
-    tile_id = int(re.split('-',os.path.splitext(os.path.split(sexcat_path)[1])[0])[1])
+    tile_id = int(re.split('-', os.path.splitext(os.path.split(sexcat_path)[1])[0])[1])
     tile_id_array = np.ones(cat_size) * tile_id
 
     final_cat_file.open()
