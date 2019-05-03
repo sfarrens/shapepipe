@@ -23,7 +23,7 @@ import reproject
 
 def get_gauss_2D(sigma, center=(0, 0), shape=(51, 51)):
 
-    x, y = np.meshgrid(np.linspace(0, shape[0]-1, shape[0]), np.linspace(0, shape[1]-1,shape[1]))
+    x, y = np.meshgrid(np.linspace(0, shape[0]-1, shape[0]), np.linspace(0, shape[1]-1, shape[1]))
     return np.exp(-(((x-center[0])**2. + (y-center[1])**2.))/(2. * sigma**2.)) / (sigma**2. * 2. * np.pi)
 
 
@@ -101,7 +101,7 @@ def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
     for i in range(n_epoch):
         s = np.shape(weights[i])
         cx, cy = int(s[0]/2.), int(s[1]/2.)
-        w = np.average(weights[i], weight=get_gauss_2D(psfs_sigma[i], center=(cx,cy)))
+        w = np.average(weights[i], weight=get_gauss_2D(psfs_sigma[i], center=(cx, cy)))
         if w <= 0:
             raise ValueError('Error weight <= 0')
         psf_tmp = psf_list_stack[i]/np.sum(psf_list_stack[i])
