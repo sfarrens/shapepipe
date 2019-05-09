@@ -88,7 +88,7 @@ def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
     n_epoch = len(psfs)
 
     psf_list_stack = []
-    psf_list_dict.append(psfs[0])
+    psf_list_stack.append(psfs[0])
 
     for psf, wcs in zip(psfs[1:], loc_wcs[1:]):
         res = reproject.reproject_interp((psf, wcs), loc_wcs[0], shape_out=psfs[0].shape)
@@ -101,7 +101,7 @@ def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
     for i in range(n_epoch):
         s = np.shape(weights[i])
         cx, cy = int(s[0]/2.), int(s[1]/2.)
-        w = np.average(weights[i], weight=get_gauss_2D(psfs_sigma[i], center=(cx, cy)))
+        w = np.average(weights[i], weights=get_gauss_2D(psfs_sigma[i], center=(cx, cy)))
         if w <= 0:
             raise ValueError('Error weight <= 0')
         psf_tmp = psf_list_stack[i]/np.sum(psf_list_stack[i])
@@ -147,12 +147,13 @@ def do_galsim_shapes(gal, gal_sig, psfs, loc_wcs, psfs_sigma, weights, flags, pi
 
     g_gal = galsim.Image(gal, scale=pixel_scale)
 
-    if len(psfs == 1):
+    if len(psfs) == 1:
         psf = psfs[0]
     else:
         psf = stack_psfs(psfs, psfs_sigma, weights, loc_wcs)
     if psf == 'Error':
         return 'Error'
+
     psf_sig = np.mean(psfs_sigma)
     g_psf = galsim.Image(psf, scale=pixel_scale)
 
@@ -243,9 +244,9 @@ def save_results(output_dict, output_name):
     f.save_as_fits(output_dict, ext_name='RESULTS')
 
 
-def process(tile_cat_path, sm_cat_path, gal_vignet_path, bkg_vignet_path,
+def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             psf_vignet_path, weight_vignet_path, flag_vignet_path,
-            w_log):
+            f_wcs_path, w_log):
     """ Process
 
     Process function.
@@ -285,11 +286,11 @@ def process(tile_cat_path, sm_cat_path, gal_vignet_path, bkg_vignet_path,
     tile_n_epoch = np.copy(tile_cat.get_data()['N_EPOCH'])
     tile_fwhm = np.copy(tile_cat.get_data()['FWHM_IMAGE'])
     tile_cat.close()
-    sm_cat = io.FITSCatalog(sm_cat_path, SEx_catalog=True)
-    sm_cat.open()
-    sm = np.copy(sm_cat.get_data()['SPREAD_MODEL'])
-    sm_err = np.copy(sm_cat.get_data()['SPREADERR_MODEL'])
-    sm_cat.close()
+    # sm_cat = io.FITSCatalog(sm_cat_path, SEx_catalog=True)
+    # sm_cat.open()
+    # sm = np.copy(sm_cat.get_data()['SPREAD_MODEL'])
+    # sm_err = np.copy(sm_cat.get_data()['SPREADERR_MODEL'])
+    # sm_cat.close()
     f_wcs_file = np.load(f_wcs_path).item()
     bkg_vign_cat = SqliteDict(bkg_vignet_path)
     psf_vign_cat = SqliteDict(psf_vignet_path)
@@ -383,14 +384,14 @@ def process(tile_cat_path, sm_cat_path, gal_vignet_path, bkg_vignet_path,
                file_pattern=['tile_sexcat', 'image', 'exp_background', 'galaxy_psf', 'weight', 'flag'],
                file_ext=['.fits', '.sqlite', '.sqlite', '.sqlite', '.sqlite', '.sqlite'],
                depends=['numpy', 'ngmix', 'galsim'])
-def galsim_shapes_runner(input_file_list, output_dir, file_number_string,
-                         config, w_log):
+def galsim_shapes_v2_runner(input_file_list, output_dir, file_number_string,
+                            config, w_log):
 
     output_name = output_dir + '/' + 'galsim' + file_number_string + '.fits'
 
-    f_wcs_path = config.getexpanded('NGMIX_RUNNER', 'LOG_WCS')
+    f_wcs_path = config.getexpanded('GALSIM_SHAPES_V2_RUNNER', 'LOG_WCS')
 
-    metacal_res = process(*input_file_list, w_log)
+    metacal_res = process(*input_file_list, f_wcs_path, w_log)
     res_dict = compile_results(metacal_res)
     save_results(res_dict, output_name)
 

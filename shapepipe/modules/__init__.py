@@ -24,4 +24,5 @@ __module_list__ = ['combine_mexp_runner',
                    'vignetmaker_runner',
                    'spread_model_runner',
                    'swarp_runner',
-                   'galsim_shapes_runner']
+                   'galsim_shapes_runner',
+                   'galsim_shapes_v2_runner']
