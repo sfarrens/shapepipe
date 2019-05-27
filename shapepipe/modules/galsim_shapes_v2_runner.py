@@ -22,9 +22,46 @@ import reproject
 
 
 def get_gauss_2D(sigma, center=(0, 0), shape=(51, 51)):
+    """
+    """
 
     x, y = np.meshgrid(np.linspace(0, shape[0]-1, shape[0]), np.linspace(0, shape[1]-1, shape[1]))
     return np.exp(-(((x-center[0])**2. + (y-center[1])**2.))/(2. * sigma**2.)) / (sigma**2. * 2. * np.pi)
+
+
+def get_wcs_from_sexcat(header_list):
+    """ Get wcs from SExtractor catalog
+
+    Read the image header from SExtractor catalog and create a wcs object.
+
+    Parameters
+    ----------
+    header_list : list
+        List containing all the header parameters.
+
+    Returns
+    -------
+    new_wcs : astropy.wcs.WCS
+        WCS object.
+    """
+
+    keys = ['CTYPE1', 'CUNIT1', 'CRVAL1', 'CRPIX1', 'CD1_1', 'CD1_2',
+           'CTYPE2', 'CUNIT2', 'CRVAL2', 'CRPIX2', 'CD2_1', 'CD2_2']
+    wcs_dict = {}
+    for line in header_list:
+        tmp = re.split('=|/', line.replace(' ',''))
+        if tmp[0] not in keys:
+            continue
+        wcs_dict[tmp[0]] = tmp[1].replace("'","")
+
+    new_wcs = WCS(naxis=2)
+    new_wcs.wcs.ctype = [w['CTYPE1'], w['CTYPE2']]
+    new_wcs.wcs.cunit = [w['CUNIT1'], w['CUNIT2']]
+    new_wcs.wcs.crpix = [w['CRPIX1'], w['CRPIX2']]
+    new_wcs.wcs.crval = [w['CRVAL1'], w['CRVAL2']]
+    new_wcs.wcs.cd = [[w['CD1_1'], w['CD1_2']], [w['CD2_1'], w['CD2_2']]]
+
+    return new_wcs
 
 
 def get_local_wcs(wcs, ra, dec, vign_shape):
@@ -62,13 +99,15 @@ def get_local_wcs(wcs, ra, dec, vign_shape):
     return loc_wcs
 
 
-def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
+def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
     """ Stack PSFs
 
     Perform the weighted average stacking of the PSFs.
 
     Parameters
     ----------
+    tile_loc_wcs : astropy.wcs.WCS
+        Local WCS from the tile.
     psfs : numpy.ndarray
         Array containing the PSF for all epochs of one object.
     psfs_sigma : list
@@ -88,10 +127,9 @@ def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
     n_epoch = len(psfs)
 
     psf_list_stack = []
-    psf_list_stack.append(psfs[0])
 
-    for psf, wcs in zip(psfs[1:], loc_wcs[1:]):
-        res = reproject.reproject_interp((psf, wcs), loc_wcs[0], shape_out=psfs[0].shape)
+    for psf, wcs in zip(psfs, loc_wcs):
+        res = reproject.reproject_interp((psf, wcs), tile_loc_wcs, shape_out=psfs[0].shape)
         new_psf = res[0]
         new_psf[np.isnan(new_psf)] = 0
         psf_list_stack.append(new_psf)
@@ -113,7 +151,7 @@ def stack_psfs(psfs, psfs_sigma, weights, loc_wcs):
     return psf_sum
 
 
-def do_galsim_shapes(gal, gal_sig, psfs, loc_wcs, psfs_sigma, weights, flags, pixel_scale):
+def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weights, flags, pixel_scale):
     """ Do ngmix metacal
 
     Do the metacalibration on a multi-epoch object and return the join shape
@@ -125,6 +163,8 @@ def do_galsim_shapes(gal, gal_sig, psfs, loc_wcs, psfs_sigma, weights, flags, pi
         Galaxy vignet from the stack.
     psfs : list
         List of the PSF vignets.
+    tile_loc_wcs : astropy.wcs.WCS
+        Local WCS from the tile.
     loc_wcs : list
         List of local WCS.
     psfs_sigma : list
@@ -147,10 +187,10 @@ def do_galsim_shapes(gal, gal_sig, psfs, loc_wcs, psfs_sigma, weights, flags, pi
 
     g_gal = galsim.Image(gal, scale=pixel_scale)
 
-    if len(psfs) == 1:
-        psf = psfs[0]
-    else:
-        psf = stack_psfs(psfs, psfs_sigma, weights, loc_wcs)
+    # if len(psfs) == 1:
+    #     psf = psfs[0]
+    # else:
+    psf = stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs)
     if psf == 'Error':
         return 'Error'
 
@@ -187,7 +227,7 @@ def compile_results(results, w_log):
         Dictionary containing ready to be saved.
 
     """
-    
+
     output_dict = {'id': [],
                    'gal_g1': [], 'gal_g2': [], 'gal_g1_err': [], 'gal_g2_err':[],
                    'gal_uncorr_g1': [], 'gal_uncorr_g2': [],
@@ -293,6 +333,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
     tile_dec = np.copy(tile_cat.get_data()['YWIN_WORLD'])
     tile_n_epoch = np.copy(tile_cat.get_data()['N_EPOCH'])
     tile_fwhm = np.copy(tile_cat.get_data()['FWHM_IMAGE'])
+    tile_wcs = get_wcs_from_sexcat(tile_cat.get_data(1)[0][0])
     tile_cat.close()
     # sm_cat = io.FITSCatalog(sm_cat_path, SEx_catalog=True)
     # sm_cat.open()
@@ -347,6 +388,11 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
                 continue
             flag_vign.append(flag_vign_tmp)
 
+            tile_loc_wcs = get_local_wcs(tile_wcs,
+                                         tile_ra[i_tile],
+                                         tile_dec[i_tile],
+                                         tile_vign_tmp.shape)
+
             exp_name, ccd_n = re.split('-', expccd_name_tmp)
             loc_wcs_list.append(get_local_wcs(f_wcs_file[exp_name][int(ccd_n)],
                                               tile_ra[i_tile],
@@ -363,6 +409,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             res['gal'] = do_galsim_shapes(tile_vign[i_tile],
                                           tile_fwhm[i_tile]/2.335,
                                           psf_vign,
+                                          tile_loc_wcs,
                                           loc_wcs_list,
                                           sigma_psf,
                                           weight_vign,
@@ -377,7 +424,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             continue
 
         res['obj_id'] = id_tmp
-        
+
         final_res.append(res)
 
     bkg_vign_cat.close()
