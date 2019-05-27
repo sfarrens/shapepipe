@@ -203,6 +203,7 @@ def save_galsim_shapes(final_cat_file, galsim_cat_path):
     # max_epoch = np.max(ngmix_n_epoch)
 
     output_dict = {'GALSIM_GAL_ELL': np.ones((len(obj_id), 2)) * -10.,
+                   'GALSIM_GAL_ELL_ERR': np.ones(len(obj_id)) * -1.,
                    'GALSIM_GAL_SIGMA': np.zeros(len(obj_id)),
                    'GALSIM_GAL_FLAG': np.ones(len(obj_id), dtype='int16'),
                    'GALSIM_GAL_ELL_U': np.ones((len(obj_id), 2)) * -10.,
@@ -215,6 +216,7 @@ def save_galsim_shapes(final_cat_file, galsim_cat_path):
         if len(ind) > 0:
             output_dict['GALSIM_GAL_ELL'][i][0] = galsim_cat_file.get_data()['gal_g1'][ind[0]]
             output_dict['GALSIM_GAL_ELL'][i][1] = galsim_cat_file.get_data()['gal_g2'][ind[0]]
+            output_dict['GALSIM_GAL_ELL_ERR'][i] = galsim_cat_file.get_data()['gal_g1_err'][ind[0]]
             output_dict['GALSIM_GAL_SIGMA'][i] = galsim_cat_file.get_data()['gal_sigma'][ind[0]]
             output_dict['GALSIM_GAL_FLAG'][i] = galsim_cat_file.get_data()['gal_flag'][ind[0]]
             output_dict['GALSIM_GAL_RES'][i] = galsim_cat_file.get_data()['gal_resolution'][ind[0]]
@@ -274,7 +276,7 @@ def save_psf_data(final_cat_file, galaxy_psf_path, w_log):
 @module_runner(input_module=['sextractor_runner', 'spread_model_runner', 'psfexinterp_runner', 'ngmix_runner'],
                version='1.0', file_pattern=['tile_sexcat', 'sexcat_sm', 'galaxy_psf', 'ngmix'],
                file_ext=['.fits', '.fits', '.npy', '.fits'],
-               depends=['numpy', 'sqlitedict'])
+               depends=['numpy'])
 def make_catalog_runner(input_file_list, output_dir, file_number_string,
                         config, w_log):
 
@@ -307,7 +309,7 @@ def make_catalog_runner(input_file_list, output_dir, file_number_string,
     elif shape_type.lower() == "galsim":
         save_galsim_shapes(final_cat_file, ngmix_cat_path)
 
-    w_log.info('Save PSF data')
-    save_psf_data(final_cat_file, galaxy_psf_path, w_log)
+    #w_log.info('Save PSF data')
+    #save_psf_data(final_cat_file, galaxy_psf_path, w_log)
 
     return None, None

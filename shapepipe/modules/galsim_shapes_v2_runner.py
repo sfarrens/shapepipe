@@ -164,14 +164,14 @@ def do_galsim_shapes(gal, gal_sig, psfs, loc_wcs, psfs_sigma, weights, flags, pi
 
     s = np.shape(weight)
     cx, cy = int(s[0]/2.), int(s[1]/2.)
-    sky_var = 1./np.average(weight, weights=get_gauss_2D(psfs_sigma[i], center=(cx, cy)))
+    sky_var = 1./np.average(weight, weights=get_gauss_2D(psf_sig, center=(cx, cy)))
 
     res_gal = galsim.hsm.EstimateShear(g_gal, g_psf, sky_var=sky_var, weight=g_weight, strict=False)
 
     return res_gal
 
 
-def compile_results(results):
+def compile_results(results, w_log):
     """ Compile results
 
     Prepare the results of ngmix before saving.
@@ -187,7 +187,7 @@ def compile_results(results):
         Dictionary containing ready to be saved.
 
     """
-
+    
     output_dict = {'id': [],
                    'gal_g1': [], 'gal_g2': [], 'gal_g1_err': [], 'gal_g2_err':[],
                    'gal_uncorr_g1': [], 'gal_uncorr_g2': [],
@@ -196,6 +196,7 @@ def compile_results(results):
                    'gal_flag': [],
                    'psf_g1': [], 'psf_g2': [],
                    'psf_sigma': []}
+
     for i in range(len(results)):
         output_dict['id'].append(results[i]['obj_id'])
         if (results[i]['gal'].error_message == ''):
@@ -212,13 +213,13 @@ def compile_results(results):
             # output_dict['gal_g2'].append(results[i]['gal'].corrected_g2)
             # gal_err = 0
         else:
-            w_log.info('Object : {}    Error : {}'.format(i_tile, results[i]['gal'].error_message))
+            w_log.info('Object : {}    Error : {}'.format(results[i]['obj_id'], results[i]['gal'].error_message))
             output_dict['gal_g1'].append(-10.)
             output_dict['gal_g2'].append(-10.)
             gal_err = 1
 
-        output_dict['gal_g1_err'].append(results[i]['gal'].corrected_shape_err[0])
-        output_dict['gal_g2_err'].append(results[i]['gal'].corrected_shape_err[1])
+        output_dict['gal_g1_err'].append(results[i]['gal'].corrected_shape_err)
+        output_dict['gal_g2_err'].append(results[i]['gal'].corrected_shape_err)
         output_dict['gal_uncorr_g1'].append(results[i]['gal'].observed_shape.g1)
         output_dict['gal_uncorr_g2'].append(results[i]['gal'].observed_shape.g2)
         output_dict['gal_sigma'].append(results[i]['gal'].moments_sigma)
@@ -376,7 +377,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             continue
 
         res['obj_id'] = id_tmp
-
+        
         final_res.append(res)
 
     bkg_vign_cat.close()
@@ -400,7 +401,7 @@ def galsim_shapes_v2_runner(input_file_list, output_dir, file_number_string,
     f_wcs_path = config.getexpanded('GALSIM_SHAPES_V2_RUNNER', 'LOG_WCS')
 
     metacal_res = process(*input_file_list, f_wcs_path, w_log)
-    res_dict = compile_results(metacal_res)
+    res_dict = compile_results(metacal_res, w_log)
     save_results(res_dict, output_name)
 
     return None, None
