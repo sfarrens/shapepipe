@@ -19,6 +19,14 @@ import numpy as np
 import galsim
 from astropy.wcs import WCS
 import reproject
+import ngmix
+
+
+def mad(data, axis=None):
+    """
+    """
+
+    return np.mean(np.abs(data - np.mean(data, axis)), axis)
 
 
 def get_gauss_2D(sigma, center=(0, 0), shape=(51, 51)):
@@ -55,11 +63,12 @@ def get_wcs_from_sexcat(header_list):
         wcs_dict[tmp[0]] = tmp[1].replace("'","")
 
     new_wcs = WCS(naxis=2)
-    new_wcs.wcs.ctype = [w['CTYPE1'], w['CTYPE2']]
-    new_wcs.wcs.cunit = [w['CUNIT1'], w['CUNIT2']]
-    new_wcs.wcs.crpix = [w['CRPIX1'], w['CRPIX2']]
-    new_wcs.wcs.crval = [w['CRVAL1'], w['CRVAL2']]
-    new_wcs.wcs.cd = [[w['CD1_1'], w['CD1_2']], [w['CD2_1'], w['CD2_2']]]
+    new_wcs.wcs.ctype = [wcs_dict['CTYPE1'], wcs_dict['CTYPE2']]
+    new_wcs.wcs.cunit = [wcs_dict['CUNIT1'], wcs_dict['CUNIT2']]
+    new_wcs.wcs.crpix = [wcs_dict['CRPIX1'], wcs_dict['CRPIX2']]
+    new_wcs.wcs.crval = [wcs_dict['CRVAL1'], wcs_dict['CRVAL2']]
+    new_wcs.wcs.cd = [[wcs_dict['CD1_1'], wcs_dict['CD1_2']],
+                      [wcs_dict['CD2_1'], wcs_dict['CD2_2']]]
 
     return new_wcs
 
@@ -139,7 +148,12 @@ def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
     for i in range(n_epoch):
         s = np.shape(weights[i])
         cx, cy = int(s[0]/2.), int(s[1]/2.)
-        w = np.average(weights[i], weights=get_gauss_2D(psfs_sigma[i], center=(cx, cy)))
+        gauss_img = get_gauss_2D(psfs_sigma[i], center=(cx, cy))
+        # w = np.average(weights[i], weights=gauss_img)
+        # w2 = np.sum(weights[i]*gauss_img)/
+        w = np.sum(weights[i]*gauss_img)/np.sum(gauss_img[np.where(weights[i] != 0)])
+        # w_old = np.mean(weights[i][cx-3:cx+3, cy-3:cy+3])
+        # print("old : {} | new : {} | new2 : {}".format(w_old, w, w2))
         if w <= 0:
             raise ValueError('Error weight <= 0')
         psf_tmp = psf_list_stack[i]/np.sum(psf_list_stack[i])
@@ -151,7 +165,95 @@ def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
     return psf_sum
 
 
-def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weights, flags, pixel_scale):
+def check_galsim_shapes(galsim_shape, obj_id, w_log):
+    """
+    """
+
+    if (galsim_shape.error_message == ''):
+        try:
+            gal_shapes = galsim.Shear(e1=galsim_shape.corrected_e1, e2=galsim_shape.corrected_e2)
+            g1 = gal_shapes.g1
+            g2 = gal_shapes.g2
+            gal_err = 0
+        except:
+            g1 = galsim_shape.corrected_e1
+            g2 = galsim_shape.corrected_e2
+            gal_err = 2
+    else:
+        w_log.info('Object : {}    Error : {}'.format(obj_id, galsim_shape.error_message))
+        g1 = -10.
+        g2 = -10.
+        gal_err = 1
+
+    return g1, g2, gal_err
+
+
+#####################
+# Metacal functions #
+#####################
+
+def psf_fitter(psf_vign):
+    """Psf fitter
+
+    Function used to create a gaussian fit of the PSF.
+
+    Parameters
+    ----------
+    psf_vign : numpy.array
+        Array containg one vignet of psf
+
+    """
+
+    psf_obs=ngmix.Observation(psf_vign)
+    pfitter=ngmix.fitting.LMSimple(psf_obs,'gauss')
+
+    shape = psf_vign.shape
+    psf_pars = np.array([0., 0., 0., 0., 4., 1.])
+    pfitter.go(psf_pars)
+
+    psf_gmix_fit=pfitter.get_gmix()
+    psf_obs.set_gmix(psf_gmix_fit)
+
+    return psf_obs
+
+
+def make_metacal(gal_vign, psf_vign, weight_vign, option_dict):
+    """Make the metacalibration
+
+    This function call different ngmix functions to create images needed for the metacalibration.
+
+    Parameters
+    ----------
+    gal_vign : numpy.array
+        Array containing one vignet of galaxy
+    psf_vign : numpy.array
+        Array containg one vignet of psf
+    option_dict : dict
+        Dictionnary containg option for ngmix (keys : ['TYPES', 'FIXNOISE', 'CHEATNOISE', 'SYMMETRIZE_PSF', 'STEP'])
+
+    """
+
+    psf_obs = psf_fitter(psf_vign)
+
+    obs = ngmix.Observation(gal_vign, psf=psf_obs, weight=weight_vign)
+
+    # obs_out = ngmix.metacal.get_all_metacal(obs,
+    #                                         types= option_dict['TYPES'],
+    #                                         fixnoise= option_dict['FIXNOISE'],
+    #                                         cheatnoise= option_dict['CHEATNOISE'],
+    #                                         symmetrize_psf= option_dict['SYMMETRIZE_PSF'],
+    #                                         step= option_dict['STEP'])
+    obs_out = ngmix.metacal.get_all_metacal(obs,
+                                            types=option_dict['TYPES'],
+                                            fixnoise=option_dict['FIXNOISE'],
+                                            step=option_dict['STEP'],
+                                            psf=option_dict['PSF_KIND'])
+
+    return obs_out
+
+
+
+def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weights, flags, pixel_scale, do_metacal):
     """ Do ngmix metacal
 
     Do the metacalibration on a multi-epoch object and return the join shape
@@ -185,17 +287,15 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
 
     """
 
-    g_gal = galsim.Image(gal, scale=pixel_scale)
-
     # if len(psfs) == 1:
     #     psf = psfs[0]
     # else:
     psf = stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs)
     if psf == 'Error':
         return 'Error'
+    g_psf = galsim.Image(psf, scale=pixel_scale)
 
     psf_sig = np.mean(psfs_sigma)
-    g_psf = galsim.Image(psf, scale=pixel_scale)
 
     weight = np.sum(weights, 0)
     flag = np.sum(flags, 0)
@@ -206,12 +306,43 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
     cx, cy = int(s[0]/2.), int(s[1]/2.)
     sky_var = 1./np.average(weight, weights=get_gauss_2D(psf_sig, center=(cx, cy)))
 
-    res_gal = galsim.hsm.EstimateShear(g_gal, g_psf, sky_var=sky_var, weight=g_weight, strict=False)
+    # print("mean from single : {}".format(1./sky_var))
+    # print("from stack image : {}".format(mad(gal[gal!=-1e30])**2.))
 
-    return res_gal
+    res_gal = {}
+
+    if do_metacal:
+        option_dict = {'TYPES': ['noshear','1p','1m','2p','2m'],
+                       'FIXNOISE': True,
+                       'STEP': 0.01,
+                       'PSF_KIND': 'gauss'}
+        res = make_metacal(gal, psf, weight, option_dict)
+
+        for key in option_dict['TYPES']:
+            gal_tmp = res[key].image
+            g_gal = galsim.Image(gal_tmp, scale=pixel_scale)
+            g_psf_mc = galsim.Image(res[key].get_psf().image, scale=pixel_scale)
+            sky_var = mad(gal_tmp)**2.
+            res_gal[key] = galsim.hsm.EstimateShear(g_gal,
+                                                    g_psf_mc,
+                                                    sky_var=sky_var,
+                                                    weight=g_weight,
+                                                    strict=False)
+        res_gal['original_psf'] = galsim.hsm.FindAdaptiveMom(g_psf,
+                                                             weight=g_weight,
+                                                             strict=False)
+    else:
+        g_gal = galsim.Image(gal, scale=pixel_scale)
+        res_gal['classic'] = galsim.hsm.EstimateShear(g_gal,
+                                                      g_psf,
+                                                      sky_var=sky_var,
+                                                      weight=g_weight,
+                                                      strict=False)
+
+    return res_gal, psf
 
 
-def compile_results(results, w_log):
+def compile_results(results, do_metacal, w_log):
     """ Compile results
 
     Prepare the results of ngmix before saving.
@@ -228,46 +359,61 @@ def compile_results(results, w_log):
 
     """
 
-    output_dict = {'id': [],
-                   'gal_g1': [], 'gal_g2': [], 'gal_g1_err': [], 'gal_g2_err':[],
-                   'gal_uncorr_g1': [], 'gal_uncorr_g2': [],
-                   'gal_sigma': [],
-                   'gal_resolution': [],
-                   'gal_flag': [],
-                   'psf_g1': [], 'psf_g2': [],
-                   'psf_sigma': []}
+    cat_keys = ['id',
+                'gal_g1', 'gal_g2', 'gal_g1_err', 'gal_g2_err',
+                'gal_uncorr_g1', 'gal_uncorr_g2',
+                'gal_sigma',
+                'gal_resolution',
+                'gal_flag',
+                'psf_g1', 'psf_g2', 'psf_sigma', 'psf_vignet']
+
+    if do_metacal:
+        types = ['noshear','1p','1m','2p','2m']
+        types += ['original_psf']
+    else:
+        types = ['classic']
+
+    output_dict = {k: {kk: [] for kk in cat_keys} for k in types}
 
     for i in range(len(results)):
-        output_dict['id'].append(results[i]['obj_id'])
-        if (results[i]['gal'].error_message == ''):
-            try:
-                gal_shapes = galsim.Shear(e1=results[i]['gal'].corrected_e1, e2=results[i]['gal'].corrected_e2)
-                output_dict['gal_g1'].append(gal_shapes.g1)
-                output_dict['gal_g2'].append(gal_shapes.g2)
-                gal_err = 0
-            except:
-                output_dict['gal_g1'].append(results[i]['gal'].corrected_e1)
-                output_dict['gal_g2'].append(results[i]['gal'].corrected_e2)
-                gal_err = 2
-            # output_dict['gal_g1'].append(results[i]['gal'].corrected_g1)
-            # output_dict['gal_g2'].append(results[i]['gal'].corrected_g2)
-            # gal_err = 0
-        else:
-            w_log.info('Object : {}    Error : {}'.format(results[i]['obj_id'], results[i]['gal'].error_message))
-            output_dict['gal_g1'].append(-10.)
-            output_dict['gal_g2'].append(-10.)
-            gal_err = 1
+        # output_dict['id'].append(results[i]['obj_id'])
+        for key in types:
+            output_dict[key]['id'].append(results[i]['obj_id'])
+            # if (results[i]['gal'].error_message == ''):
+            #     try:
+            #         gal_shapes = galsim.Shear(e1=results[i]['gal'].corrected_e1, e2=results[i]['gal'].corrected_e2)
+            #         output_dict['gal_g1'].append(gal_shapes.g1)
+            #         output_dict['gal_g2'].append(gal_shapes.g2)
+            #         gal_err = 0
+            #     except:
+            #         output_dict['gal_g1'].append(results[i]['gal'].corrected_e1)
+            #         output_dict['gal_g2'].append(results[i]['gal'].corrected_e2)
+            #         gal_err = 2
+            #     # output_dict['gal_g1'].append(results[i]['gal'].corrected_g1)
+            #     # output_dict['gal_g2'].append(results[i]['gal'].corrected_g2)
+            #     # gal_err = 0
+            # else:
+            #     w_log.info('Object : {}    Error : {}'.format(results[i]['obj_id'], results[i]['gal'].error_message))
+            #     output_dict['gal_g1'].append(-10.)
+            #     output_dict['gal_g2'].append(-10.)
+            #     gal_err = 1
 
-        output_dict['gal_g1_err'].append(results[i]['gal'].corrected_shape_err)
-        output_dict['gal_g2_err'].append(results[i]['gal'].corrected_shape_err)
-        output_dict['gal_uncorr_g1'].append(results[i]['gal'].observed_shape.g1)
-        output_dict['gal_uncorr_g2'].append(results[i]['gal'].observed_shape.g2)
-        output_dict['gal_sigma'].append(results[i]['gal'].moments_sigma)
-        output_dict['gal_flag'].append(gal_err)
-        output_dict['gal_resolution'].append(results[i]['gal'].resolution_factor)
-        output_dict['psf_g1'].append(results[i]['gal'].psf_shape.g1)
-        output_dict['psf_g2'].append(results[i]['gal'].psf_shape.g2)
-        output_dict['psf_sigma'].append(results[i]['gal'].psf_sigma)
+            shapes_check = check_galsim_shapes(results[i]['gal'][key],
+                                               results[i]['obj_id'],
+                                               w_log)
+            output_dict[key]['gal_g1'].append(shapes_check[0])
+            output_dict[key]['gal_g2'].append(shapes_check[1])
+            output_dict[key]['gal_g1_err'].append(results[i]['gal'][key].corrected_shape_err)
+            output_dict[key]['gal_g2_err'].append(results[i]['gal'][key].corrected_shape_err)
+            output_dict[key]['gal_uncorr_g1'].append(results[i]['gal'][key].observed_shape.g1)
+            output_dict[key]['gal_uncorr_g2'].append(results[i]['gal'][key].observed_shape.g2)
+            output_dict[key]['gal_sigma'].append(results[i]['gal'][key].moments_sigma)
+            output_dict[key]['gal_flag'].append(shapes_check[2])
+            output_dict[key]['gal_resolution'].append(results[i]['gal'][key].resolution_factor)
+            output_dict[key]['psf_g1'].append(results[i]['gal'][key].psf_shape.g1)
+            output_dict[key]['psf_g2'].append(results[i]['gal'][key].psf_shape.g2)
+            output_dict[key]['psf_sigma'].append(results[i]['gal'][key].psf_sigma)
+            output_dict[key]['psf_vignet'].append(results[i]['psf_vign'])
 
     return output_dict
 
@@ -288,13 +434,13 @@ def save_results(output_dict, output_name):
 
     f = io.FITSCatalog(output_name, open_mode=io.BaseCatalog.OpenMode.ReadWrite)
 
-    # for key in output_dict.keys():
-    f.save_as_fits(output_dict, ext_name='RESULTS')
+    for key in output_dict.keys():
+        f.save_as_fits(output_dict[key], ext_name=key.upper())
 
 
 def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             psf_vignet_path, weight_vignet_path, flag_vignet_path,
-            f_wcs_path, w_log):
+            f_wcs_path, do_metacal, w_log):
     """ Process
 
     Process function.
@@ -352,6 +498,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
     for i_tile, id_tmp in enumerate(obj_id):
         res = {}
         w_log.info('{}'.format(i_tile))
+        print(i_tile)
         # Preselection step
         # if (tile_flag[i_tile] > 1) or (tile_imaflag[i_tile] > 0):
         #     continue
@@ -405,19 +552,20 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             skip = False
             continue
 
-        try:
-            res['gal'] = do_galsim_shapes(tile_vign[i_tile],
-                                          tile_fwhm[i_tile]/2.335,
-                                          psf_vign,
-                                          tile_loc_wcs,
-                                          loc_wcs_list,
-                                          sigma_psf,
-                                          weight_vign,
-                                          flag_vign,
-                                          0.186)
-        except:
-            w_log.info('Galsim fail on object {}'.format(id_tmp))
-            continue
+        # try:
+        res['gal'], res['psf_vign'] = do_galsim_shapes(tile_vign[i_tile],
+                                                       tile_fwhm[i_tile]/2.335,
+                                                       psf_vign,
+                                                       tile_loc_wcs,
+                                                       loc_wcs_list,
+                                                       sigma_psf,
+                                                       weight_vign,
+                                                       flag_vign,
+                                                       0.186,
+                                                       do_metacal)
+        # except:
+        #     w_log.info('Galsim fail on object {}'.format(id_tmp))
+        #     continue
 
         if res['gal'] == 'Error':
             w_log.info('Something went wrong with the psf on object id : {}.'.format(id_tmp))
@@ -447,8 +595,10 @@ def galsim_shapes_v2_runner(input_file_list, output_dir, file_number_string,
 
     f_wcs_path = config.getexpanded('GALSIM_SHAPES_V2_RUNNER', 'LOG_WCS')
 
-    metacal_res = process(*input_file_list, f_wcs_path, w_log)
-    res_dict = compile_results(metacal_res, w_log)
+    do_metacal = True
+
+    metacal_res = process(*input_file_list, f_wcs_path, do_metacal, w_log)
+    res_dict = compile_results(metacal_res, do_metacal, w_log)
     save_results(res_dict, output_name)
 
     return None, None
