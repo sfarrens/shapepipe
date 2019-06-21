@@ -216,8 +216,8 @@ def save_galsim_shapes(final_cat_file, galsim_cat_path):
         if len(ind) > 0:
             for key in keys:
                 if key == 'ORIGINAL_PSF':
-                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_g1_uncorr'][ind[0]]
-                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_g2_uncorr'][ind[0]]
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_uncorr_g1'][ind[0]]
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_uncorr_g2'][ind[0]]
                     output_dict['GALSIM_PSF_SIGMA_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_sigma'][ind[0]]
                 else:
                     output_dict['GALSIM_GAL_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_g1'][ind[0]]
@@ -230,7 +230,7 @@ def save_galsim_shapes(final_cat_file, galsim_cat_path):
                     output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['psf_g1'][ind[0]]
                     output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['psf_g2'][ind[0]]
                     output_dict['GALSIM_PSF_SIGMA_{}'.format(key)][i] = galsim_cat_file.get_data(key)['psf_sigma'][ind[0]]
-                    output_dict['GALSIM_FLAGS_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['gal_flag'][ind[0]]
+                    output_dict['GALSIM_FLAGS_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_flag'][ind[0]]
                     output_dict['GALSIM_RES_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_resolution'][ind[0]]
 
     for key in output_dict.keys():
@@ -365,8 +365,10 @@ def make_catalog_runner(input_file_list, output_dir, file_number_string,
 
     w_log.info('Save ngmix data')
     if shape_type.lower() == "ngmix":
+        w_log.info('Save ngmix data')
         save_ngmix_data(final_cat_file, ngmix_cat_path)
     elif shape_type.lower() == "galsim":
+        w_log.info('Save galsim data')
         save_galsim_shapes(final_cat_file, ngmix_cat_path)
 
     #w_log.info('Save PSF data')
