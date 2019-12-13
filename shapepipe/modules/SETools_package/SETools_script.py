@@ -5,7 +5,10 @@ This script contain a class to handle operations on SExtractor output catalog.
 
 :Authors: Axel Guinot modified by Joel Gehin
 modification :
-    1. In multi-thhreading mode, the make of directories is subject to mis-management of concurrent access. Thus we don't throw any exception when trying to create an existing directory that otherwise might impeed to ending the thread properly. It prevents leading pipeline random file missing error. Function _mkdir() modified.
+    1. In multi-thhreading mode, the make of directories is subject to mis-management of concurrent access.
+    Thus we don't throw any exception when trying to create an existing directory that otherwise might
+    impeed to ending the thread properly. It prevents leading pipeline random file missing error.
+    Function _mkdir() modified.
 
 :Date: 16/01/2017
 
