@@ -3,7 +3,9 @@
 
 This script contain a class to handle operations on SExtractor output catalog.
 
-:Authors: Axel Guinot
+:Authors: Axel Guinot modified by Joel Gehin
+modification :
+    1. In multi-thhreading mode, the make of directories is subject to mis-management of concurrent access. Thus we don't throw any exception when trying to create an existing directory that otherwise might impeed to ending the thread properly. It prevents leading pipeline random file missing error. Function _mkdir() modified.
 
 :Date: 16/01/2017
 
@@ -15,33 +17,29 @@ import re
 import operator
 import string
 
-import matplotlib.pylab as plt
+#import matplotlib.pylab as plt
+import matplotlib.pyplot as plt
 
 import os
 
 import shapepipe.pipeline.file_io as sc
 
-
 def _mkdir(direc):
     """Create directory direc.
-      This function should probably go somewhere further up.
+        Modified by J. GEHIN
+        
+        Parameters
+        ----------
+        direc: string
+        Directory name
+        
+        Returns
+        -------
+        None
+        """
 
-    Parameters
-    ----------
-    direc: string
-      Directory name
-
-    Returns
-    -------
-    None
-    """
-
-    if not os.path.isdir(direc):
-        try:
-            os.mkdir(direc)
-        except Exception as detail:
-            raise Exception('SETools: Cannot create directory {}, error={}'.format(direc, detail))
-
+    # from python 3.2 no need to check for directory existence, just use option exist_ok=True
+    os.makedirs(direc, exist_ok=True)
 
 class SETools(object):
     """SETools class
@@ -98,11 +96,8 @@ class SETools(object):
 
         # Processing: Create mask = filter input
         if len(self._mask) != 0:
-            # MKDEBUG new, prevent to create directory, somehow this causes error sometimes
-            # (in multi-process run?)
             direc = self._output_dir + '/mask'
             _mkdir(direc)
-            # direc = self._output_dir
             self._make_mask()
             for i in self.mask.keys():
                 if 'NO_SAVE' in self._mask[i]:
@@ -111,12 +106,6 @@ class SETools(object):
                 self.save_mask(self.mask[i], file_name)
 
         if len(self._plot) != 0:
-            # MKDEBUG new, prevent to create directory, somehow this causes error sometimes
-            # (in multi-process run?)
-            # if self._plot_output_dir:
-            #     direc = self._plot_output_dir
-            # else:
-            # Depreciated, should be removed, no mkdir here
             direc = self._output_dir + '/plot'
             _mkdir(direc)
             self._make_plot()
@@ -140,20 +129,8 @@ class SETools(object):
                 output_dir = direc + '/' + i + '_'
                 self.save_rand_split(self.rand_split[i], output_dir, file_number)
 
-        # if len(self._flag_split) != 0:
-        #     direc = self._output_dir + '/flag_split'
-        #     _mkdir(direc)
-        #     self._make_flag_split()
-        #     for i in self.flag_mask_dict.keys():
-        #         output_path = direc + '/' + self._flag_split.keys()[0] + '_flag_' + i + file_number + '.fits'
-        #         self.save_flag_split(self.flag_mask_dict[i], output_path)
-
         if len(self._stat) != 0:
-            # MKDEBUG new, prevent to create directory, somehow this causes error sometimes
-            # (in multi-process run?)
-            # if self._stat_output_dir:
-            #     direc = self._stat_output_dir
-            # else:
+
             direc = self._output_dir + '/stat'
             _mkdir(direc)
             self._make_stat()

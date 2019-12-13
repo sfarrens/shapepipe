@@ -95,13 +95,13 @@ def sextractor_runner_exp(input_file_list, run_dirs, file_number_string,
     flag_file = config.getboolean("SEXTRACTOR_RUNNER_EXP", "FLAG_IMAGE")
     psf_file = config.getboolean("SEXTRACTOR_RUNNER_EXP", "PSF_FILE")
 
-    if config.has_option('SEXTRACTOR_RUNNER_EXP', "CHECKIMAGE"):
+    if config.has_option("SEXTRACTOR_RUNNER_EXP", "CHECKIMAGE"):
         check_image = config.getlist("SEXTRACTOR_RUNNER_EXP", "CHECKIMAGE")
     else:
         check_image = ['']
 
-    if config.has_option('SEXTRACTOR_RUNNER_EXP', 'SUFFIX'):
-        suffix = config.get('SEXTRACTOR_RUNNER_EXP', 'SUFFIX')
+    if config.has_option("SEXTRACTOR_RUNNER_EXP", "SUFFIX"):
+        suffix = config.get("SEXTRACTOR_RUNNER_EXP", "SUFFIX")
         if (suffix.lower() != 'none') & (suffix != ''):
             suffix = suffix + '_'
         else:
@@ -140,7 +140,7 @@ def sextractor_runner_exp(input_file_list, run_dirs, file_number_string,
         check_name = []
         for i in check_image:
             check_type.append(i.upper())
-            check_name.append(run_dirs['output'] + '/' + suffix+i.lower()+num+'.fits')
+            check_name.append(run_dirs['output'] + '/' + suffix + i.lower() + num + '.fits')
 
     command_line += (' -CHECKIMAGE_TYPE {0} -CHECKIMAGE_NAME {1}'
                      ''.format(','.join(check_type), ','.join(check_name)))

@@ -178,7 +178,6 @@ class WorkerHandler(object):
         This method executes a worker job and logs the results.
 
         """
-
         self._run_module()
         self._log_stdout()
 
@@ -199,7 +198,6 @@ class WorkerHandler(object):
 
         file_number_string = self.worker_dict['file_number_string']
         input_file_list = self.worker_dict['process']
-
         self._stdout, self._stderr = self._module_runner(input_file_list,
                                                          self._run_dirs,
                                                          file_number_string,

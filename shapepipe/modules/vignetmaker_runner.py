@@ -4,7 +4,10 @@
 
 This file contains methods to create postage stamps from images.
 
-:Author: Axel Guinot
+:Author: Axel Guinot modified by Joel Gehin
+
+:Modification:
+    1. add option allow_pickle = True for np.load instruction since last Numpy version forbids pickle by default.
 
 """
 
@@ -280,7 +283,7 @@ class vignetmaker(object):
 
         """
 
-        self._f_wcs_file = np.load(f_wcs_path).item()
+        self._f_wcs_file = np.load(f_wcs_path,allow_pickle=True).item()
         self._rad = rad
 
         for i in range(len(image_pattern)):

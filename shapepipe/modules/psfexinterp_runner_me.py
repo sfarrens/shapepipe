@@ -48,13 +48,10 @@ def psfexinterp_runner_me(input_file_list, run_dirs, file_number_string,
         dot_psf_dir = get_psfex_run_dir(run_dirs['output'])
         dot_psf_pattern = config.get('PSFEXINTERP_RUNNER_ME', 'ME_DOT_PSF_PATTERN')
         f_wcs_path = config.getexpanded('PSFEXINTERP_RUNNER_ME', 'ME_LOG_WCS')
-
         galcat_path = input_file_list[0]
-
         inst = interpolation_script.PSFExInterpolator(None, galcat_path,
                                                       run_dirs['output'], file_number_string, w_log,
                                                       pos_params, get_shapes, star_thresh, chi2_thresh)
-
         inst.process_me(dot_psf_dir, dot_psf_pattern, f_wcs_path)
 
     elif mode == 'VALIDATION':

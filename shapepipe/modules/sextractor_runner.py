@@ -20,8 +20,7 @@ from sqlitedict import SqliteDict
 def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
     """Make post process
 
-    This function will add one hdu by epoch to the SExtractor catalog.
-    Only works for tiles.
+    This function will add one hdu by epoch to the SExtractor catalog. Only works for tiles.
     The columns will be : NUMBER same as SExtractor NUMBER
                           EXP_NAME name of the single exposure for this epoch
                           CCD_N extansion where the object is
@@ -39,18 +38,16 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
 
     """
 
-    cat = io.FITSCatalog(cat_path, SEx_catalog=True,
-                         open_mode=io.BaseCatalog.OpenMode.ReadWrite)
+    cat = io.FITSCatalog(cat_path, SEx_catalog=True, open_mode=io.BaseCatalog.OpenMode.ReadWrite)
     cat.open()
 
     f_wcs = SqliteDict(f_wcs_path)
     n_hdu = len(f_wcs[list(f_wcs.keys())[0]])
-
     hist = []
     for i in cat.get_data(1)[0][0]:
         if re.split('HISTORY', i)[0] == '':
             hist.append(i)
-
+    
     exp_list = []
     pattern = r'([0-9]*)p\.(.*)'
     for i in hist:
@@ -58,26 +55,20 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
         exp_list.append(m.group(1))
 
     obj_id = np.copy(cat.get_data()['NUMBER'])
-
     n_epoch = np.zeros(len(obj_id), dtype='int32')
     for i, exp in enumerate(exp_list):
         pos_tmp = np.ones(len(obj_id), dtype='int32') * -1
         for j in range(n_hdu):
             w = f_wcs[exp][j]
-            pix_tmp = w.all_world2pix(cat.get_data()[pos_params[0]],
-                                      cat.get_data()[pos_params[1]], 0)
-            ind = ((pix_tmp[0] > int(ccd_size[0])) &
-                   (pix_tmp[0] < int(ccd_size[1])) &
-                   (pix_tmp[1] > int(ccd_size[2])) &
-                   (pix_tmp[1] < int(ccd_size[3])))
+            pix_tmp = w.all_world2pix(cat.get_data()[pos_params[0]], cat.get_data()[pos_params[1]], 0)
+            ind = ((pix_tmp[0] > int(ccd_size[0])) & (pix_tmp[0] < int(ccd_size[1])) &
+                   (pix_tmp[1] > int(ccd_size[2])) & (pix_tmp[1] < int(ccd_size[3])))
             pos_tmp[ind] = j
             n_epoch[ind] += 1
         exp_name = np.array([exp_list[i] for n in range(len(obj_id))])
-        a = np.array([(obj_id[ii], exp_name[ii], pos_tmp[ii])
-                      for ii in range(len(exp_name))],
-                     dtype=[('NUMBER', obj_id.dtype),
-                            ('EXP_NAME', exp_name.dtype),
-                            ('CCD_N', pos_tmp.dtype)])
+
+        a = np.array([(obj_id[ii], exp_name[ii], pos_tmp[ii]) for ii in range(len(exp_name))],
+                     dtype=[('NUMBER', obj_id.dtype), ('EXP_NAME', exp_name.dtype), ('CCD_N', pos_tmp.dtype)])
         cat.save_as_fits(data=a, ext_name='EPOCH_{}'.format(i))
         cat.open()
 
@@ -150,8 +141,7 @@ def sextractor_runner(input_file_list, run_dirs, file_number_string,
         check_name = []
         for i in check_image:
             check_type.append(i.upper())
-            check_name.append(run_dirs['output'] + '/' + suffix + i.lower() +
-                              num + '.fits')
+            check_name.append(run_dirs['output'] + '/' + suffix + i.lower() + num + '.fits')
 
     command_line += (' -CHECKIMAGE_TYPE {0} -CHECKIMAGE_NAME {1}'
                      ''.format(','.join(check_type), ','.join(check_name)))

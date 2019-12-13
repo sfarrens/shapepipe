@@ -4,8 +4,9 @@
 
 This file contains methods to create postage stamps from images.
 
-:Author: Axel Guinot
-
+:Author: Axel Guinot, modified by Joel Gehin
+Modifications:
+    1. add the clear() instruction of DB SQliteDict to avoid reuse of persistant values.
 """
 
 import numpy as np
@@ -315,6 +316,8 @@ class vignetmaker(object):
         # np.save(output_name, output_dict)
 
         output_file = SqliteDict(output_name+'.sqlite')
+        # Added instruction: this prevents for past residual recordings in the data base history
+        output_file.clear()
         for i in output_dict.keys():
             output_file[str(i)] = output_dict[i]
         output_file.commit()
@@ -452,7 +455,6 @@ def vignetmaker_runner2(input_file_list, run_dirs, file_number_string,
                                            "ME_IMAGE_PATTERN")
             f_wcs_path = config.getexpanded("VIGNETMAKER_RUNNER2",
                                             "ME_LOG_WCS")
-
             inst = vignetmaker(galcat_path, pos_type, pos_params,
                                run_dirs['output'], file_number_string)
             inst.process_me(image_dir, image_pattern, f_wcs_path, rad)

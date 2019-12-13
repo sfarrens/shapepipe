@@ -7,11 +7,14 @@ This module computes the PSFs from a PSFEx model at several galaxy positions.
 Was using Erin Sheldon & Eli Rykoff's psfex module, available on GitHub at:
 https://github.com/esheldon/psfex
 
-:Author: Morgan Schmitz and Axel Guinot
+:Author: Morgan Schmitz and Axel Guinot, modified Joel Gehin
 
-:Version: 1.2.0
+:Modified
+    1. add clear() instruction on Sqlitedict DB to clear potential residual/persistent data in DB history
+    
+:Version: 1.2.1
 
-:Date: 06/02/2018
+:Date: 12/03/2019
 
 """
 
@@ -57,6 +60,7 @@ def interpsfex(dotpsfpath, pos, thresh_star, thresh_chi2):
 
     """
     # read PSF model and extract basis and polynomial degree and scale position
+
     PSF_model = fits.open(dotpsfpath)[1]
 
     # Check number of stars used to compute the PSF
@@ -393,10 +397,8 @@ class PSFExInterpolator(object):
         self._dot_psf_dir = dot_psf_dir
         self._dot_psf_pattern = dot_psf_pattern
         self._f_wcs_file = SqliteDict(f_wcs_path)
-
         if self.gal_pos is None:
             self._get_galaxy_positions()
-
         output_dict = self._interpolate_me()
 
         self._write_output_me(output_dict)
@@ -415,10 +417,8 @@ class PSFExInterpolator(object):
 
         all_id = np.copy(cat.get_data()['NUMBER'])
         n_epoch = np.copy(cat.get_data()['N_EPOCH'])
-
         list_ext_name = cat.get_ext_name()
         hdu_ind = [i for i in range(len(list_ext_name)) if 'EPOCH' in list_ext_name[i]]
-
         final_list = []
         for hdu_index in hdu_ind:
             exp_name = cat.get_data(hdu_index)['EXP_NAME'][0]
@@ -442,6 +442,7 @@ class PSFExInterpolator(object):
                                      ' {} of the exposure {}. Object inside'
                                      ' this ccd will lose an epoch.'.format(ccd, exp_name))
                     continue
+                    
                 if isinstance(self.interp_PSFs, str) and self.interp_PSFs == BAD_CHI2:
                     self._w_log.info('Bad chi2 for the psf model in the ccd'
                                      ' {} of the exposure {}. Object inside'
@@ -512,6 +513,9 @@ class PSFExInterpolator(object):
         # np.save(self._output_path+self._img_number, output_dict)
 
         output_file = SqliteDict(self._output_path+self._img_number+'.sqlite')
+        # add clear() instruction to clear potential residual DB persistent data in history
+        output_file.clear()
+        
         for i in output_dict.keys():
             output_file[str(i)] = output_dict[i]
         output_file.commit()
