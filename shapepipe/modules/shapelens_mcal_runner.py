@@ -419,8 +419,10 @@ def shapelens_mcal_runner(input_file_list, run_dirs, file_number_string,
     opt_dict['dirs'] = {}
     for key in opt_dict['TYPES'] + ['psf']:
         opt_dict['dirs'][key] = run_dirs['output'] + '/{}'.format(key)
-        if not os.path.isdir(opt_dict['dirs'][key]):
+        try:
             os.mkdir(opt_dict['dirs'][key])
+        except:
+            print("Directory {} already exist.".format(opt_dict['dirs'][key]))
 
     process(*input_file_list, opt_dict, img_size, n_obj, 'float{}'.format(format_mcal))
 
