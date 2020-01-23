@@ -191,7 +191,7 @@ def psf_fitter(psf_vign, opt_dict):
     pfitter=ngmix.fitting.LMSimple(psf_obs,'gauss')
 
     shape = psf_vign.shape
-    psf_pars = np.array([0., 0., 0., 0., 0.5, 1.])
+    psf_pars = np.array([0., 0., 0., 0., 0.05, 1.])
     pfitter.go(psf_pars)
 
     psf_gmix_fit=pfitter.get_gmix()
@@ -221,11 +221,13 @@ def make_metacal(gal_vign, psf_vign, weight_vign, opt_dict):
 
     """
 
-    psf_obs = psf_fitter(psf_vign, opt_dict)
+    # psf_obs = psf_fitter(psf_vign, opt_dict)
+    psf_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=psf_vign.shape[0]/2., y=psf_vign.shape[1]/2.)
+    psf_obs=ngmix.Observation(psf_vign, jacobian=psf_jacob)
 
     gal_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=gal_vign.shape[0]/2., y=gal_vign.shape[1]/2.)
 
-    obs = ngmix.Observation(gal_vign, psf=psf_obs, weight=weight_vign)
+    obs = ngmix.Observation(gal_vign, psf=psf_obs, weight=weight_vign, jacobian=gal_jacob)
 
     obs_out = ngmix.metacal.get_all_metacal(obs,
                                             types=opt_dict['TYPES'],
