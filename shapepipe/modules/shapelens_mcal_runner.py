@@ -388,6 +388,95 @@ def process(img_path, psf_path, opt_dict, img_size, n_obj, dtype='float32'):
         os.remove(psf_map_name)
 
 
+def create_out_image(img_header, img_size, n_obj, key, opt_dict, dtype='float32'):
+    """
+    """
+    if key == 'test':
+        file_name = '{}/{}{}.fits'.format(opt_dict['dirs']['noshear'], key, opt_dict['file_number_string'])
+    else:
+        file_name = '{}/{}{}.fits'.format(opt_dict['dirs'][key], key, opt_dict['file_number_string'])
+
+    img_header.tofile(file_name)
+
+    shape = tuple(img_header['NAXIS{0}'.format(ii)] for ii in range(1, img_header['NAXIS']+1))
+    with open(file_name, 'rb+') as fobj:
+        fobj.seek(len(img_header.tostring()) + (np.product(shape) * np.abs(img_header['BITPIX']//8)) - 1)
+        fobj.write(b'\0')
+
+    return fits.open(file_name, mode='update', memmap=True), file_name
+
+
+def process_memmap(img_path, psf_path, opt_dict, img_size, n_obj, dtype='float32'):
+    """Process
+
+    Main function which handle all the processing.
+
+    Parameters
+    ----------
+    img_path : str
+        Path to the image
+    psf_path : str
+        Path to the PSF image
+    opt_dict : dict
+        Dictionnary with other options
+    img_size : int
+        Size of one stamp that composed the mapped image
+    n_obj : int
+        Total number of objects
+    dtype : str
+        type of the data (Default = 'float32')
+
+    """
+
+    # Load images
+    map_img = fits.getdata(img_path, ext=0, memmap=True)
+    map_psf = fits.getdata(psf_path, ext=0, memmap=True)
+    img_header = fits.getheader(img_path, 0)
+
+    # Create output image
+    mcal_out_img = {}
+    mcal_out_path = {}
+    for key in opt_dict['TYPES']+['psf']:
+        mcal_out_img[key], mcal_out_path[key] = create_out_image(img_header, img_size, n_obj, key, opt_dict, dtype=dtype)
+
+    nx = ny = int(np.sqrt(n_obj))
+    for i in range(ny):
+        for j in range(nx):
+
+            img = map_img[j*img_size:(j+1)*img_size,i*img_size:(i+1)*img_size]
+            psf = map_psf[j*img_size:(j+1)*img_size,i*img_size:(i+1)*img_size]
+
+            # Get noise level for the weight
+            sigma_noise = mad(img)
+            weight = np.ones_like(img) * 1./sigma_noise**2.
+
+            # Create metacal images
+            obs_mcal = make_metacal(img, psf, weight, opt_dict)
+
+            new_psf = obs_mcal['noshear'].get_psf().galsim_obj
+            new_psf_img = new_psf.drawImage(nx=img_size, ny=img_size, scale=opt_dict['pixel_scale']).array
+            mcal_out_img['psf'][0].data[j*img_size:(j+1)*img_size, i*img_size:(i+1)*img_size] = new_psf_img
+
+            for key in opt_dict['TYPES']:
+                mcal_out_img[key][0].data[j*img_size:(j+1)*img_size, i*img_size:(i+1)*img_size] = obs_mcal[key].image
+
+    for key in opt_dict['TYPES']+['psf']:
+        mcal_out_img[key].close()
+
+    for key in opt_dict['TYPES']:
+        print('running Shapelens on : {}'.format(key))
+
+        # Run ShapeLens
+        run_shapelens(mcal_out_path[key], mcal_out_path['psf'], img_size, nx, key, opt_dict)
+        # run_shapelens_output(tmp_name, psf_map_name, img_size, grid, key, opt_dict)
+
+        if not opt_dict['keep_img']:
+            os.remove(mcal_out_path[key])
+
+    if not opt_dict['keep_img']:
+        os.remove(mcal_out_path['psf'])
+
+
 
 @module_runner(version='0.0.1',
                file_pattern=['image', 'starfield'],
@@ -426,6 +515,6 @@ def shapelens_mcal_runner(input_file_list, run_dirs, file_number_string,
         except:
             print("Directory {} already exist.".format(opt_dict['dirs'][key]))
 
-    process(*input_file_list, opt_dict, img_size, n_obj, 'float{}'.format(format_mcal))
+    process_memmap(*input_file_list, opt_dict, img_size, n_obj, 'float{}'.format(format_mcal))
 
     return None, None
