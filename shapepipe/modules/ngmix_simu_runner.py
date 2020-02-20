@@ -131,6 +131,11 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
     """
 
     n_epoch = len(gals)
+    # n_epoch = 1
+
+    psf_pars = {'maxfev': 5000,
+               'xtol': 5.0e-6,
+               'ftol': 5.0e-6}
 
     if n_epoch == 0:
         raise ValueError("0 epoch to process")
@@ -138,27 +143,59 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
     # Make observation
     gal_obs_list = ObsList()
     T_guess_psf = []
+    psf_res_gT = {'g_PSFo': np.array([0., 0.]), 
+                  'g_err_PSFo': np.array([0., 0.]),
+                  'T_PSFo': 0.,
+                  'T_err_PSFo': 0.}
+    wsum = 0.
     for n_e in range(n_epoch):
 
+        w = np.copy(weights[n_e])
+        w[np.where(flags[n_e] != 0)] = 0.
+
         # psf_jacob = ngmix.Jacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., wcs=jacob_list[n_e])
-        # gal_jacob = ngmix.Jacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., wcs=jacob_list[n_e])
-        psf_jacob = None
-        gal_jacob = None
+        psf_jacob = ngmix.DiagonalJacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., scale=0.187)
+        #gal_jacob = ngmix.Jacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., wcs=jacob_list[n_e])
+        gal_jacob  = ngmix.DiagonalJacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., scale=0.187)
+        # psf_jacob = None
+        # gal_jacob = None
 
         psf_obs = Observation(psfs[n_e], jacobian=psf_jacob)
 
         psf_T = 2. * psfs_sigma[n_e]**2.
 
-        w = np.copy(weights[n_e])
-        w[np.where(flags[n_e] != 0)] = 0.
+        boot_psf = ngmix.bootstrap.PSFRunner(psf_obs, 'gauss', psf_T, psf_pars)
+
+        boot_psf.go(ntry=2)
+
+        psf_res = boot_psf.fitter.get_result()
+
+        w_tmp = np.sum(w)
+
+        if psf_res['flags'] == 0:
+            psf_obs.set_gmix(boot_psf.fitter.get_gmix())
+            psf_res_gT['g_PSFo'] += psf_res['g']*w_tmp 
+            psf_res_gT['g_err_PSFo'] += np.array([psf_res['pars_err'][2], psf_res['pars_err'][3]])*w_tmp
+            psf_res_gT['T_PSFo'] += psf_res['T']*w_tmp
+            psf_res_gT['T_err_PSFo'] += psf_res['T_err']*w_tmp
+            wsum += w_tmp
+        else:
+            raise Exception('Fit PSF failed !')
+
+        # pfitter = ngmix.fitting.LMSimple(psf_obs, 'gauss')
+        # pfitter.go([0., 0., 0., 0., psf_T, 1*0.186**2.])
+        # psf_obs.set_gmix(pfitter.get_gmix())
 
         gal_obs = Observation(gals[n_e], weight=w, jacobian=gal_jacob, psf=psf_obs)
 
         gal_obs_list.append(gal_obs)
         T_guess_psf.append(psf_T)
 
+    for key in psf_res_gT.keys():
+        psf_res_gT[key] /= wsum
+
     boot = ngmix.bootstrap.MaxMetacalBootstrapper(gal_obs_list)
-    psf_model = 'em3'
+    psf_model = 'gauss'
     gal_model = 'gauss'
 
     # metacal specific parameters
@@ -180,8 +217,11 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
         # parameters for leastsq
         'lm_pars': lm_pars}
 
-    psf_pars = {'maxiter': 5000,
-                'tol': 5.0e-6}
+    # psf_pars = {'maxiter': 5000,
+    #             'tol': 5.0e-6}
+    psf_pars = {'maxfev': 5000,
+               'xtol': 5.0e-6,
+               'ftol': 5.0e-6}
 
     # Tguess = np.mean(T_guess_psf)*0.186**2  # size guess in arcsec
     Tguess = np.mean(T_guess_psf)
@@ -196,12 +236,144 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
                      ntry=ntry,
                      metacal_pars=metacal_pars,
                      psf_fit_pars=psf_pars,
-                     psf_ntry=20)
+                     psf_ntry=5)
 
     # result dictionary, keyed by the types in metacal_pars above
     metacal_res = boot.get_metacal_result()
+    metacal_res.update(psf_res_gT)
 
     return metacal_res
+
+
+# def do_ngmix(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
+#     """ Do ngmix metacal
+
+#     Do the metacalibration on a multi-epoch object and return the join shape
+#     measurement with ngmix
+
+#     Parameters
+#     ---------
+#     gals : list
+#         List of the galaxy vignets.
+#     psfs : list
+#         List of the PSF vignets.
+#     psfs_sigma : list
+#         List of the sigma PSFs.
+#     weights : list
+#         List of the weight vignets.
+#     flags : list
+#         List of the flag vignets.
+#     jacob_list : list
+#         List of the jacobians.
+#     prior : ngmix.priors
+#         Priors for the fitting parameters.
+
+#     Returns
+#     -------
+#     metacal_res : dict
+#         Dictionary containing the results of ngmix metacal.
+
+#     """
+
+#     # n_epoch = len(gals)
+#     n_epoch = 1
+
+#     if n_epoch == 0:
+#         raise ValueError("0 epoch to process")
+
+#     # Make observation
+#     gal_obs_list = ObsList()
+#     T_guess_psf = []
+#     for n_e in range(n_epoch):
+
+#         # psf_jacob = ngmix.Jacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., wcs=jacob_list[n_e])
+#         # gal_jacob = ngmix.Jacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., wcs=jacob_list[n_e])
+#         psf_jacob = None
+#         gal_jacob = None
+
+#         psf_obs = Observation(psfs[n_e], jacobian=psf_jacob)
+
+#         psf_T = 2. * psfs_sigma[n_e]**2.
+
+#         w = np.copy(weights[n_e])
+#         w[np.where(flags[n_e] != 0)] = 0.
+
+#         gal_obs = Observation(gals[n_e], weight=w, jacobian=gal_jacob, psf=psf_obs)
+
+#         gal_obs_list.append(gal_obs)
+#         T_guess_psf.append(psf_T)
+
+#     boot = ngmix.bootstrap.Bootstrapper(gal_obs_list)
+#     psf_model = 'gauss'
+#     gal_model = 'gauss'
+
+#     # maximum likelihood fitter parameters
+#     # parameters for the Levenberg-Marquardt fitter in scipy
+#     lm_pars = {'maxfev': 2000,
+#                'xtol': 5.0e-5,
+#                'ftol': 5.0e-5}
+#     max_pars = {
+#         # use scipy.leastsq for the fitting
+#         'method': 'lm',
+
+#         # parameters for leastsq
+#         'lm_pars': lm_pars}
+
+#     # psf_pars = {'maxiter': 5000,
+#     #             'tol': 5.0e-6}
+#     psf_pars = {'maxfev': 2000,
+#                'xtol': 5.0e-5,
+#                'ftol': 5.0e-5}
+
+#     # Tguess = np.mean(T_guess_psf)*0.186**2  # size guess in arcsec
+#     Tguess = np.mean(T_guess_psf)
+#     # Tguess = 4.
+#     # Tguess = 4.0*0.186**2
+#     ntry = 2       # retry the fit twice
+
+#     boot.fit_psfs(psf_model, Tguess, ntry=20, fit_pars=psf_pars, skip_already_done=False)
+
+#     boot.fit_max(gal_model, max_pars, prior=prior, ntry=2)
+
+#     boot.set_round_s2n()
+
+#     tres = boot.get_max_fitter().get_result()
+#     rres = boot.get_round_result()
+
+#     tres['s2n_r'] = rres['s2n_r']
+#     tres['T_r'] = rres['T_r']
+#     tres['psf_T_r'] = rres['psf_T_r']
+
+#     ngmix_res = {'mcal_flags':0}
+#     ngmix_res['mcal_flags'] |= tres['flags']
+#     ngmix_res['mcal_flags'] |= rres['flags']
+
+
+#     wsum = 0.
+#     Tpsf_sum = 0.
+#     gpsf_sum = np.zeros(2)
+#     npsf = 0
+#     for obslist in boot.mb_obs_list:
+#         for obs in obslist:
+#             if hasattr(obs, 'psf_nopix'):
+#                 g1,g2,T = obs.psf_nopix.gmix.get_g1g2T()
+#             else:
+#                 g1,g2,T = obs.psf.gmix.get_g1g2T()
+
+#             twsum = obs.weight.sum()
+
+#             wsum += twsum
+#             gpsf_sum[0] += g1*twsum
+#             gpsf_sum[1] += g2*twsum
+#             Tpsf_sum += T*twsum
+#             npsf+=1
+
+#     tres['gspf'] = gpsf_sum/wsum
+#     tres['Tpsf'] = Tpsf_sum/wsum
+
+#     ngmix_res['noshear'] = tres
+
+#     return ngmix_res
 
 
 def compile_results(results):
@@ -222,12 +394,32 @@ def compile_results(results):
     """
 
     names = ['1m', '1p', '2m', '2p', 'noshear']
-    names2 = ['id', 'n_epoch_model', 'g1', 'g1_err', 'g2', 'g2_err', 'T', 'T_err', 'Tpsf', 's2n', 'flags', 'mcal_flags']
+    names2 = ['id', 'n_epoch_model',
+              'psf_true_e1', 'psf_true_e2', 'psf_true_sigma',
+              'psf_true_e1m', 'psf_true_e2m', 'psf_true_sigmam',
+              'g1_psfo_ngmix', 'g2_psfo_ngmix', 'T_psfo_ngmix',
+              'g1_err_psfo_ngmix', 'g2_err_psfo_ngmix', 'T_err_psfo_ngmix',
+              'g1', 'g1_err', 'g2', 'g2_err', 
+              'T', 'T_err', 'Tpsf', 
+              's2n', 
+              'flags', 'mcal_flags']
     output_dict = {k: {kk: [] for kk in names2} for k in names}
     for i in range(len(results)):
         for name in names:
             output_dict[name]['id'].append(results[i]['obj_id'])
             output_dict[name]['n_epoch_model'].append(results[i]['n_epoch_model'])
+            output_dict[name]['psf_true_e1'].append(results[i]['psf_true_e1'])
+            output_dict[name]['psf_true_e2'].append(results[i]['psf_true_e2'])
+            output_dict[name]['psf_true_sigma'].append(results[i]['psf_true_sigma'])
+            output_dict[name]['psf_true_e1m'].append(np.mean(results[i]['psf_true_e1']))
+            output_dict[name]['psf_true_e2m'].append(np.mean(results[i]['psf_true_e2']))
+            output_dict[name]['psf_true_sigmam'].append(np.mean(results[i]['psf_true_sigma']))
+            output_dict[name]['g1_psfo_ngmix'].append(results[i]['g_PSFo'][0])
+            output_dict[name]['g2_psfo_ngmix'].append(results[i]['g_PSFo'][1])
+            output_dict[name]['g1_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][0])
+            output_dict[name]['g2_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][1])
+            output_dict[name]['T_psfo_ngmix'].append(results[i]['T_PSFo'])
+            output_dict[name]['T_err_psfo_ngmix'].append(results[i]['T_err_PSFo'])
             output_dict[name]['g1'].append(results[i][name]['g'][0])
             output_dict[name]['g1_err'].append(results[i][name]['pars_err'][2])
             output_dict[name]['g2'].append(results[i][name]['g'][1])
@@ -240,6 +432,48 @@ def compile_results(results):
             output_dict[name]['mcal_flags'].append(results[i]['mcal_flags'])
 
     return output_dict
+
+
+# def compile_results_ngmix(results):
+#     """ Compile results
+
+#     Prepare the results of ngmix before saving.
+
+#     Parameters
+#     ----------
+#     results : dict
+#         Dictionary containing the results of ngmix metacal.
+
+#     Returns
+#     -------
+#     output_dict : dict
+#         Dictionary containing ready to be saved.
+
+#     """
+
+#     names = ['noshear']
+#     names2 = ['id', 'n_epoch_model', 'psf_true_e1', 'psf_true_e2', 'psf_true_e1m', 'psf_true_e2m', 'g1', 'g1_err', 'g2', 'g2_err', 'T', 'T_err', 'Tpsf', 's2n', 'flags', 'mcal_flags']
+#     output_dict = {k: {kk: [] for kk in names2} for k in names}
+#     for i in range(len(results)):
+#         for name in names:
+#             output_dict[name]['id'].append(results[i]['obj_id'])
+#             output_dict[name]['n_epoch_model'].append(results[i]['n_epoch_model'])
+#             output_dict[name]['psf_true_e1'].append(results[i]['psf_true_e1'])
+#             output_dict[name]['psf_true_e2'].append(results[i]['psf_true_e2'])
+#             output_dict[name]['psf_true_e1m'].append(np.mean(results[i]['psf_true_e1']))
+#             output_dict[name]['psf_true_e2m'].append(np.mean(results[i]['psf_true_e2']))
+#             output_dict[name]['g1'].append(results[i][name]['g'][0])
+#             output_dict[name]['g1_err'].append(results[i][name]['pars_err'][2])
+#             output_dict[name]['g2'].append(results[i][name]['g'][1])
+#             output_dict[name]['g2_err'].append(results[i][name]['pars_err'][3])
+#             output_dict[name]['T'].append(results[i][name]['T'])
+#             output_dict[name]['T_err'].append(results[i][name]['T_err'])
+#             output_dict[name]['Tpsf'].append(results[i][name]['Tpsf'])
+#             output_dict[name]['s2n'].append(results[i][name]['s2n'])
+#             output_dict[name]['flags'].append(results[i][name]['flags'])
+#             output_dict[name]['mcal_flags'].append(results[i]['mcal_flags'])
+
+#     return output_dict
 
 
 def save_results(output_dict, output_name):
@@ -265,7 +499,7 @@ def save_results(output_dict, output_name):
 # def process(tile_cat_path, sm_cat_path, gal_vignet_path, bkg_vignet_path,
 #             psf_vignet_path, weight_vignet_path, flag_vignet_path,
 #             f_wcs_path, w_log):
-def process(main_file_path, w_log=None):
+def process(main_file_path, w_log):
     """ Process
 
     Process function.
@@ -316,17 +550,20 @@ def process(main_file_path, w_log=None):
     # flag_vign_cat = SqliteDict(flag_vignet_path)
 
     cat = SqliteDict(main_file_path)
+    #cat = np.load(main_file_path)
     # cat_size = len(list(cat.keys()))
     cat_size = 10000
-    n_epoch = len(cat[0]['galsim_image'])
+    n_epoch = len(cat['0']['galsim_image'])
+    # n_epoch = 1
     vign_size = np.shape(cat['0']['galsim_image'][0].array)
     flag_map = np.zeros(vign_size)
 
     final_res = []
     prior = get_prior()
-    iter_list = list(range(0,500)) + list(range(5000,5500))
-    for i in iter_list:
-        # w_log.info('{}'.format(i))
+    # iter_list = list(range(0,500)) + list(range(5000,5500))
+    for i in range(cat_size):
+        print(i)
+        w_log.info('{}'.format(i))
         # Preselection step
         # if (tile_flag[i_tile] > 1) or (tile_imaflag[i_tile] > 0):
         #     continue
@@ -338,10 +575,17 @@ def process(main_file_path, w_log=None):
         weight_vign = []
         flag_vign = []
         jacob_list = []
+        psf_true_e1 = []
+        psf_true_e2 = []
+        psf_true_sigma = []
         # if (psf_vign_cat[str(id_tmp)] == 'empty') or (gal_vign_cat[str(id_tmp)] == 'empty'):
         #     continue
         # psf_expccd_name = list(psf_vign_cat[str(id_tmp)].keys())
         for n_e in range(n_epoch):
+            psf_true_e1.append(cat[str(i)]['PSF']['e1_true'][n_e])
+            psf_true_e2.append(cat[str(i)]['PSF']['e2_true'][n_e])
+            psf_true_sigma.append(cat[str(i)]['PSF']['fwhm'][n_e] / 2.355)
+
             gal_vign.append(cat[str(i)]['galsim_image'][n_e].array)
             # if len(np.where(gal_vign_tmp.ravel() == 0)[0]) != 0:
             #     continue
@@ -369,19 +613,31 @@ def process(main_file_path, w_log=None):
                                         cat[str(i)]['PSF']['Y'][n_e]))
         if len(gal_vign) == 0:
             continue
+        if (len(gal_vign) != len(psf_vign)) | (len(gal_vign) != len(jacob_list)):
+            continue
         try:
             res = do_ngmix_metacal(gal_vign,
-                                   psf_vign,
-                                   sigma_psf,
-                                   weight_vign,
-                                   flag_vign,
-                                   jacob_list,
-                                   prior)
-        except:
-            # w_log.info('ngmix fail on object {}'.format(id_tmp))
+                                psf_vign,
+                                sigma_psf,
+                                weight_vign,
+                                flag_vign,
+                                jacob_list,
+                                prior)
+        # res = do_ngmix(gal_vign,
+        #                psf_vign,
+        #                sigma_psf,
+        #                weight_vign,
+        #                flag_vign,
+        #                jacob_list,
+        #                prior)
+        except Exception as e:
+            w_log.info('ngmix fail on object {}\n{}'.format(i, e))
             continue
         res['obj_id'] = i
-        res['n_epoch_model'] = len(gal_vign)
+        res['n_epoch_model'] = 1 #  len(gal_vign)
+        res['psf_true_e1'] = psf_true_e1
+        res['psf_true_e2'] = psf_true_e2
+        res['psf_true_sigma'] = psf_true_sigma
         final_res.append(res)
 
     # gal_vign_cat.close()
@@ -408,6 +664,7 @@ def ngmix_simu_runner(input_file_list, output_dir, file_number_string,
 
     metacal_res = process(input_file_list[0], w_log)
     res_dict = compile_results(metacal_res)
+    # res_dict = compile_results_ngmix(metacal_res)
     save_results(res_dict, output_name)
 
     return None, None
