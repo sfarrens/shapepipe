@@ -70,6 +70,16 @@ def get_prior():
     return prior
 
 
+def local_wcs(wcs, x_pos, y_pos):
+    """
+    """
+
+    g_wcs = galsim.fitswcs.AstropyWCS(wcs=wcs)
+    image_pos = galsim.PositionD(x=x_pos, y=y_pos)
+
+    return g_wcs.local(image_pos)
+
+
 def get_jacob(wcs, x_pos, y_pos):
     """ Get jacobian
 
@@ -153,10 +163,10 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
         w = np.copy(weights[n_e])
         w[np.where(flags[n_e] != 0)] = 0.
 
-        # psf_jacob = ngmix.Jacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., wcs=jacob_list[n_e])
-        psf_jacob = ngmix.DiagonalJacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., scale=0.187)
-        #gal_jacob = ngmix.Jacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., wcs=jacob_list[n_e])
-        gal_jacob  = ngmix.DiagonalJacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., scale=0.187)
+        psf_jacob = ngmix.Jacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., wcs=jacob_list[n_e])
+        # psf_jacob = ngmix.DiagonalJacobian(row=psfs[0].shape[0]/2., col=psfs[0].shape[1]/2., scale=0.187)
+        gal_jacob = ngmix.Jacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., wcs=jacob_list[n_e])
+        #gal_jacob  = ngmix.DiagonalJacobian(row=gals[0].shape[0]/2., col=gals[0].shape[1]/2., scale=0.187)
         # psf_jacob = None
         # gal_jacob = None
 
@@ -590,7 +600,14 @@ def process(main_file_path, w_log):
             # if len(np.where(gal_vign_tmp.ravel() == 0)[0]) != 0:
             #     continue
 
-            psf_vign.append(cat[str(i)]['PSF']['psf_image'][n_e])
+            #psf_vign.append(cat[str(i)]['PSF']['psf_image'][n_e])
+            psf_obj = cat[str(i)]['PSF']['galsim_psf'][n_e]
+            wcs_tmp = cat[str(i)]['wcs'][n_e]
+            wcs_x = cat[str(i)]['PSF']['X'][n_e]
+            wcs_y = cat[str(i)]['PSF']['Y'][n_e]
+            galsim_wcs_psf = local_wcs(wcs_tmp, wcs_x, wcs_y)
+            psf_vign_tmp = psf_obj.drawImage(nx=51, ny=51, wcs=galsim_wcs_psf).array
+            psf_vign.append(psf_vign_tmp)
             sigma_psf.append(cat[str(i)]['PSF']['fwhm'][n_e] / 2.355)
 
             # bkg_vign_tmp = bkg_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET']
