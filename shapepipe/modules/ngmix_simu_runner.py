@@ -414,11 +414,11 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
             guess[0:5] += urand(low=-0.1,high=0.1)
             guess[5:] *= (1.0 + urand(low=-0.1, high=0.1))
             try:
-                # fitter1 = ngmix.galsimfit.LMSimple(obs_dict_mcal[key], gal_model)
+                # fitter1 = ngmix.galsimfit.LMSimple(obs_dict_mcal[key], gal_model, prior=prior)
                 # fitter1.go(guess)
                 # fres1 = fitter1.get_result()
                 
-                fitter = ngmix.galsimfit.GalsimSimple(obs_dict_mcal[key], gal_model)
+                fitter = ngmix.galsimfit.GalsimSimple(obs_dict_mcal[key], gal_model, prior=prior)
                 fitter.go(guess)
                 fres = fitter.get_result()
             except:
@@ -426,11 +426,15 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
 
             if fres['flags'] == 0:
                 break
+
+        if fres['flags'] != 0:
+            raise ngmix.gexceptions.BootGalFailure("Failes to fit galaxy with galsimfit")
         # except Exception as err:
         #     print(err)
         #     fres = {'flags': np.ones(1, dtype=[('flags', 'i4')])}
 
-        # print("ntry : {}".format(ii))
+        # print("ntry : {}".format(ii+1))
+        fres['ntry'] = ii + 1
         
         res['mcal_flags'] |= fres['flags']
         tres = {}
@@ -472,7 +476,7 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, prior):
     # result dictionary, keyed by the types in metacal_pars above
     metacal_res = res
     # print("T : {}      {}".format(metacal_res['noshear']['T'], fres1['T']))
-    # print("Tgal/Tpsf : {:.2f}      {:.2f}".format(res['noshear']['T']/res['noshear']['Tpsf'], fres1['T']/res['noshear']['Tpsf']))
+    # print("Tgal/Tpsf : {:.2f}      {:.2f}".format(res['noshear']['T']/(np.sqrt(res['noshear']['Tpsf']/2.)*1.1774), fres1['T']/res['noshear']['Tpsf']))
     # print("Flux : {}      {}".format(metacal_res['noshear']['flux'], fres1['flux']/0.187**2.))
     # print("s2n : {}      {}".format(res['noshear']['s2n_r'], fres1['s2n']))
     metacal_res.update(psf_res_gT)
