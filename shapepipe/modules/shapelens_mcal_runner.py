@@ -185,14 +185,29 @@ def psf_fitter(psf_vign, opt_dict):
 
     """
 
+    lm_pars = {'maxfev': 4000,
+               'ftol': 1.0e-5,
+               'xtol': 1.0e-5}
+
     psf_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=psf_vign.shape[0]/2., y=psf_vign.shape[1]/2.)
 
     psf_obs=ngmix.Observation(psf_vign, jacobian=psf_jacob)
-    pfitter=ngmix.fitting.LMSimple(psf_obs,'gauss')
 
-    shape = psf_vign.shape
-    psf_pars = np.array([0., 0., 0., 0., 0.05, 1.])
-    pfitter.go(psf_pars)
+    # runner = ngmix.bootstrap.PSFRunner(psf_obs,
+    #                                    'gauss',
+    #                                    opt_dict['PSF_FIT_T'],
+    #                                    lm_pars)
+    runner = ngmix.bootstrap.AMRunner(psf_obs, opt_dict['PSF_FIT_T'])
+
+    runner.go(ntry=opt_dict['PSF_FIT_NTRY'])
+
+    pfitter = runner.fitter
+
+    # pfitter=ngmix.fitting.LMSimple(psf_obs,'gauss')
+
+    # shape = psf_vign.shape
+    # psf_pars = np.array([0., 0., 0., 0., 0.05, 1.])
+    # pfitter.go(psf_pars)
 
     psf_gmix_fit=pfitter.get_gmix()
     psf_obs.set_gmix(psf_gmix_fit)
@@ -221,9 +236,11 @@ def make_metacal(gal_vign, psf_vign, weight_vign, opt_dict):
 
     """
 
-    # psf_obs = psf_fitter(psf_vign, opt_dict)
-    psf_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=psf_vign.shape[0]/2., y=psf_vign.shape[1]/2.)
-    psf_obs=ngmix.Observation(psf_vign, jacobian=psf_jacob)
+    if opt_dict['SYMMETRIZE_PSF']:
+        psf_obs = psf_fitter(psf_vign, opt_dict)
+    else:
+        psf_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=psf_vign.shape[0]/2., y=psf_vign.shape[1]/2.)
+        psf_obs=ngmix.Observation(psf_vign, jacobian=psf_jacob)
 
     gal_jacob = ngmix.DiagonalJacobian(scale=opt_dict['pixel_scale'], x=gal_vign.shape[0]/2., y=gal_vign.shape[1]/2.)
 
@@ -234,7 +251,7 @@ def make_metacal(gal_vign, psf_vign, weight_vign, opt_dict):
                                             fixnoise=opt_dict['FIXNOISE'],
                                             cheatnoise=opt_dict['CHEATNOISE'],
                                             step=opt_dict['STEP'],
-                                            psf=opt_dict['PSF_KIND'])
+                                            symmetrize_psf=opt_dict['SYMMETRIZE_PSF'])
 
     return obs_out
 
@@ -396,6 +413,9 @@ def create_out_image(img_header, img_size, n_obj, key, opt_dict, dtype='float32'
     else:
         file_name = '{}/{}{}.fits'.format(opt_dict['dirs'][key], key, opt_dict['file_number_string'])
 
+    for ii in range(1, img_header['NAXIS']+1):
+        img_header['NAXIS{0}'.format(ii)] = int(np.sqrt(n_obj)*img_size)
+
     img_header.tofile(file_name)
 
     shape = tuple(img_header['NAXIS{0}'.format(ii)] for ii in range(1, img_header['NAXIS']+1))
@@ -454,7 +474,9 @@ def process_memmap(img_path, psf_path, opt_dict, img_size, n_obj, dtype='float32
             obs_mcal = make_metacal(img, psf, weight, opt_dict)
 
             new_psf = obs_mcal['noshear'].get_psf().galsim_obj
-            new_psf_img = new_psf.drawImage(nx=img_size, ny=img_size, scale=opt_dict['pixel_scale']).array
+            # new_psf_img = new_psf.drawImage(nx=img_size, ny=img_size, scale=opt_dict['pixel_scale']).array
+            # print(new_psf.drawImage(nx=img_size, ny=img_size, scale=opt_dict['pixel_scale']).FindAdaptiveMom())
+            new_psf_img = obs_mcal['noshear'].get_psf().image
             mcal_out_img['psf'][0].data[j*img_size:(j+1)*img_size, i*img_size:(i+1)*img_size] = new_psf_img
 
             for key in opt_dict['TYPES']:
@@ -498,10 +520,20 @@ def shapelens_mcal_runner(input_file_list, run_dirs, file_number_string,
     opt_dict['TYPES'] = config.getlist('SHAPELENS_MCAL_RUNNER', 'TYPES')
     opt_dict['STEP'] = config.getfloat('SHAPELENS_MCAL_RUNNER', 'STEP')
     opt_dict['PSF_KIND'] = config.get('SHAPELENS_MCAL_RUNNER', 'PSF_MODEL')
+    opt_dict['SYMMETRIZE_PSF'] = config.getboolean('SHAPELENS_MCAL_RUNNER', 'SYMMETRIZE_PSF')
     opt_dict['FIXNOISE'] = config.getboolean('SHAPELENS_MCAL_RUNNER', 'FIXNOISE')
     opt_dict['CHEATNOISE'] = config.getboolean('SHAPELENS_MCAL_RUNNER', 'CHEATNOISE')
     if opt_dict['FIXNOISE'] and opt_dict['CHEATNOISE']:
         raise ValueError('Either cheatnoise or fixnoise can be enabled')
+    if opt_dict['SYMMETRIZE_PSF']:
+        opt_dict['PSF_FIT_T'] = config.getfloat('SHAPELENS_MCAL_RUNNER', 'PSF_FIT_T')
+        opt_dict['PSF_FIT_NTRY'] = config.getint('SHAPELENS_MCAL_RUNNER', 'PSF_FIT_NTRY')
+        if (opt_dict['PSF_KIND'].lower() != 'none'):
+            msg = 'WARNING : when SYMMETRIZE_PSF is set to True, PSF_KING is automatically ignore.'
+            print(msg)
+            w_log.info(msg)
+        opt_dict['PSF_KIND'] = None
+
 
     opt_dict['execute'] = config.getexpanded('SHAPELENS_MCAL_RUNNER', 'PATH')
     opt_dict['shapelens_opt'] = config.get('SHAPELENS_MCAL_RUNNER', 'OPTIONS')
