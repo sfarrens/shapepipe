@@ -435,7 +435,10 @@ class PSFExInterpolator(object):
                 obj_id = all_id[ind_obj]
                 gal_pos = np.array(self._f_wcs_file[exp_name][ccd].all_world2pix(self.gal_pos[:, 0][ind_obj], self.gal_pos[:, 1][ind_obj], 0)).T
 
-                self.interp_PSFs = interpsfex(dot_psf_path, gal_pos, self._star_thresh, self._chi2_thresh)
+                try:
+                    self.interp_PSFs = interpsfex(dot_psf_path, gal_pos, self._star_thresh, self._chi2_thresh)
+                except:
+                    self.interp_PSFs = None
 
                 if isinstance(self.interp_PSFs, str) and self.interp_PSFs == NOT_ENOUGH_STARS:
                     self._w_log.info('Not enough stars find in the ccd'
@@ -446,6 +449,10 @@ class PSFExInterpolator(object):
                     self._w_log.info('Bad chi2 for the psf model in the ccd'
                                      ' {} of the exposure {}. Object inside'
                                      ' this ccd will lose an epoch.'.format(ccd, exp_name))
+                    continue
+
+                if isinstance(self.interp_PSFs, type(None)):
+                    self._w_log.info('File : {} not found !'.format(dot_psf_path))
                     continue
 
                 if array_psf is None:
@@ -516,3 +523,4 @@ class PSFExInterpolator(object):
             output_file[str(i)] = output_dict[i]
         output_file.commit()
         output_file.close()
+

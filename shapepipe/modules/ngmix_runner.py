@@ -177,7 +177,7 @@ def make_galsimfit(obs, model, guess0, prior=None, lm_pars=None, ntry=5):
                                                   lm_pars=lm_pars)
             fitter.go(guess)
             fres = fitter.get_result()
-        except:
+        except Exception as ee:
             continue
 
         if fres['flags'] == 0:
@@ -277,15 +277,15 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list,
         psf_obs = Observation(psfs[n_e], jacobian=psf_jacob)
 
         # psf_T = 2. * psfs_sigma[n_e]**2.
-        psf_T = psfs_sigma[n_e]*1.17741
+        psf_T = psfs_sigma[n_e]*1.17741*pixel_scale
 
         w = np.copy(weights[n_e])
         w[np.where(flags[n_e] != 0)] = 0.
 
-        psf_guess = np.array([0., 0., 0., 0., psfs_sigma[n_e]*1.17741, 1.])
+        psf_guess = np.array([0., 0., 0., 0., psf_T, 1.])
         try:
             psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess, None)
-        except:
+        except Exception as ee:
             continue
 
         # Original PSF fit
@@ -496,7 +496,7 @@ def compile_results(results):
               'g1_err_psfo_ngmix', 'g2_err_psfo_ngmix', 'T_err_psfo_ngmix',
               'g1', 'g1_err', 'g2', 'g2_err', 
               'T', 'T_err', 'Tpsf', 'g1_psf', 'g2_psf', 
-              's2n', 
+              'flux', 'flux_err', 's2n', 
               'flags', 'mcal_flags']
     output_dict = {k: {kk: [] for kk in names2} for k in names}
     for i in range(len(results)):
@@ -520,6 +520,8 @@ def compile_results(results):
             output_dict[name]['Tpsf'].append(results[i][name]['Tpsf'])
             output_dict[name]['g1_psf'].append(results[i][name]['gpsf'][0])
             output_dict[name]['g2_psf'].append(results[i][name]['gpsf'][1])
+            output_dict[name]['flux'].append(results[i][name]['flux'])
+            output_dict[name]['flux_err'].append(results[i][name]['flux_err'])
             try:
                 output_dict[name]['s2n'].append(results[i][name]['s2n'])
             except:
@@ -606,6 +608,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
     final_res = []
     prior = get_prior()
     for i_tile, id_tmp in enumerate(obj_id):
+        w_log.info(id_tmp)
         # Preselection step
         # if (tile_flag[i_tile] > 1) or (tile_imaflag[i_tile] > 0):
         #     continue
@@ -651,7 +654,7 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
         if len(gal_vign) == 0:
             continue
         try:
-            res = do_ngmix_metacal(gal_vign,
+             res = do_ngmix_metacal(gal_vign,
                                     psf_vign,
                                     sigma_psf,
                                     weight_vign,
@@ -696,3 +699,4 @@ def ngmix_runner(input_file_list, run_dirs, file_number_string,
     save_results(res_dict, output_name)
 
     return None, None
+

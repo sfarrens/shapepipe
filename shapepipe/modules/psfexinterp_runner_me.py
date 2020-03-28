@@ -19,7 +19,7 @@ def get_psfex_run_dir(output_dir):
     """
 
     # return '/' + '/'.join(re.split('/', output_dir)[1:-2]) + '/psfex_runner/output'
-    return '/s03data2/guinot/pipeline_output/shapepipe_run_2019-08-04_11-59-50/psfex_runner/output/'
+    return '/n17data/guinot/pipeline_output_w3/shapepipe_run_2020-03-16_02-03-05/psfex_runner/output/'
 
 
 @module_runner(input_module=['sextractor_runner'], version='1.0',

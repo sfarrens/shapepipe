@@ -134,6 +134,9 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
     ngmix_cat_file.open()
     ngmix_n_epoch = ngmix_cat_file.get_data()['n_epoch_model']
     ngmix_mcal_flags = ngmix_cat_file.get_data()['mcal_flags']
+
+    ngmix_mom_fail = ngmix_cat_file.get_data()['moments_fail']
+
     ngmix_id = ngmix_cat_file.get_data()['id']
     # max_epoch = np.max(ngmix_n_epoch)
 
@@ -144,9 +147,18 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
     output_dict = {**output_dict, **{'NGMIX_T_ERR_{}'.format(i): np.ones(len(obj_id)) * 1e30 for i in keys}}
     output_dict = {**output_dict, **{'NGMIX_Tpsf_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
     output_dict = {**output_dict, **{'NGMIX_SNR_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
+    output_dict = {**output_dict, **{'NGMIX_FLUX_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
+    output_dict = {**output_dict, **{'NGMIX_FLUX_ERR_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
     output_dict = {**output_dict, **{'NGMIX_FLAGS_{}'.format(i): np.ones(len(obj_id), dtype='int16') for i in keys}}
+    
+    output_dict = {**output_dict, **{'NGMIX_ELL_PSFo_{}'.format(i): np.ones((len(obj_id), 2)) * -10. for i in keys}}
+    output_dict = {**output_dict, **{'NGMIX_T_PSFo_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
+    
     output_dict['NGMIX_N_EPOCH'] = np.zeros(len(obj_id))
     output_dict['NGMIX_MCAL_FLAGS'] = np.zeros(len(obj_id))
+
+    output_dict['NGMIX_MOM_FAIL'] = np.zeros(len(obj_id))
+
     for i, id_tmp in enumerate(obj_id):
         ind = np.where(id_tmp == ngmix_id)[0]
         if len(ind) > 0:
@@ -159,10 +171,17 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
                 output_dict['NGMIX_T_ERR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['T_err'][ind[0]]
                 output_dict['NGMIX_Tpsf_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['Tpsf'][ind[0]]
                 output_dict['NGMIX_SNR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['s2n'][ind[0]]
+                output_dict['NGMIX_FLUX_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flux'][ind[0]]
+                output_dict['NGMIX_FLUX_ERR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flux_err'][ind[0]]
                 output_dict['NGMIX_FLAGS_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flags'][ind[0]]
+
+                output_dict['NGMIX_ELL_PSFo_{}'.format(key)][i][0] = ngmix_cat_file.get_data(key)['g1_psfo_ngmix'][ind[0]]
+                output_dict['NGMIX_ELL_PSFo_{}'.format(key)][i][1] = ngmix_cat_file.get_data(key)['g2_psfo_ngmix'][ind[0]]
+                output_dict['NGMIX_T_PSFo_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['T_psfo_ngmix'][ind[0]]
 
             output_dict['NGMIX_N_EPOCH'][i] = ngmix_n_epoch[ind[0]]
             output_dict['NGMIX_MCAL_FLAGS'][i] = ngmix_mcal_flags[ind[0]]
+            output_dict['NGMIX_MOM_FAIL'][i] = ngmix_mom_fail[ind[0]]
 
     for key in output_dict.keys():
         final_cat_file.add_col(key, output_dict[key])
@@ -304,7 +323,7 @@ def make_catalog_runner(input_file_list, run_dirs, file_number_string,
     elif shape_type.lower() == "galsim":
         save_galsim_shapes(final_cat_file, ngmix_cat_path)
 
-    w_log.info('Save PSF data')
-    save_psf_data(final_cat_file, galaxy_psf_path, w_log)
+    #w_log.info('Save PSF data')
+    #save_psf_data(final_cat_file, galaxy_psf_path, w_log)
 
     return None, None
