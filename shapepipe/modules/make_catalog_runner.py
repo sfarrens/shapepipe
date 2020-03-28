@@ -12,6 +12,9 @@ from shapepipe.modules.module_decorator import module_runner
 from shapepipe.pipeline import file_io as io
 from sqlitedict import SqliteDict
 
+import os
+import re
+
 import numpy as np
 
 
@@ -63,6 +66,14 @@ def save_sextractor_data(final_cat_file, sexcat_path, remove_vignet=True):
         data = remove_field_name(data, 'VIGNET')
 
     final_cat_file.save_as_fits(data, ext_name='RESULTS')
+
+    cat_size = len(data)
+
+    tile_id = int(re.split('-', os.path.splitext(os.path.split(sexcat_path)[1])[0])[1])
+    tile_id_array = np.ones(cat_size) * tile_id
+
+    final_cat_file.open()
+    final_cat_file.add_col('TILE_ID', tile_id_array)
 
     sexcat_file.close()
 
@@ -209,36 +220,98 @@ def save_galsim_shapes(final_cat_file, galsim_cat_path):
 
     galsim_cat_file = io.FITSCatalog(galsim_cat_path)
     galsim_cat_file.open()
-    galsim_id = galsim_cat_file.get_data()['id']
-    # max_epoch = np.max(ngmix_n_epoch)
 
-    output_dict = {'GALSIM_GAL_ELL': np.ones((len(obj_id), 2)) * -10.,
-                   'GALSIM_GAL_SIGMA': np.zeros(len(obj_id)),
-                   'GALSIM_GAL_FLAG': np.ones(len(obj_id), dtype='int16'),
-                   'GALSIM_GAL_ELL_U': np.ones((len(obj_id), 2)) * -10.,
-                   'GALSIM_GAL_RES': np.ones(len(obj_id)) * -1.,
-                   'GALSIM_PSF_ELL': np.ones((len(obj_id), 2)) * -10.,
-                   'GALSIM_PSF_SIGMA': np.zeros(len(obj_id)),
-                   'GALSIM_PSF_FLAG': np.ones(len(obj_id), dtype='int16')}
+    galsim_id = galsim_cat_file.get_data()['id']
+
+    keys = galsim_cat_file.get_ext_name()[1:]
+    output_dict = {'GALSIM_GAL_ELL_{}'.format(i): np.ones((len(obj_id), 2)) * -10. for i in keys}
+    output_dict = {**output_dict, **{'GALSIM_GAL_ELL_ERR_{}'.format(i): np.ones((len(obj_id), 2)) * -10. for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_GAL_ELL_UNCORR_{}'.format(i): np.ones((len(obj_id), 2)) * -10. for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_GAL_SIGMA_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_PSF_ELL_{}'.format(i): np.ones((len(obj_id), 2)) * -10. for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_PSF_SIGMA_{}'.format(i): np.zeros(len(obj_id)) for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_FLAGS_{}'.format(i): np.ones(len(obj_id), dtype='int16') for i in keys}}
+    output_dict = {**output_dict, **{'GALSIM_RES_{}'.format(i): np.ones(len(obj_id)) * -1. for i in keys}}
     for i, id_tmp in enumerate(obj_id):
         ind = np.where(id_tmp == galsim_id)[0]
         if len(ind) > 0:
-            output_dict['GALSIM_GAL_ELL'][i][0] = galsim_cat_file.get_data()['gal_g1'][ind[0]]
-            output_dict['GALSIM_GAL_ELL'][i][1] = galsim_cat_file.get_data()['gal_g2'][ind[0]]
-            output_dict['GALSIM_GAL_SIGMA'][i] = galsim_cat_file.get_data()['gal_sigma'][ind[0]]
-            output_dict['GALSIM_GAL_FLAG'][i] = galsim_cat_file.get_data()['gal_flag'][ind[0]]
-            output_dict['GALSIM_GAL_RES'][i] = galsim_cat_file.get_data()['gal_resolution'][ind[0]]
-            output_dict['GALSIM_GAL_ELL_U'][i][0] = galsim_cat_file.get_data()['gal_uncorr_g1'][ind[0]]
-            output_dict['GALSIM_GAL_ELL_U'][i][1] = galsim_cat_file.get_data()['gal_uncorr_g2'][ind[0]]
-            output_dict['GALSIM_PSF_ELL'][i][0] = galsim_cat_file.get_data()['psf_g1'][ind[0]]
-            output_dict['GALSIM_PSF_ELL'][i][1] = galsim_cat_file.get_data()['psf_g2'][ind[0]]
-            output_dict['GALSIM_PSF_SIGMA'][i] = galsim_cat_file.get_data()['psf_sigma'][ind[0]]
+            for key in keys:
+                if key == 'ORIGINAL_PSF':
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_uncorr_g1'][ind[0]]
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_uncorr_g2'][ind[0]]
+                    output_dict['GALSIM_PSF_SIGMA_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_sigma'][ind[0]]
+                else:
+                    output_dict['GALSIM_GAL_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_g1'][ind[0]]
+                    output_dict['GALSIM_GAL_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_g2'][ind[0]]
+                    output_dict['GALSIM_GAL_ELL_ERR_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_g1_err'][ind[0]]
+                    output_dict['GALSIM_GAL_ELL_ERR_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_g2_err'][ind[0]]
+                    output_dict['GALSIM_GAL_ELL_UNCORR_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['gal_uncorr_g1'][ind[0]]
+                    output_dict['GALSIM_GAL_ELL_UNCORR_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['gal_uncorr_g2'][ind[0]]
+                    output_dict['GALSIM_GAL_SIGMA_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_sigma'][ind[0]]
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][0] = galsim_cat_file.get_data(key)['psf_g1'][ind[0]]
+                    output_dict['GALSIM_PSF_ELL_{}'.format(key)][i][1] = galsim_cat_file.get_data(key)['psf_g2'][ind[0]]
+                    output_dict['GALSIM_PSF_SIGMA_{}'.format(key)][i] = galsim_cat_file.get_data(key)['psf_sigma'][ind[0]]
+                    output_dict['GALSIM_FLAGS_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_flag'][ind[0]]
+                    output_dict['GALSIM_RES_{}'.format(key)][i] = galsim_cat_file.get_data(key)['gal_resolution'][ind[0]]
 
     for key in output_dict.keys():
         final_cat_file.add_col(key, output_dict[key])
 
     final_cat_file.close()
     galsim_cat_file.close()
+
+
+# def save_galsim_shapes(final_cat_file, galsim_cat_path):
+#     """ Save ngmix data
+#
+#     Save the ngmix catalog into the final one.
+#
+#     Parameters
+#     ----------
+#     final_cat_file : io.FITSCatalog
+#         Final catalog.
+#     ngmix_cat_path : str
+#         Path to ngmix catalog to save.
+#
+#     """
+#
+#     final_cat_file.open()
+#     obj_id = np.copy(final_cat_file.get_data()['NUMBER'])
+#
+#     galsim_cat_file = io.FITSCatalog(galsim_cat_path)
+#     galsim_cat_file.open()
+#     galsim_id = galsim_cat_file.get_data()['id']
+#     # max_epoch = np.max(ngmix_n_epoch)
+#
+#     output_dict = {'GALSIM_GAL_ELL': np.ones((len(obj_id), 2)) * -10.,
+#                    'GALSIM_GAL_ELL_ERR': np.ones(len(obj_id)) * -1.,
+#                    'GALSIM_GAL_SIGMA': np.zeros(len(obj_id)),
+#                    'GALSIM_GAL_FLAG': np.ones(len(obj_id), dtype='int16'),
+#                    'GALSIM_GAL_ELL_U': np.ones((len(obj_id), 2)) * -10.,
+#                    'GALSIM_GAL_RES': np.ones(len(obj_id)) * -1.,
+#                    'GALSIM_PSF_ELL': np.ones((len(obj_id), 2)) * -10.,
+#                    'GALSIM_PSF_SIGMA': np.zeros(len(obj_id)),
+#                    'GALSIM_PSF_FLAG': np.ones(len(obj_id), dtype='int16')}
+#     for i, id_tmp in enumerate(obj_id):
+#         ind = np.where(id_tmp == galsim_id)[0]
+#         if len(ind) > 0:
+#             output_dict['GALSIM_GAL_ELL'][i][0] = galsim_cat_file.get_data()['gal_g1'][ind[0]]
+#             output_dict['GALSIM_GAL_ELL'][i][1] = galsim_cat_file.get_data()['gal_g2'][ind[0]]
+#             output_dict['GALSIM_GAL_ELL_ERR'][i] = galsim_cat_file.get_data()['gal_g1_err'][ind[0]]
+#             output_dict['GALSIM_GAL_SIGMA'][i] = galsim_cat_file.get_data()['gal_sigma'][ind[0]]
+#             output_dict['GALSIM_GAL_FLAG'][i] = galsim_cat_file.get_data()['gal_flag'][ind[0]]
+#             output_dict['GALSIM_GAL_RES'][i] = galsim_cat_file.get_data()['gal_resolution'][ind[0]]
+#             output_dict['GALSIM_GAL_ELL_U'][i][0] = galsim_cat_file.get_data()['gal_uncorr_g1'][ind[0]]
+#             output_dict['GALSIM_GAL_ELL_U'][i][1] = galsim_cat_file.get_data()['gal_uncorr_g2'][ind[0]]
+#             output_dict['GALSIM_PSF_ELL'][i][0] = galsim_cat_file.get_data()['psf_g1'][ind[0]]
+#             output_dict['GALSIM_PSF_ELL'][i][1] = galsim_cat_file.get_data()['psf_g2'][ind[0]]
+#             output_dict['GALSIM_PSF_SIGMA'][i] = galsim_cat_file.get_data()['psf_sigma'][ind[0]]
+#
+#     for key in output_dict.keys():
+#         final_cat_file.add_col(key, output_dict[key])
+#
+#     final_cat_file.close()
+#     galsim_cat_file.close()
 
 
 def save_psf_data(final_cat_file, galaxy_psf_path, w_log):
@@ -319,8 +392,10 @@ def make_catalog_runner(input_file_list, run_dirs, file_number_string,
 
     w_log.info('Save ngmix data')
     if shape_type.lower() == "ngmix":
+        w_log.info('Save ngmix data')
         save_ngmix_data(final_cat_file, ngmix_cat_path)
     elif shape_type.lower() == "galsim":
+        w_log.info('Save galsim data')
         save_galsim_shapes(final_cat_file, ngmix_cat_path)
 
     #w_log.info('Save PSF data')
