@@ -494,17 +494,18 @@ def process(tile_cat_path, tile_weight_path, gal_vignet_path, bkg_vignet_path,
 
     """
 
-    tile_cat = io.FITSCatalog(tile_cat_path, SEx_catalog=True)
-    tile_cat.open()
-    obj_id = np.copy(tile_cat.get_data()['NUMBER'])
-    tile_vign = np.copy(tile_cat.get_data()['VIGNET'])
-    tile_ra = np.copy(tile_cat.get_data()['XWIN_WORLD'])
-    tile_dec = np.copy(tile_cat.get_data()['YWIN_WORLD'])
-    tile_n_epoch = np.copy(tile_cat.get_data()['N_EPOCH'])
-    tile_fwhm = np.copy(tile_cat.get_data()['FWHM_IMAGE'])
-    tile_wcs = get_wcs_from_sexcat(tile_cat.get_data(1)[0][0])
-    tile_cat.close()
-    tile_weight = np.copy(fits.getdata(tile_weight_path, 2)['VIGNET'])
+    # tile_cat = io.FITSCatalog(tile_cat_path, SEx_catalog=True)
+    # tile_cat.open()
+    obj_id = fits.getdata(tile_cat_path, 2, memmap=True)['NUMBER']
+    tile_vign = fits.getdata(tile_cat_path, 2, memmap=True)['VIGNET']
+    tile_ra = fits.getdata(tile_cat_path, 2, memmap=True)['XWIN_WORLD']
+    tile_dec = fits.getdata(tile_cat_path, 2, memmap=True)['YWIN_WORLD']
+    tile_n_epoch = fits.getdata(tile_cat_path, 2, memmap=True)['N_EPOCH']
+    tile_fwhm = fits.getdata(tile_cat_path, 2, memmap=True)['FWHM_IMAGE']
+    tile_wcs = get_wcs_from_sexcat(fits.getdata(tile_cat_path, 1, memmap=True)[0][0])
+    # tile_wcs = get_wcs_from_sexcat(tile_cat.get_data(1)[0][0])
+    # tile_cat.close()
+    tile_weight = fits.getdata(tile_weight_path, 2, memmap=True)['VIGNET']
     bkg_vign_cat = SqliteDict(bkg_vignet_path)
     psf_vign_cat = SqliteDict(psf_vignet_path)
     weight_vign_cat = SqliteDict(weight_vignet_path)
@@ -515,7 +516,6 @@ def process(tile_cat_path, tile_weight_path, gal_vignet_path, bkg_vignet_path,
     for i_tile, id_tmp in enumerate(obj_id):
         res = {}
         w_log.info('{}'.format(i_tile))
-        print(i_tile)
         psf_vign = []
         sigma_psf = []
         weight_vign = []
