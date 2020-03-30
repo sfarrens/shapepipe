@@ -17,6 +17,7 @@ import re
 import numpy as np
 
 import galsim
+from astropy.io import fits
 from astropy.wcs import WCS
 import reproject
 import ngmix
@@ -26,7 +27,7 @@ def mad(data, axis=None):
     """
     """
 
-    return np.mean(np.abs(data - np.mean(data, axis)), axis)
+    return np.median(np.abs(data - np.median(data, axis)), axis)*1.4826
 
 
 def get_gauss_2D(sigma, center=(0, 0), shape=(51, 51)):
@@ -108,6 +109,35 @@ def get_local_wcs(wcs, ra, dec, vign_shape):
     return loc_wcs
 
 
+def get_jacob(wcs, ra, dec):
+    """ Get jacobian
+
+    Return the jacobian of the wcs at the required position.
+
+    Parameters
+    ----------
+    wcs : astropy.wcs.WCS
+        WCS object for wich we want the jacobian.
+    ra : float
+        Ra position of the center of the vignet (in Deg).
+    dec : float
+        Dec position of the center of the vignet (in Deg).
+
+    Returns
+    -------
+    galsim_jacob : galsim.wcs.BaseWCS.jacobian
+        Jacobian of the WCS at the required position.
+
+    """
+
+    g_wcs = galsim.fitswcs.AstropyWCS(wcs=wcs)
+    world_pos = galsim.CelestialCoord(ra=ra*galsim.angle.degrees,
+                                      dec=dec*galsim.angle.degrees)
+    galsim_jacob = g_wcs.jacobian(world_pos=world_pos)
+
+    return galsim_jacob
+
+
 def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
     """ Stack PSFs
 
@@ -138,13 +168,14 @@ def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
     psf_list_stack = []
 
     for psf, wcs in zip(psfs, loc_wcs):
-        res = reproject.reproject_interp((psf, wcs), tile_loc_wcs, shape_out=psfs[0].shape)
+        res = reproject.reproject_exact((psf, wcs), tile_loc_wcs, shape_out=psfs[0].shape)
         new_psf = res[0]
         new_psf[np.isnan(new_psf)] = 0
         psf_list_stack.append(new_psf)
 
     w_sum = 0
     psf_sum = np.zeros_like(psfs[0])
+    psf_sigma = 0
     for i in range(n_epoch):
         s = np.shape(weights[i])
         cx, cy = int(s[0]/2.), int(s[1]/2.)
@@ -159,10 +190,12 @@ def stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs):
         psf_tmp = psf_list_stack[i]/np.sum(psf_list_stack[i])
         psf_sum += w * psf_tmp
         w_sum += w
+        psf_sigma += psfs_sigma[i] * w
 
     psf_sum /= w_sum
+    psf_sigma /= w_sum
 
-    return psf_sum
+    return psf_sum, psf_sigma
 
 
 def check_galsim_shapes(galsim_shape, obj_id, w_log):
@@ -170,15 +203,20 @@ def check_galsim_shapes(galsim_shape, obj_id, w_log):
     """
 
     if (galsim_shape.error_message == ''):
-        try:
-            gal_shapes = galsim.Shear(e1=galsim_shape.corrected_e1, e2=galsim_shape.corrected_e2)
-            g1 = gal_shapes.g1
-            g2 = gal_shapes.g2
+        if (galsim_shape.corrected_g1 != -10.) & (galsim_shape.corrected_g2 != -10):
+            g1 = galsim_shape.corrected_g1
+            g2 = galsim_shape.corrected_g2
             gal_err = 0
-        except:
-            g1 = galsim_shape.corrected_e1
-            g2 = galsim_shape.corrected_e2
-            gal_err = 2
+        else:
+            try:
+                gal_shapes = galsim.Shear(e1=galsim_shape.corrected_e1, e2=galsim_shape.corrected_e2)
+                g1 = gal_shapes.g1
+                g2 = gal_shapes.g2
+                gal_err = 0
+            except:
+                g1 = galsim_shape.corrected_e1
+                g2 = galsim_shape.corrected_e2
+                gal_err = 2
     else:
         w_log.info('Object : {}    Error : {}'.format(obj_id, galsim_shape.error_message))
         g1 = -10.
@@ -217,7 +255,7 @@ def psf_fitter(psf_vign):
     return psf_obs
 
 
-def make_metacal(gal_vign, psf_vign, weight_vign, option_dict):
+def make_metacal(gal_vign, psf_vign, weight_vign, tile_jacob, option_dict):
     """Make the metacalibration
 
     This function call different ngmix functions to create images needed for the metacalibration.
@@ -233,9 +271,14 @@ def make_metacal(gal_vign, psf_vign, weight_vign, option_dict):
 
     """
 
-    psf_obs = psf_fitter(psf_vign)
+    jacob = ngmix.Jacobian(row=(gal_vign.shape[0]-1)/2.,
+                                col=(gal_vign.shape[1]-1)/2.,
+                                wcs=tile_jacob)
 
-    obs = ngmix.Observation(gal_vign, psf=psf_obs, weight=weight_vign)
+    # psf_obs = psf_fitter(psf_vign)
+    psf_obs = ngmix.Observation(psf_vign, jacobian=jacob)
+
+    obs = ngmix.Observation(gal_vign, psf=psf_obs, weight=weight_vign, jacobian=jacob)
 
     obs_out = ngmix.metacal.get_all_metacal(obs,
                                             types=option_dict['TYPES'],
@@ -248,7 +291,7 @@ def make_metacal(gal_vign, psf_vign, weight_vign, option_dict):
 
 
 
-def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weights, flags, pixel_scale, do_metacal):
+def do_galsim_shapes(gal, gal_weight, gal_sig, psfs, tile_loc_wcs, tile_jacob, loc_wcs, psfs_sigma, weights, flags, pixel_scale, do_metacal):
     """ Do ngmix metacal
 
     Do the metacalibration on a multi-epoch object and return the join shape
@@ -282,26 +325,30 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
 
     """
 
-    psf = stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs)
+    psf, psf_sig = stack_psfs(tile_loc_wcs, psfs, psfs_sigma, weights, loc_wcs)
     if psf == 'Error':
         return 'Error'
     g_psf = galsim.Image(psf, scale=pixel_scale)
 
-    psf_sig = np.mean(psfs_sigma)
-
-    weight = np.sum(weights, 0)
+    weight = np.copy(gal_weight)
+    
     flag = np.sum(flags, 0)
+    flag[flag != 0] = 1
+    flag[gal == -1e30] = 1
+    g_flag = galsim.ImageI(flag, scale=pixel_scale)
+
     weight[np.where(flag != 0)] = 0
-    g_weight = galsim.Image(weight)
+    weight[gal == -1e30] = 0
+
+    inv_flag = np.ones_like(flag)
+    inv_flag[flag != 0] = 0
+    g_weight = galsim.Image(weight, scale=pixel_scale)
 
     gal[gal == -1e30] = 0
 
     s = np.shape(weight)
     cx, cy = int(s[0]/2.), int(s[1]/2.)
     sky_var = 1./np.average(weight, weights=get_gauss_2D(psf_sig, center=(cx, cy)))
-
-    # print("mean from single : {}".format(1./sky_var))
-    # print("from stack image : {}".format(mad(gal[gal!=-1e30])**2.))
 
     res_gal = {}
 
@@ -311,7 +358,7 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
                        'CHEATNOISE': False,
                        'STEP': 0.01,
                        'PSF_KIND': 'gauss'}
-        res = make_metacal(gal, psf, weight, option_dict)
+        res = make_metacal(gal, psf, weight, tile_jacob, option_dict)
 
         for key in option_dict['TYPES']:
             gal_tmp = res[key].image
@@ -320,11 +367,12 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
             sky_var = mad(gal_tmp)**2.
             res_gal[key] = galsim.hsm.EstimateShear(g_gal,
                                                     g_psf_mc,
+                                                    shear_est='KSB',
                                                     sky_var=sky_var,
                                                     weight=g_weight,
+                                                    badpix=g_flag,
                                                     strict=False)
         res_gal['original_psf'] = galsim.hsm.FindAdaptiveMom(g_psf,
-                                                             weight=g_weight,
                                                              strict=False)
     else:
         g_gal = galsim.Image(gal, scale=pixel_scale)
@@ -332,9 +380,10 @@ def do_galsim_shapes(gal, gal_sig, psfs, tile_loc_wcs, loc_wcs, psfs_sigma, weig
                                                       g_psf,
                                                       sky_var=sky_var,
                                                       weight=g_weight,
+                                                      badpix=g_flag,
                                                       strict=False)
 
-    return res_gal, psf, gal_tmp
+    return res_gal
 
 
 def compile_results(results, do_metacal, w_log):
@@ -414,7 +463,7 @@ def save_results(output_dict, output_name):
         f.save_as_fits(output_dict[key], ext_name=key.upper())
 
 
-def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
+def process(tile_cat_path, tile_weight_path, gal_vignet_path, bkg_vignet_path,
             psf_vignet_path, weight_vignet_path, flag_vignet_path,
             f_wcs_path, do_metacal, w_log):
     """ Process
@@ -449,23 +498,21 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
     tile_cat.open()
     obj_id = np.copy(tile_cat.get_data()['NUMBER'])
     tile_vign = np.copy(tile_cat.get_data()['VIGNET'])
-    tile_flag = np.copy(tile_cat.get_data()['FLAGS'])
-    tile_imaflag = np.copy(tile_cat.get_data()['IMAFLAGS_ISO'])
     tile_ra = np.copy(tile_cat.get_data()['XWIN_WORLD'])
     tile_dec = np.copy(tile_cat.get_data()['YWIN_WORLD'])
     tile_n_epoch = np.copy(tile_cat.get_data()['N_EPOCH'])
     tile_fwhm = np.copy(tile_cat.get_data()['FWHM_IMAGE'])
     tile_wcs = get_wcs_from_sexcat(tile_cat.get_data(1)[0][0])
     tile_cat.close()
-    f_wcs_file = np.load(f_wcs_path).item()
+    tile_weight = np.copy(fits.getdata(tile_weight_path, 2)['VIGNET'])
     bkg_vign_cat = SqliteDict(bkg_vignet_path)
     psf_vign_cat = SqliteDict(psf_vignet_path)
     weight_vign_cat = SqliteDict(weight_vignet_path)
     flag_vign_cat = SqliteDict(flag_vignet_path)
+    f_wcs_file = SqliteDict(f_wcs_path)
 
     final_res = []
-    output_vignet = {'PSF': [], 'WEIGHT': [], 'FLAG': [], 'GAL': [], 'id': [], 'gal_flag': []}
-    for i_tile, id_tmp in enumerate(obj_id[:100]):
+    for i_tile, id_tmp in enumerate(obj_id):
         res = {}
         w_log.info('{}'.format(i_tile))
         print(i_tile)
@@ -480,12 +527,6 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
         skip = False
         psf_expccd_name = list(psf_vign_cat[str(id_tmp)].keys())
         for expccd_name_tmp in psf_expccd_name:
-
-            psf_vign.append(psf_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET'])
-            sigma_psf.append(psf_vign_cat[str(id_tmp)][expccd_name_tmp]['SHAPES']['SIGMA_PSF_HSM'])
-
-            weight_vign.append(weight_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET'])
-
             tile_vign_tmp = np.copy(tile_vign[i_tile])
             flag_vign_tmp = flag_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET']
             flag_vign_tmp[np.where(tile_vign_tmp == -1e30)] = 2**10
@@ -493,6 +534,10 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             if len(np.where(v_flag_tmp != 0)[0])/(51*51) > 1/3.:
                 skip = True
                 continue
+
+            psf_vign.append(psf_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET'])
+            sigma_psf.append(psf_vign_cat[str(id_tmp)][expccd_name_tmp]['SHAPES']['SIGMA_PSF_HSM'])
+            weight_vign.append(weight_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET'])
             flag_vign.append(flag_vign_tmp)
 
             tile_loc_wcs = get_local_wcs(tile_wcs,
@@ -512,16 +557,20 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
             skip = False
             continue
 
-        res['gal'], res['psf_vign'], res['gal_vign'] = do_galsim_shapes(tile_vign[i_tile],
-                                                       tile_fwhm[i_tile]/2.335,
-                                                       psf_vign,
-                                                       tile_loc_wcs,
-                                                       loc_wcs_list,
-                                                       sigma_psf,
-                                                       weight_vign,
-                                                       flag_vign,
-                                                       0.186,
-                                                       do_metacal)
+        tile_jacob = get_jacob(tile_loc_wcs, tile_ra[i_tile], tile_dec[i_tile])
+
+        res['gal'] = do_galsim_shapes(tile_vign[i_tile],
+                                      tile_weight[i_tile],
+                                      tile_fwhm[i_tile]/2.335,
+                                      psf_vign,
+                                      tile_loc_wcs,
+                                      tile_jacob,
+                                      loc_wcs_list,
+                                      sigma_psf,
+                                      weight_vign,
+                                      flag_vign,
+                                      0.187,
+                                      do_metacal)
 
         if res['gal'] == 'Error':
             w_log.info('Something went wrong with the psf on object id : {}.'.format(id_tmp))
@@ -541,13 +590,13 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
 
 @module_runner(input_module=['sextractor_runner', 'psfexinterp_runner', 'vignetmaker_runner'],
                version='0.0.1',
-               file_pattern=['tile_sexcat', 'image', 'exp_background', 'galaxy_psf', 'weight', 'flag'],
-               file_ext=['.fits', '.sqlite', '.sqlite', '.sqlite', '.sqlite', '.sqlite'],
+               file_pattern=['tile_sexcat', 'weight', 'image', 'exp_background', 'galaxy_psf', 'weight', 'flag'],
+               file_ext=['.fits', '.fits', '.sqlite', '.sqlite', '.sqlite', '.sqlite', '.sqlite'],
                depends=['numpy', 'ngmix', 'galsim'])
-def galsim_shapes_v2_runner(input_file_list, output_dir, file_number_string,
+def galsim_shapes_v2_runner(input_file_list, run_dirs, file_number_string,
                             config, w_log):
 
-    output_name = output_dir + '/' + 'galsim' + file_number_string + '.fits'
+    output_name = run_dirs['output'] + '/' + 'galsim' + file_number_string + '.fits'
 
     f_wcs_path = config.getexpanded('GALSIM_SHAPES_V2_RUNNER', 'LOG_WCS')
 
