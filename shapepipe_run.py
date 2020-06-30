@@ -9,6 +9,8 @@ This script runs the shape measurement pipeline.
 
 """
 
+import sys
+
 from datetime import datetime
 from modopt.interface.errors import catch_error
 from modopt.interface.log import set_up_log, close_log
@@ -40,7 +42,7 @@ class ShapePipe():
         self.config = create_config_parser(self._args.config)
         self._set_run_name()
         self.modules = self.config.getlist('EXECUTION', 'MODULE')
-        self.mode = self.config.get('EXECUTION', 'MODE')
+        self.mode = self.config.get('EXECUTION', 'MODE').lower()
         self.filehd = FileHandler(self._run_name, self.modules, self.config)
         self.verbose = self.config.getboolean('DEFAULT', 'VERBOSE')
         self.error_count = 0
@@ -203,6 +205,20 @@ class ShapePipe():
         if self.verbose:
             print('')
 
+    def _get_module_run_methods(self):
+        """ Get Module Run Method
+
+        Create a dictionary of modules with corresponding run methods.
+
+        """
+
+        self.run_method = {}
+
+        for module in self.modules:
+
+            self.run_method[module] = \
+                self.filehd.module_runners[module].run_method
+
     def _prep_run(self):
         """ Run
 
@@ -221,6 +237,9 @@ class ShapePipe():
 
         # Check the versions of these modules
         self._check_module_versions()
+
+        # Get run method for each module
+        self._get_module_run_methods()
 
     def record_mode(self):
         """ Record Mode
@@ -254,12 +273,12 @@ def run_smp(pipe):
     for module in pipe.modules:
 
         # Create a job handler for the current module
-        jh = JobHandler(module, filehd=pipe.filehd,
-                        config=pipe.config,
-                        log=pipe.log, verbose=pipe.verbose)
+        jh = JobHandler(module, filehd=pipe.filehd, config=pipe.config,
+                        log=pipe.log, job_type=pipe.run_method[module],
+                        verbose=pipe.verbose)
 
-        # Submit the SMP jobs
-        jh.submit_smp_jobs()
+        # Submit jobs
+        jh.submit_jobs()
 
         # Update error count
         pipe.error_count += jh.error_count
@@ -295,53 +314,77 @@ def run_mpi(pipe, comm):
     # Get ShapePipe objects
     if master:
         config = pipe.config
-        verbose = pipe.config
+        verbose = pipe.verbose
     else:
-        config, verbose, worker_log = None, None, None
+        config = verbose = None
     config = comm.bcast(config, root=0)
     verbose = comm.bcast(verbose, root=0)
 
     # Loop through modules to be run
     for module in modules:
 
+        # Run set up on master
         if master:
             # Create a job handler for the current module
             jh = JobHandler(module, filehd=pipe.filehd, config=config,
-                            log=pipe.log, verbose=verbose)
-            # Get JobHandler objects
-            timeout = jh.timeout
-            # Get file handler objects
-            output_dir = jh.filehd.output_dir
-            module_runner = jh.filehd.module_runners[module]
-            worker_log = jh.filehd.get_worker_log_name
-            # Define process list
-            process_list = jh.filehd.process_list
-            # Define job list
-            jobs = split_mpi_jobs(process_list, comm.size)
-            del process_list
+                            log=pipe.log, job_type=pipe.run_method[module],
+                            parallel_mode='mpi', verbose=verbose)
+
+            # Get job type
+            job_type = jh.job_type
+
+            # Handle serial jobs
+            if job_type == 'serial':
+                jh.submit_jobs()
+
+            # Handle parallel jobs
+            else:
+                # Get JobHandler objects
+                timeout = jh.timeout
+                # Get file handler objects
+                run_dirs = jh.filehd.module_run_dirs
+                module_runner = jh.filehd.module_runners[module]
+                worker_log = jh.filehd.get_worker_log_name
+                # Define process list
+                process_list = jh.filehd.process_list
+                # Define job list
+                jobs = split_mpi_jobs(process_list, comm.size)
+                del process_list
         else:
-            output_dir, module_runner, worker_log, timeout, jobs = \
-             (None, None, None, None, None)
+            job_type = module_runner = worker_log = timeout = \
+                jobs = run_dirs = None
 
-        # Broadcast objects to all nodes
-        output_dir = comm.bcast(output_dir, root=0)
-        module_runner = comm.bcast(module_runner, root=0)
-        worker_log = comm.bcast(worker_log, root=0)
-        timeout = comm.bcast(timeout, root=0)
-        jobs = comm.scatter(jobs, root=0)
+        # Broadcast job type to all nodes
+        job_type = comm.bcast(job_type, root=0)
 
-        # Submit the MPI jobs and gather results
-        results = comm.gather(submit_mpi_jobs(jobs, config, timeout,
-                              output_dir, module_runner, worker_log,
-                              verbose), root=0)
+        if job_type == 'parallel':
 
-        del output_dir, module_runner, timeout, jobs
+            # Broadcast objects to all nodes
+            run_dirs = comm.bcast(run_dirs, root=0)
+
+            module_runner = comm.bcast(module_runner, root=0)
+            worker_log = comm.bcast(worker_log, root=0)
+            timeout = comm.bcast(timeout, root=0)
+            jobs = comm.scatter(jobs, root=0)
+
+            # Submit the MPI jobs and gather results
+            results = comm.gather(submit_mpi_jobs(jobs, config, timeout,
+                                  run_dirs, module_runner, worker_log,
+                                  verbose), root=0)
+
+            # Delete broadcast objects
+            del module_runner, worker_log, timeout, jobs
+
+            # Finish up parallel jobs
+            if master:
+                # Assign worker dictionaries
+                jh.worker_dicts = jh.filehd.flatten_list(results)
+                # Finish up job handler session
+                jh.finish_up()
+                # Delete results
+                del results
 
         if master:
-            # Assign worker dictionaries
-            jh.worker_dicts = jh.filehd.flatten_list(results)
-            # Finish up job handler session
-            jh.finish_up()
             # Update error count
             pipe.error_count += jh.error_count
             # Delete job handler
@@ -354,7 +397,7 @@ def run_mpi(pipe, comm):
 def main(args=None):
 
     try:
-        
+
         if import_mpi:
             comm = MPI.COMM_WORLD
             master = comm.rank == 0
@@ -386,4 +429,4 @@ def main(args=None):
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

@@ -3,16 +3,19 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - python=3.6
+  - python=3.7
   - astropy>=3.0
   - galsim>=2.1.4
   - joblib>=0.13
   - matplotlib>=3.0.2
+  - pip>=19.3
   - pip:
     - modopt>=1.2
-    - numba==0.40.0
+    - numba>=0.49.1
     - sip_tpv>=1.1
     - sf_tools>=2.0
     - sqlitedict>=1.6.0
     - termcolor>=1.1
-    - git+https://github.com/esheldon/ngmix
+    - reproject>=0.7.1
+    - tqdm>=4.46.1
+    - git+https://github.com/aguinot/ngmix@stable_version

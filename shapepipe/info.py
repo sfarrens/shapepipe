@@ -17,7 +17,7 @@ else:
 
 
 # Package Info
-version_info = (0, 0, 1)
+version_info = (0, 0, 2)
 __version__ = '.'.join(str(c) for c in version_info)
 __name__ = 'shapepipe'
 __author__ = 'Samuel Farrens'
@@ -63,8 +63,11 @@ def shapepipe_logo(colour=False):
     Shape measurement pipeline developed at CosmoStat.
 
     Authors: Samuel Farrens   <samuel.farrens@cea.fr>
-             Martin Kilbinger <martin.kilbinger@cea.fr>
-             Axel Guinot
+             Axel Guinot      <axel.guinot@cea.fr>
+
+    Main Contributors:
+             Martin Kilbinger
+             Tobias Liaudat
              Morgan Schmitz
 
     Version: {}

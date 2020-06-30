@@ -2,7 +2,8 @@
 
 """SPLIT EXP RUNNER
 
-This module split the different CCD's hdu of a single exposure into separate files.
+This module split the different CCD's hdu of a single exposure into separate
+files.
 
 :Author: Axel Guinot
 
@@ -12,6 +13,7 @@ This module split the different CCD's hdu of a single exposure into separate fil
 import numpy as np
 import sip_tpv as stp
 from astropy.wcs import WCS
+from astropy.io import fits
 
 from shapepipe.modules.module_decorator import module_runner
 from shapepipe.pipeline import file_io as io
@@ -40,18 +42,15 @@ def create_hdus(exp_path, output_dir, output_name, output_sufix, n_hdu=40,
 
     """
 
-    exp_file = io.FITSCatalog(exp_path, hdu_no=1)
-    exp_file.open()
-
     header_file = np.zeros(n_hdu, dtype='O')
 
     for i in range(1, n_hdu+1):
 
-        h = exp_file._cat_data[i].header
+        h = fits.getheader(exp_path, i)
         if transf_coord:
             stp.pv_to_sip(h)
 
-        d = exp_file.get_data(i)
+        d = fits.getdata(exp_path, i)
         if transf_int:
             d = d.astype(np.int16)
 
@@ -73,7 +72,7 @@ def create_hdus(exp_path, output_dir, output_name, output_sufix, n_hdu=40,
 @module_runner(version='1.0', file_pattern=['image', 'weight', 'flag'],
                file_ext=['.fz', '.fz', '.fz'],
                depends=['numpy', 'astropy', 'sip_tpv'])
-def split_exp_runner(input_file_list, output_dir, file_number_string,
+def split_exp_runner(input_file_list, run_dirs, file_number_string,
                      config, w_log):
 
     file_suffix = config.getlist("SPLIT_EXP_RUNNER", "OUTPUT_SUFFIX")
@@ -85,7 +84,7 @@ def split_exp_runner(input_file_list, output_dir, file_number_string,
         transf_coord = 'image' in exp_suffix
         save_header = 'image' in exp_suffix
 
-        create_hdus(exp_path, output_dir, file_number_string, exp_suffix,
-                    n_hdu, transf_coord, transf_int, save_header)
+        create_hdus(exp_path, run_dirs['output'], file_number_string,
+                    exp_suffix, n_hdu, transf_coord, transf_int, save_header)
 
     return None, None

@@ -1,10 +1,10 @@
 ShapePipe
 =========
 
-|gitlab-ci| |python35| |python36|
+|travis| |python35| |python36| |python37|
 
-.. |gitlab-ci| image:: https://drf-gitlab.cea.fr/cosmostat/ShapePipe/badges/master/pipeline.svg
-  :target: https://drf-gitlab.cea.fr/cosmostat/ShapePipe/tree/master
+.. |travis| image:: https://travis-ci.com/CosmoStat/shapepipe.svg?branch=master
+  :target: https://travis-ci.com/CosmoStat/shapepipe
 
 .. |python35| image:: https://img.shields.io/badge/python-3.5-yellow.svg
   :target: https://www.python.org/
@@ -12,9 +12,12 @@ ShapePipe
 .. |python36| image:: https://img.shields.io/badge/python-3.6-yellow.svg
   :target: https://www.python.org/
 
-:Version: 0.0.1
+.. |python37| image:: https://img.shields.io/badge/python-3.7-yellow.svg
+  :target: https://www.python.org/
 
-:Date: 19/04/2019
+:Version: 0.0.3
+
+:Date: 19/05/2020
 
 ShapePipe is a galaxy shape measurement pipeline developed within the
 CosmoStat lab at CEA Paris-Saclay.
@@ -24,23 +27,27 @@ Contents
 
 1. `Dependencies`_
 
-   a. `Pipeline Dependencies`_
+   a. `Core Dependencies`_
    b. `Module Dependencies`_
 
 2. `Installation`_
 
    a. `Installing ShapePipe`_
-   b. `Installing Module Dependencies`_
+   b. `Installing the ShapePipe Library Only`_
+   c. `Installing the Module Python Dependencies`_
 
 3. `Execution`_
 
-   a. `Running the Pipeline`_
-   b. `Configuration`_
+   a. `Running the Pipeline with SMP`_
+   b. `Running the Pipeline with MPI`_
+   c. `Configuration`_
 
 4. `Development`_
 
    a. `Modules`_
    b. `Examples`_
+   
+5. `Additional Documentation <docs/wiki/shapepipe.md>`_
 
 Dependencies
 ============
@@ -81,7 +88,7 @@ The entire ShapePipe package, include dependencies, can be built as follows:
 
 .. code-block:: bash
 
-  $ git clone https://drf-gitlab.cea.fr/cosmostat/ShapePipe
+  $ git clone https://github.com/CosmoStat/shapepipe
   $ cd ShapePipe
   $ ./install_shapepipe
 
@@ -108,9 +115,10 @@ and built as follows:
 
 .. code-block:: bash
 
-  $ git clone https://drf-gitlab.cea.fr/cosmostat/ShapePipe
-  $ cd ShapePipe
+  $ git clone https://github.com/CosmoStat/shapepipe
+  $ cd shapepipe
   $ python setup.py install
+
 
 This method is recommend for development.
 
@@ -121,7 +129,7 @@ repository as follows:
 
 .. code-block:: bash
 
-  $ pip install git+ssh://git@drf-gitlab.cea.fr/cosmostat/ShapePipe.git
+  $ pip install git+https://github.com/CosmoStat/shapepipe
 
 Note, this method will not include any executable scripts or examples.
 
@@ -242,16 +250,16 @@ Additional module options can be added using the following structure:
 
 .. code-block:: bash
 
-   [MODULE_NAME]
-    PARAMETER = PARAMETER VALUE
+  [MODULE_NAME]
+  PARAMETER = PARAMETER VALUE
 
 This mechanism can also be used to modify module decorator properties or append
 additional values to list properties as follows:
 
 .. code-block:: bash
 
-   [MODULE_NAME]
-    ADD_PARAMETER = PARAMETER VALUE
+  [MODULE_NAME]
+  ADD_PARAMETER = PARAMETER VALUE
 
 Development
 ===========
