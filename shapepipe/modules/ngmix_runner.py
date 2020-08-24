@@ -360,6 +360,12 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list,
         psf_guess = np.array([0., 0., 0., 0., psf_T, 1.])
         try:
             psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess, None)
+
+            # Set PSF GMix object
+            pars_psf = psf_res['pars']
+            pars_psf[4] = (pars_psf[4]/1.17741)**2. * 2.
+            psf_gmix = ngmix.GMixModel(pars_psf, 'gauss')
+            psf_obs.set_gmix(psf_gmix)
         except:
             continue
 
@@ -432,12 +438,18 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list,
     gal_model = 'gauss'
 
     # metacal specific parameters
+    # metacal_pars = {'types': ['noshear', '1p', '1m', '2p', '2m'],
+    #                 'step': 0.01,
+    #                 'psf': 'gauss',
+    #                 'fixnoise': True,
+    #                 'cheatnoise': False,
+    #                 'symmetrize_psf': False,
+    #                 'use_noise_image': True}
     metacal_pars = {'types': ['noshear', '1p', '1m', '2p', '2m'],
                     'step': 0.01,
-                    'psf': 'gauss',
                     'fixnoise': True,
                     'cheatnoise': False,
-                    'symmetrize_psf': False,
+                    'symmetrize_psf': True,
                     'use_noise_image': True}
 
     # maximum likelihood fitter parameters
