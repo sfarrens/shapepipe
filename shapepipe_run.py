@@ -9,6 +9,8 @@ This script runs the shape measurement pipeline.
 
 """
 
+import sys
+
 from datetime import datetime
 from modopt.interface.errors import catch_error
 from modopt.interface.log import set_up_log, close_log
@@ -35,6 +37,15 @@ class ShapePipe():
     """
 
     def __init__(self):
+
+        self.log = None
+
+    def set_up(self):
+        """ Set Up
+
+        Set up ShapePipe properties.
+
+        """
 
         self._args = create_arg_parser()
         self.config = create_config_parser(self._args.config)
@@ -83,10 +94,19 @@ class ShapePipe():
 
         Close general logging instance for the pipeline run.
 
+        Raises
+        ------
+        RunTimeError
+            if error occurs during pipeline run
+
         """
 
-        final_error_count = ('A total of {} errors were recorded.'.format(
-                             self.error_count))
+        if self.error_count == 1:
+            plur = ' was'
+        else:
+            plur = 's were'
+        final_error_count = ('A total of {} error{} recorded.'.format(
+                             self.error_count, plur))
         end_text = 'Finishing ShapePipe Run'
 
         self.log.info(final_error_count)
@@ -98,6 +118,9 @@ class ShapePipe():
             print(final_error_count)
             print(end_text)
             print(line())
+
+        if self.error_count > 0:
+            raise RuntimeError(final_error_count)
 
     def _get_module_depends(self, property):
         """ Get Module Dependencies
@@ -264,7 +287,6 @@ def run_smp(pipe):
     ----------
     pipe : ShapePipe
         ShapePipe instance
-
     """
 
     # Loop through modules to be run
@@ -299,7 +321,6 @@ def run_mpi(pipe, comm):
         ShapePipe instance
     comm : MPI.COMM_WORLD
         MPI common world instance
-
     """
 
     # Assign master node
@@ -404,6 +425,7 @@ def main(args=None):
 
         if master:
             pipe = ShapePipe()
+            pipe.set_up()
             mode = pipe.mode
         else:
             pipe = None
@@ -422,9 +444,9 @@ def main(args=None):
 
     except Exception as err:
         if master:
-            catch_error(err, pipe.log)
+            catch_error(err, log=pipe.log)
             return 1
 
 
 if __name__ == "__main__":
-    main()
+    sys.exit(main())

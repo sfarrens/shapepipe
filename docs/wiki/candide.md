@@ -4,7 +4,7 @@
 
 > Environment Status Notes  
 > - Website: https://candideusers.calet.org/
-> - No internet access on compute nodes, see [tutorial](https://github.com/CosmoStat/shapepipe/blob/master/docs/wiki/tutorial/pipeline_tutorial.md#mask-images) for how to mange `mask_runner`
+> - No internet access on compute nodes, see [tutorial](https://github.com/CosmoStat/shapepipe/blob/master/docs/wiki/tutorial/pipeline_tutorial.md#mask-images) for how to manage `mask_runner`
 > - Current stable OpenMPI version: `4.0.2`
 
 ## Contents
@@ -38,13 +38,18 @@ The CANDIDE system uses [Environment Modules](https://modules.readthedocs.io/en/
 $ module avail
 ```
 
-ShapePipe requires `conda`, which on CANDIDE is provided via `intelpython/3`. To load this package simply run:
+ShapePipe requires `conda`, which on CANDIDE is provided via `intelpython/3`. To load the newest version of this package simply run:
 
 ```bash
-$ module load intelpython/3
+$ module load intelpython/3-2020.1
 ```
 
-> You can add this command to your `.bash_profile` to ensure that this module is available when you log in.
+For the installation of `astromatic` software (`SExtractor`, `PSFEx`) the `BLAS` library is required. This is made available by loading the Intel MLK module,
+```bash
+module load intel/19.0
+```
+
+> You can add these commands to your `.bash_profile` to ensure that this module is available when you log in.
 
 You can list the modules already loaded by running:
 
@@ -75,7 +80,7 @@ $ module show openmpi
 which should reveal something like `/softs/openmpi/<VERSION>-torque-CentOS7`. Provide this path to the `mpi-root` option of the installation script as follows:
 
 ```bash
-$ ./shapepipe_install --mpi-root=/softs/openmpi/<VERSION>-torque-CentOS7
+$ ./install_shapepipe --mpi-root=/softs/openmpi/<VERSION>-torque-CentOS7
 ```
 
 > Be sure to check the output of the **Installing MPI** section, as the final check only tests if the `mpiexec` command is available on the system.
@@ -92,7 +97,7 @@ $ ./install_shapepipe --no-env --no-exe --mpi-root=/softs/openmpi/<VERSION>-torq
 To install ShapePipe without MPI enabled simply pass the `no-mpi` option to the installation script as follows:
 
 ```bash
-$ ./shapepipe_install --no-mpi
+$ ./install_shapepipe --no-mpi
 ```
 
 ## Execution
@@ -217,7 +222,7 @@ error while loading shared libraries: libopenblas.so.0: cannot open shared objec
 simply run
 
 ```bash
-export LD_LIBRARY_PATH=$CONDA_PREFIX/lib
+$ export LD_LIBRARY_PATH=$CONDA_PREFIX/lib
 ```
 
 > You can add the command to your `.bash_profile`.

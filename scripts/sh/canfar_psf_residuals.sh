@@ -47,7 +47,7 @@ done
 # Assumes untar_results.sh has been run before.
 n_skipped=0
 n_created=0
-FILES=output/*/psfexinterp_runner/output/${psfval_file_base}*
+FILES=output/*/psfex_interp_runner/output/${psfval_file_base}*
 for val in $FILES; do
     base=`basename $val`
     link_s "$pwd/$val" "$dir_individual/$base"
@@ -58,7 +58,7 @@ echo " Created $n_created links, skipped $n_skipped files"
 merge_star_cat -i $dir_individual -o $dir_merged/$fname_merged -v
 
 # Create plots
-MeanShapes -o $dir_merged -i $dir_merged/$fname_merged -v -x 10 --max_e=0.05 --max_d=0.005
+MeanShapes -o $dir_merged -i $dir_merged/$fname_merged -v -x 20 --max_e=0.05 --max_d=0.005
 
 #tar czf p.tgz psf_validation_merged/*.png
 

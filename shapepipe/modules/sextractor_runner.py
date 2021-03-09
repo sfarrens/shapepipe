@@ -15,6 +15,38 @@ from shapepipe.pipeline import file_io as io
 
 import numpy as np
 from sqlitedict import SqliteDict
+from astropy.io import fits
+
+
+def get_header_value(image_path, key):
+    """Get header value
+
+    This function read a value from the header image.
+
+    Parameters
+    ----------
+    image_path: str
+        Path to the input image
+    key: str
+        Key from which the value is requested (has to be float)
+
+    Returns
+    -------
+    val: float
+        Value associated to the key provided
+
+    """
+
+    h = fits.getheader(image_path)
+
+    val = h[key]
+
+    try:
+        val = float(val)
+    except:
+        raise ValueError('The key {} does not return a float value. Got '.format(key, val))
+
+    return val
 
 
 def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
@@ -22,20 +54,24 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
 
     This function will add one hdu by epoch to the SExtractor catalog.
     Only works for tiles.
-    The columns will be : NUMBER same as SExtractor NUMBER
-                          EXP_NAME name of the single exposure for this epoch
-                          CCD_N extansion where the object is
+    The columns will be: NUMBER same as SExtractor NUMBER
+                         EXP_NAME name of the single exposure for this epoch
+                         CCD_N extansion where the object is
 
     Parameters
     ----------
-    cat_path : str
+    cat_path: str
         Path to the outputed SExtractor catalog
-    f_wcs_path : str
+    f_wcs_path: str
         Path to the log file containing wcs for all single exp CCDs
-    pos_params : list
+    pos_params: list
         World coordinates to use to match the objects.
-    ccd_size : list
+    ccd_size: list
         Size of a ccd [nx, ny]
+
+    Raises
+    ------
+    IOError
 
     """
 
@@ -44,7 +80,11 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
     cat.open()
 
     f_wcs = SqliteDict(f_wcs_path)
-    n_hdu = len(f_wcs[list(f_wcs.keys())[0]])
+    key_list = list(f_wcs.keys())
+    if len(key_list) == 0:
+        raise IOError('Could not read sql file \'{}\''
+                      ''.format(f_wcs_path))
+    n_hdu = len(f_wcs[key_list[0]])
 
     hist = []
     for i in cat.get_data(1)[0][0]:
@@ -63,7 +103,7 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
     for i, exp in enumerate(exp_list):
         pos_tmp = np.ones(len(obj_id), dtype='int32') * -1
         for j in range(n_hdu):
-            w = f_wcs[exp][j]
+            w = f_wcs[exp][j]['WCS']
             pix_tmp = w.all_world2pix(cat.get_data()[pos_params[0]],
                                       cat.get_data()[pos_params[1]], 0)
             ind = ((pix_tmp[0] > int(ccd_size[0])) &
@@ -105,6 +145,18 @@ def sextractor_runner(input_file_list, run_dirs, file_number_string,
     weight_file = config.getboolean("SEXTRACTOR_RUNNER", "WEIGHT_IMAGE")
     flag_file = config.getboolean("SEXTRACTOR_RUNNER", "FLAG_IMAGE")
     psf_file = config.getboolean("SEXTRACTOR_RUNNER", "PSF_FILE")
+    detection_image = config.getboolean("SEXTRACTOR_RUNNER", "DETECTION_IMAGE")
+    detection_weight = config.getboolean("SEXTRACTOR_RUNNER", "DETECTION_WEIGHT")
+
+    zp_from_header = config.getboolean("SEXTRACTOR_RUNNER", "ZP_FROM_HEADER")
+    if zp_from_header:
+        zp_key = config.get("SEXTRACTOR_RUNNER", "ZP_KEY")
+        zp_value = get_header_value(input_file_list[0], zp_key)
+
+    bkg_from_header = config.getboolean("SEXTRACTOR_RUNNER", "BKG_FROM_HEADER")
+    if bkg_from_header:
+        bkg_key = config.get("SEXTRACTOR_RUNNER", "BKG_KEY")
+        bkg_value = get_header_value(input_file_list[0], bkg_key)
 
     if config.has_option('SEXTRACTOR_RUNNER', "CHECKIMAGE"):
         check_image = config.getlist("SEXTRACTOR_RUNNER", "CHECKIMAGE")
@@ -123,26 +175,63 @@ def sextractor_runner(input_file_list, run_dirs, file_number_string,
     output_file_name = suffix + 'sexcat{0}.fits'.format(num)
     output_file_path = '{0}/{1}'.format(run_dirs['output'], output_file_name)
 
-    command_line = ('{0} {1} -c {2} -PARAMETERS_NAME {3} -FILTER_NAME {4} '
-                    '-CATALOG_NAME {5}'.format(exec_path, input_file_list[0],
-                                               dot_sex, dot_param, dot_conv,
-                                               output_file_path))
+    measurement_image = input_file_list[0]
+
+    # Collect optional arguments for SExtractor
+    command_line_extra = ''
+    if zp_from_header:
+        command_line_extra += ' -MAG_ZEROPOINT {0}'.format(zp_value)
+
+    if bkg_from_header:
+        command_line_extra += ' -BACK_TYPE MANUAL -BACK_VALUE {0}'.format(bkg_value)
 
     extra = 1
     if weight_file:
-        command_line += ' -WEIGHT_IMAGE {0}'.format(input_file_list[extra])
+        weight_image = input_file_list[extra]
         extra += 1
     if flag_file:
-        command_line += ' -FLAG_IMAGE {0}'.format(input_file_list[extra])
+        command_line_extra += ' -FLAG_IMAGE {0}'.format(input_file_list[extra])
         extra += 1
     if psf_file:
-        command_line += ' -PSF_NAME {0}'.format(input_file_list[extra])
+        command_line_extra += ' -PSF_NAME {0}'.format(input_file_list[extra])
         extra += 1
+
+    # Check for separate files for detection and measurement
+
+    # First, consistency checks
+    if detection_weight and not detection_image:
+        raise ValueError('DETECTION_WEIGHT cannot be True if DETECTION_IMAGE is False')
+    if detection_weight and not weight_file:
+        raise ValueError('DETECTION_WEIGHT cannot be True if WEIGHT_FILE is False')
+
+    # Check for separate image file for detection and measurement
+    if detection_image:
+        detection_image_path = input_file_list[extra]
+        extra += 1
+    else:
+        detection_image_path = measurement_image
+
+    # Check for separate weight file corresponding to the detection image.
+    # If False, use measurement weight image.
+    # Note: This could be changed, and no weight image could be used, but
+    # this might lead to more user errors.
+    if weight_file:
+        if detection_weight:
+            detection_weight_path = input_file_list[extra]
+            extra += 1
+        else:
+            detection_weight_path = weight_image
+        command_line_extra += ' -WEIGHT_IMAGE {0},{1}'\
+                              ''.format(detection_weight_path, weight_image)
+    else:
+        command_line_extra += ' -WEIGHT_TYPE None'
+
     if extra != len(input_file_list):
-        raise ValueError("Incoherence between input files and keys related "
-                         "to extra files: Found {} extra files, but input "
-                         "file list lenght is {}"
-                         .format(extra, len(input_file_list)))
+        raise ValueError('Incoherence between input file number and keys '
+                         'related to extra files: 1 regular + {} extra '
+                         'files not compatible with total file list '
+                         'length of {}'
+                         ''.format(extra-1, len(input_file_list)))
 
     if (len(check_image) == 1) & (check_image[0] == ''):
         check_type = ['NONE']
@@ -155,9 +244,16 @@ def sextractor_runner(input_file_list, run_dirs, file_number_string,
             check_name.append(run_dirs['output'] + '/' + suffix + i.lower() +
                               num + '.fits')
 
-    command_line += (' -CHECKIMAGE_TYPE {0} -CHECKIMAGE_NAME {1}'
-                     ''.format(','.join(check_type), ','.join(check_name)))
+    command_line_extra += (' -CHECKIMAGE_TYPE {0} -CHECKIMAGE_NAME {1}'
+                           ''.format(','.join(check_type), ','.join(check_name)))
 
+    # Base arguments for SExtractor
+    command_line_base = ('{0} {1},{2} -c {3} -PARAMETERS_NAME {4} -FILTER_NAME {5} '
+                         '-CATALOG_NAME {6}'
+                         ''.format(exec_path, detection_image_path, measurement_image,
+                                   dot_sex, dot_param, dot_conv, output_file_path))
+
+    command_line = '{} {}'.format(command_line_base, command_line_extra)
     w_log.info('Calling command \'{}\''.format(command_line))
 
     stderr, stdout = execute(command_line)

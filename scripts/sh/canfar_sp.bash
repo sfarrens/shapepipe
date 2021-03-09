@@ -9,7 +9,7 @@
 #              machine.
 # Author: Martin Kilbinger <martin.kilbinger@cea.fr>
 # Date: 03/2020
-# Package: shapepipe
+# Package: ShapePipe
 
 
 ### Set-up ###
@@ -20,12 +20,12 @@
 
 if [ $# == 0 ]; then
   echo "Usages:"
-  echo "  bash canfar_sp.bash TILE_ID_1 [TILE_ID_2 [...]]"
+  echo "  bash $(basename "$0") TILE_ID_1 [TILE_ID_2 [...]]"
   echo "    TILE_ID = xxx.yyy"
   echo "    Examples:"
-  echo "      canfar_sp.bash 244.252"
-  echo "      canfar_sp.bash 244.252 239.293"
-  echo "  . canfar_sp.bash -e"
+  echo "      $(basename "$0") 244.252"
+  echo "      $(basename "$0") 244.252 239.293"
+  echo "  . $(basename "$0") -e"
   echo "    Assign environment variables"
   exit 1
 fi
@@ -39,8 +39,15 @@ export ID=`echo ${TILE_ARR[@]} | tr ' ' '_'`
 
 ## Paths
 
-# VM home (do not modify)
+# VM home, required for canfar run.
+# On other machines set to $HOME
 export VM_HOME=/home/ubuntu
+if [ ! -d "$VM_HOME" ]; then
+    export VM_HOME=$HOME
+fi
+
+# Results upload subdirectory on vos
+RESULTS=results
 
 ## Path variables used in shapepipe config files
 
@@ -48,7 +55,9 @@ export VM_HOME=/home/ubuntu
 export SP_RUN=`pwd`
 
 # Config file path
-export SP_CONFIG=$SP_RUN/GOLD
+export SP_CONFIG=$SP_RUN/cfis
+
+## Other variables
 
 # Input tile numbers ASCII file
 export TILE_NUMBERS_PATH=tile_numbers.txt
@@ -58,9 +67,6 @@ OUTPUT=$SP_RUN/output
 
 # For tar archives
 output_rel=`realpath --relative-to=. $OUTPUT`
-
-
-## Other variables
 
 # Stop on error
 STOP=1
@@ -75,16 +81,8 @@ else
 fi
 
 # VCP options
-# VCP without "vflag" to avoid output to stderr
-export VCP_QUICK=1
-
-if [ $VCP_QUICK == 1 ]; then
-   qflag="--quick"
-else
-   qflag=""
-fi
 export CERTFILE=$VM_HOME/.ssl/cadcproxy.pem
-export VCP="vcp $qflag --certfile=$CERTFILE"
+export VCP="vcp --certfile=$CERTFILE"
 
 
 ## Functions
@@ -123,10 +121,10 @@ function command () {
       else
          echo -e "${RED}error, return value = $res${NC}"
          if [ $STOP == 1 ]; then
-            echo "${RED}exiting 'canfar_sp.bash', error in command '$cmd'${NC}"
+            echo "${RED}exiting $(basename "$0"), error in command '$cmd'${NC}"
             exit $res
          else
-            echo "${RED}continuing 'canfar_sp.bash', error in command '$cmd'${NC}"
+            echo "${RED}continuing $(basename "$0"), error in command '$cmd'${NC}"
          fi
       fi
    fi
@@ -146,7 +144,7 @@ command_sp() {
    res=$?
    if [ $res != 0 ]; then
       upload_logs $id $verbose
-      echo "exiting 'canfar_sp.bash', error in command '$cmd', log files for id=$id uploaded"
+      echo "exiting '$(basename "$0"), '$cmd' returned $res, log files for id=$id uploaded"
       exit $res
    fi
 
@@ -170,7 +168,7 @@ function upload() {
       fi
    fi
    tar czf ${base}_${ID}.tgz ${upl[@]}
-   command "$VCP ${base}_${ID}.tgz vos:cfis/cosmostat/kilbinger/results" "Upload $base results, $n_upl files in tar ball" "$verbose"
+   command "$VCP ${base}_${ID}.tgz vos:cfis/cosmostat/kilbinger/$RESULTS" "Upload $base to $RESULTS, $n_upl files in tar ball" "$verbose"
 }
 
 # Upload log files
@@ -196,10 +194,8 @@ function print_env() {
    echo "Other variables:"
    echo " VCP=$VCP"
    echo " CERTFILE=$CERTFILE"
-   echo " qflag=$qflag"
    echo " STOP=$STOP"
    echo " verbose=$VERBOSE"
-   echo " LD_LIBRARY_PATH=$LD_LIBRARY_PATH"
    echo "***"
 }
 
@@ -211,9 +207,6 @@ echo "Activate conda 'shapepipe' environment"
 source $VM_HOME/miniconda3/bin/activate shapepipe
 
 print_env
-
-# Extra stuff for canfar
-export LD_LIBRARY_PATH=$VM_HOME/miniconda3/envs/shapepipe/lib
 
 if [ "$1" == "-e" ]; then
    echo "Exiting"
@@ -238,7 +231,7 @@ for TILE in ${TILE_ARR[@]}; do
 done
 
 # Download config files
-$VCP vos:cfis/cosmostat/kilbinger/GOLD .
+$VCP vos:cfis/cosmostat/kilbinger/cfis .
 
 ### Run pipeline
 
@@ -263,7 +256,7 @@ command_sp "shapepipe_run -c $SP_CONFIG/config_exp.ini" "Run shapepipe (exp)" "$
 
 
 # The following are very a bad hacks to get additional input files
-input_psfex=`find . -name star_selection-*.psf | head -n 1`
+input_psfex=`find . -name star_split_ratio_80-*.psf | head -n 1`
 command_sp "ln -s `dirname $input_psfex` input_psfex" "Link psfex output" "$VERBOSE" "$ID"
 
 input_split_exp=`find output -name flag-*.fits | head -n 1`
@@ -278,11 +271,17 @@ command_sp "ln -s `dirname $input_sextractor` input_sextractor" "Link sextractor
 # Everything up to shapes
 command_sp "shapepipe_run -c $SP_CONFIG/config_tile_MaSxPsViSmVi.ini" "Run shapepipe (tile: up to ngmix)" "$VERBOSE" "$ID"
 
-# Shapes
+# Shapes, run 8 parallel processes
 for k in $(seq 1 8); do
     command_sp "shapepipe_run -c $SP_CONFIG/config_tile_Ng${k}u.ini" "Run shapepipe (tile: ngmix $k)" "$VERBOSE" "$ID" &
 done
 wait
+
+# Merge separated shapes catalogues
+command_sp "shapepipe_run -c $SP_CONFIG/config_merge_sep_cats.ini" "Run shapepipe (tile: merge sep cats)" "$VERBOSE" "$ID"
+
+# Create final shape catalogue by merging all tile information
+command_sp "shapepipe_run -c $SP_CONFIG/config_make_cat.ini" "Run shapepipe (tile: create final cat)" "$VERBOSE" "$ID"
 
 
 ## Upload results
@@ -293,9 +292,8 @@ upload_logs "$ID" "$VERBOSE"
 # psfex for diagnostics, validation with leakage
 # psefxinterp for validation with residuals, rho stats
 # SETools masks (selection), stats and plots
-# SExtractor tile catalogues
-# spread model
-# PSFs at galaxy positions
+# pipeline_flags are the tile masks, for random cats
+# Final shape catalog
 
 NAMES=(
         "psfex"
@@ -303,9 +301,8 @@ NAMES=(
         "setools_mask"
         "setools_stat"
         "setools_plot"
-        "sextractor"
-        "spread_model"
-        "psfexinterp_tile"
+        "pipeline_flag"
+        "final_cat"
      )
 DIRS=(
         "*/psfex_runner/output"
@@ -313,19 +310,17 @@ DIRS=(
         "*/setools_runner/output/mask"
         "*/setools_runner/output/stat"
         "*/setools_runner/output/plot"
-        "*_tile_*/sextractor_runner/output"
-        "*/spread_model_runner/output"
-        "*/psfexinterp_runner/output"
+        "*/mask_runner/output"
+        "*/make_catalog_runner/output"
      )
 PATTERNS=(
-        "star_selection-*"
+        "star_split_ratio_80-*"
         "validation_psf*"
         "*"
         "*"
         "*"
-        "sexcat_sexcat-*"
-        "*"
-        "galaxy_psf-*"
+        "pipeline_flag-???-???*"
+        "final_cat-*"
         )
 
 for n in "${!NAMES[@]}"; do
@@ -335,31 +330,5 @@ for n in "${!NAMES[@]}"; do
     upl=$output_rel/$dir/$pattern
     upload "$name" "$ID" "$VERBOSE" "${upl[@]}"
 done
-
-# shapes
-if ls $output_rel/*/ngmix_runner/output 1> /dev/null 2>&1; then
-  n_file=(`ls -l $output_rel/*/ngmix_runner/output | wc`)
-   if [ "$n_file" == 1 ]; then
-      if [ $STOP == 1 ]; then
-         echo "Existing script, no ngmix FITS file found in ngmix output dir (1)"
-         exit 97
-      fi
-   else
-      upl=$output_rel/*/ngmix_runner/output/ngmix-*
-      n_upl=(`ls -l ${upl[@]} | wc`)
-      if [ $n_upl == 0 ]; then
-         if [ $STOP == 1 ]; then
-            echo "Existing script, no ngmix FITS file found in ngmix output dir (2)"
-            exit 97
-         fi
-      fi
-      upload "ngmix" "$ID" "$VERBOSE" "${upl[@]}"
-   fi
-else
-   if [ $STOP == 1 ]; then
-      echo "Existing script, no ngmix output dir found"
-      exit 98
-   fi
-fi
 
 echo "End"

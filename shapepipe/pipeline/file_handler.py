@@ -16,6 +16,7 @@ from glob import glob
 from functools import reduce, partial
 from shapepipe.pipeline.run_log import RunLog
 from shapepipe.modules.module_runners import get_module_runners
+from shapepipe.utilities.file_system import mkdir
 
 
 def find_files(path, pattern='*', ext='*'):
@@ -69,6 +70,33 @@ def find_files(path, pattern='*', ext='*'):
     return glob(search_string, recursive=True)
 
 
+def check_duplicate(input_list):
+    """ Check Duplicate.
+
+    Check whether input list contains at least one duplicate.
+
+    Parameters
+    ----------
+    input_list : list
+        input list
+
+    Returns
+    -------
+    ok : bool
+        True (False) if does (does not) contain at least one duplicate
+    """
+
+    input_set = set()
+
+    for elem in input_list:
+        if elem in input_set:
+            return True
+        else:
+            input_set.add(elem)
+
+    return False
+
+
 class FileHandler(object):
     """ File Handler
 
@@ -88,7 +116,11 @@ class FileHandler(object):
     def __init__(self, run_name, modules, config):
 
         self._run_name = run_name
+
         self._module_list = modules
+        if self._module_list[-1] == '':
+            raise ValueError('Invalid module list, check for a trailing comma')
+
         self._config = config
         self.module_runners = get_module_runners(self._module_list)
         self._input_list = config.getlist('FILE', 'INPUT_DIR')
@@ -103,12 +135,8 @@ class FileHandler(object):
 
         if config.has_option('FILE', 'FILE_PATTERN'):
             self._file_pattern = config.getlist('FILE', 'FILE_PATTERN')
-        else:
-            self._file_pattern = None
         if config.has_option('FILE', 'FILE_EXT'):
             self._file_ext = config.getlist('FILE', 'FILE_EXT')
-        else:
-            self._file_ext = None
         if config.has_option('FILE', 'NUMBERING_SCHEME'):
             self._numbering_scheme = config.get('FILE', 'NUMBERING_SCHEME')
         else:
@@ -231,13 +259,13 @@ class FileHandler(object):
 
         Parameters
         ----------
-        dir_name : str
+        dir_name : str`
             Directory name with full path
 
         """
 
         cls.check_dir(dir_name, check_exists=True)
-        os.mkdir(dir_name)
+        mkdir(dir_name)
 
     @staticmethod
     def format(path, name, ext=''):
@@ -355,17 +383,26 @@ class FileHandler(object):
                                  last_module,
                                  module), 'output'))
 
+            elif 'all' in dir.lower():
+                module = dir.lower().split(':')[1]
+                all_runs = self._run_log.get_all(module)
+                input_dir.extend([self.format(self.format(
+                                  run.split(' ')[0],
+                                  module), 'output')
+                                  for run in all_runs])
+
             elif ':' in dir.lower():
-                string, module = dir.lower().split(':')
+                string, module = dir.split(':')
+                module = module.lower()
                 input_dir.append(self.format(self.format(
                                              self._run_log.get_run(string),
                                              module),
                                              'output'))
 
             else:
-                raise ValueError('Invalid INPUT_DIR. Make sure the paths '
+                raise ValueError('Invalid INPUT_DIR ({}). Make sure the paths '
                                  'provided are valid directories or use the '
-                                 'allowed special keys.')
+                                 'allowed special keys.'.format(dir))
 
         return input_dir
 
@@ -436,10 +473,10 @@ class FileHandler(object):
             return self._config.getlist(module.upper(), 'ADD_{}'.format(
                                         property.upper()))
 
-    def _set_module_property(self, module, property, file_property=True):
-        """ Get Module Property
+    def _set_module_property(self, module, property, get_type):
+        """ Set Module Property
 
-        Get a module property from either the configuration file or the module
+        Set a module property from either the configuration file or the module
         runner.
 
         Parameters
@@ -448,51 +485,54 @@ class FileHandler(object):
             Module name
         property : str
             Property name
+        get_type : str
+            Type of object to get from config file
+
+        Notes
+        -----
+        Module properties are set with the following hierarchy:
+
+        1. Look for properties in module section of the config file,
+        2. look for default properties in the file handler, which sources the
+        ``[FILE]`` section of the config file,
+        3. look for default properties in the module runner definition.
+
+        In other words, module runner definitions will only be used if the
+        properties are not set in the confg file. File handler properties will
+        be used for all modules, overriding all module runner definitions.
+        Module specific properties from the config file will override all other
+        definitions, but only for the module in question.
 
         """
 
+        # 1) Check for parameter value in module section of config file
         if self._config.has_option(module.upper(), property.upper()):
-            prop_val = self._config.get(module.upper(), property.upper())
+            if get_type == 'str':
+                prop_val = self._config.get(module.upper(), property.upper())
+            elif get_type == 'list':
+                prop_val = self._config.getlist(module.upper(),
+                                                property.upper())
+            else:
+                raise ValueError('{} is not a valid get type'.format(get_type))
 
-        else:
-            prop_val = getattr(self.module_runners[module], property)
-
-        if (file_property and (len(self._module_dict) == 1 or
-                               isinstance(prop_val, type(None)))):
+        # 2) Check for default parameter values in file handler
+        elif hasattr(self, '_{}'.format(property)):
             prop_val = getattr(self, '_{}'.format(property))
 
-        self._module_dict[module][property] = prop_val
-
-    def _set_module_list_property(self, module, property):
-        """ Get Module List Property
-
-        Get a module list property from either the configuration file or the
-        module runner.
-
-        Parameters
-        ----------
-        module : str
-            Module name
-        property : str
-            Property name
-
-        """
-
-        if self._config.has_option(module.upper(), property.upper()):
-            prop_list = self._config.getlist(module.upper(), property.upper())
-
-        elif (property in ('file_pattern', 'file_ext') and not
-                isinstance(getattr(self, '_{}'.format(property)), type(None))
-                and len(self._module_dict) == 1):
-            prop_list = getattr(self, '_{}'.format(property))
+        # 3) Check for default parameter values in module runner
+        elif hasattr(self.module_runners[module], property):
+            prop_val = getattr(self.module_runners[module], property)
 
         else:
-            prop_list = getattr(self.module_runners[module], property)
+            raise ValueError('No value for {} in {} could be found.'
+                             ''.format(property, module))
 
-        if self.get_add_module_property(module, property):
-            prop_list += self.get_add_module_property(module, property)
+        # Look for additional module properties for list objects
+        if (isinstance(prop_val, list) and
+                self.get_add_module_property(module, property)):
+            prop_val += self.get_add_module_property(module, property)
 
-        self._module_dict[module][property] = prop_list
+        self._module_dict[module][property] = prop_val
 
     def _set_module_properties(self, module):
         """ Get Module Properties
@@ -506,15 +546,18 @@ class FileHandler(object):
 
         """
 
-        module_props = ('numbering_scheme',)
-        module_list_props = ('input_module', 'file_pattern', 'file_ext',
-                             'depends', 'executes')
+        module_props = {
+            'numbering_scheme': 'str',
+            'run_method': 'str',
+            'input_module': 'list',
+            'file_pattern': 'list',
+            'file_ext': 'list',
+            'depends': 'list',
+            'executes': 'list'
+        }
 
-        [self._set_module_property(module, property) for property in
-         module_props]
-        [self._set_module_list_property(module, property) for property in
-         module_list_props]
-        self._set_module_property(module, 'run_method', file_property=False)
+        [self._set_module_property(module, property, get_type)
+         for property, get_type in module_props.items()]
 
         # Make sure the number of patterns and extensions match
         if ((len(self._module_dict[module]['file_ext']) == 1) and
@@ -525,8 +568,10 @@ class FileHandler(object):
 
         if (len(self._module_dict[module]['file_ext']) !=
                 len(self._module_dict[module]['file_pattern'])):
-            raise ValueError('The number of file_ext values does not match '
-                             'the number of file_pattern values.')
+            raise ValueError('The number of file_ext values ({}) does not match '
+                             'the number of file_pattern values ({}).'
+                             ''.format(len(self._module_dict[module]['file_ext']),
+                                       len(self._module_dict[module]['file_pattern'])))
 
     def _create_module_run_dirs(self, module):
         """ Create Module Run Directories
@@ -670,6 +715,11 @@ class FileHandler(object):
         num_scheme : str
             Numbering scheme
 
+        Raises
+        ------
+        ValueError
+            if num_scheme is None
+
         Returns
         -------
         str
@@ -677,7 +727,13 @@ class FileHandler(object):
 
         """
 
-        if num_scheme.startswith('RE:'):
+        # Raise an error if num_scheme is None,
+        # but not if num_scheme==''
+        if not num_scheme and num_scheme != '':
+
+            raise ValueError('No numbering scheme adapted')
+
+        elif num_scheme.startswith('RE:'):
 
             re_pattern = num_scheme.replace('RE:', '')
 
@@ -698,8 +754,8 @@ class FileHandler(object):
         ----------
         dir_list : list
             List of input directories
-        num_scheme : str
-            Numbering scheme
+        re_pattern : str
+            Regular expression pattern
         pattern : str
             File pattern
         ext : str
@@ -725,14 +781,15 @@ class FileHandler(object):
                 break
 
         if not true_file_list:
-            raise RuntimeError('No files found matching "{}" and "{}".'
-                               ''.format(pattern, ext))
+            raise RuntimeError('No files found matching "{}" and "{}" in the '
+                               ' directories {}.'
+                               ''.format(pattern, ext, dir_list))
 
         # Correct the extension if necessary
         new_ext = '.' + ext if not ext.startswith('.') else ext
 
         if new_ext != ext:
-            print('Updating extension from "{}" to "{}".'
+            print('Updating file extension from "{}" to "{}".'
                   ''.format(ext, new_ext))
             print()
 
@@ -768,9 +825,17 @@ class FileHandler(object):
                 correct_pattern = False
 
         if not found_match:
-            raise RuntimeError('Could not match numbering scheme to any of the'
-                               ' input files matching "{}" and "{}".'
-                               ''.format(pattern, ext))
+            raise RuntimeError('Could not match numbering scheme "{}" to any '
+                               'of the input files matching "{}" and "{}" in '
+                               'the directories {}.'
+                               ''.format(self._numbering_scheme, pattern, ext,
+                                         dir_list))
+
+        if check_duplicate(final_file_list):
+            raise RuntimeError('Input file list contains at least two elements that match '
+                               'file pattern and numbering scheme, leading to identical '
+                               'input files.  Make sure that the correct input '
+                               'directory is used.')
 
         # Save file list
         np.save(output_file, np.array(final_file_list))
@@ -844,7 +909,7 @@ class FileHandler(object):
         if isinstance(mmap_list, str):
             mmap_list = [str]
 
-        for mmap in mmap_list:
+        for mmap in set(mmap_list):
             os.remove(mmap)
 
     def _format_process_list(self, patterns, memory_map, re_pattern,
@@ -858,7 +923,7 @@ class FileHandler(object):
         patterns : list
             List of file patterns
         memory_map : str
-            Name of mempry map file
+            Name of memory map file
         re_pattern : str
             Regular expression for numbering scheme
         num_scheme : str

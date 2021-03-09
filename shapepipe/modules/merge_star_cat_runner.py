@@ -2,7 +2,7 @@
 
 """CREATE LOG EXP HEADER
 
-This module merge the PSF validation catalogs from the PSFExInterpolation module
+This module merges the PSF validation catalogs from the PSFExInterpolation module
 to run the statistics on them.
 
 :Author: Morgan Schmitz, Axel Guinot
@@ -20,7 +20,7 @@ from shapepipe.modules.module_decorator import module_runner
 from shapepipe.pipeline import file_io as sc
 
 
-@module_runner(input_module='psfexinterp_runner', version='1.0',
+@module_runner(input_module='psfex_interp_runner', version='1.0',
                file_pattern=['validation_psf'],
                file_ext=['.fits'], depends=['numpy', 'sqlitedict'],
                run_method='serial')
