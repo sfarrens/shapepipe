@@ -12,7 +12,8 @@ __all__ = ['module_decorator',
            'module_runners',
            'mask_package',
            'PSFExInterpolation_package',
-           'SETools_package'
+           'SETools_package',
+           'LenSimu_package'
            ]
 __module_list__ = ['execute_example',
                    'erase_output_runner',
@@ -42,4 +43,11 @@ __module_list__ = ['execute_example',
                    'swarp_runner',
                    'vignetmaker_runner',
                    'vignetmaker_runner2',
-                   'uncompress_fits_image_runner']
+                   'merge_headers_runner',
+                   'merge_star_cat_runner',
+                   'uncompress_fits_image_runner',
+                   'erase_output_runner',
+                   'merge_sep_cats_runner',
+                   'get_images_runner',
+                   'get_images_runner2',
+                   'make_simu_runner']
