@@ -186,7 +186,7 @@ def read_image_numbers(path):
     image_number_list = []
     with open(path) as f:
         for line in f:
-            image_number_list.append(line.strip())
+            image_number_list.append(re.findall('\d+', line.strip())[0])
 
     return image_number_list
 

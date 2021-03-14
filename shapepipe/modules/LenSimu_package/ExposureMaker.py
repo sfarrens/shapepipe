@@ -4,12 +4,15 @@ import os
 import re
 
 import numpy as np
+import numpy.lib.recfunctions as rfn
 
 import galsim
 
 from astropy.wcs import WCS
 from astropy import coordinates as coord
 from astropy import units as u
+
+import sip_tpv as stp
 
 from shapepipe.pipeline import file_io as io
 from astropy.io import fits
@@ -34,7 +37,7 @@ class ExposureMaker(object):
                                     'SATURATE_KEY': 'SATURATE',
                                     'FILE_NAME_KEY': 'FILENAME',
                                     'FOV_DIAMATER': 1.5},
-                    'PSF': {'SAVE_PSF': True},
+                    'PSF': {'SAVE_PSF': False},
                     'GALAXY': {'CONVERT_MAG_SDSS': True},
                     'filter_lambda': 650,
                     'telescope_diameter': 3.5,
@@ -72,7 +75,15 @@ class ExposureMaker(object):
         m_star = star_catalog_ap.search_around_sky(field_center, 
                     seplimit=self.param_dict['TELESCOPE']['FOV_DIAMATER']/2.*u.degree)[1]
 
-        self.gal_catalog = gal_catalog[m_gal]
+        # self.gal_catalog = np.array([gal_catalog[key][m_gal] for key in gal_catalog.keys()])
+        k = 0
+        for key in gal_catalog.keys():
+            if k == 0:
+                self.gal_catalog = gal_catalog[key][m_gal].astype([(key, gal_catalog[key].dtype.type)])
+            else:
+                tmp_array = gal_catalog[key][m_gal].astype([(key, gal_catalog[key].dtype.type)])
+                self.gal_catalog = rfn.merge_arrays((self.gal_catalog, tmp_array), flatten=True)
+            k += 1
         self.star_catalog = star_catalog[m_star]
         self.gal_catalog_ap = gal_catalog_ap[m_gal]
         self.star_catalog_ap = star_catalog_ap[m_star]
@@ -94,7 +105,8 @@ class ExposureMaker(object):
         """
         """
 
-        header = self.header_list[ccd_number]
+        header = self.header_list[ccd_number].copy()
+        stp.pv_to_sip(header)
 
         w = WCS(header)
 
@@ -109,7 +121,8 @@ class ExposureMaker(object):
 
         gal_catalog, star_catalog = self.get_ccd_catalog(ccd_number)
 
-        header = self.header_list[ccd_number]
+        header = self.header_list[ccd_number].copy()
+        stp.pv_to_sip(header)
 
         ccd_obj = CCDMaker(ccd_number,
                            header,
@@ -156,7 +169,8 @@ class ExposureMaker(object):
             saturate = self.header_list[i][self.param_dict['TELESCOPE']['SATURATE_KEY']]
             img_tmp = np.copy(ccd_images[i][0].array)
             img_tmp[img_tmp > saturate] = saturate
-            hdu_list.append(fits.CompImageHDU(img_tmp, header=ccd_images[i][1], name='CCD_{}'.format(i)))
+            # hdu_list.append(fits.CompImageHDU(img_tmp, header=ccd_images[i][1], name='CCD_{}'.format(i)))
+            hdu_list.append(fits.CompImageHDU(img_tmp, header=self.header_list[i], name='CCD_{}'.format(i)))
         hdu_list.writeto(self.output_image_path + '/simu_image-{}.fits'.format(ori_name))
 
         # Write weights
@@ -184,10 +198,11 @@ class ExposureMaker(object):
             out_cat.save_as_fits(ccd_cats[i], ext_name='CCD_{}'.format(i))
         
         # Write PSF catalogs
-        out_psf_cat = io.FITSCatalog(self.output_catalog_path + '/simu_psf_cat-{}.fits'.format(ori_name),
-                                 open_mode=io.BaseCatalog.OpenMode.ReadWrite)
-        for i in range(self.param_dict['TELESCOPE']['N_CCD']):
-            out_psf_cat.save_as_fits(psf_cats[i], ext_name='CCD_{}'.format(i))
+        if self.param_dict['PSF']['SAVE_PSF']:
+            out_psf_cat = io.FITSCatalog(self.output_catalog_path + '/simu_psf_cat-{}.fits'.format(ori_name),
+                                         open_mode=io.BaseCatalog.OpenMode.ReadWrite)
+            for i in range(self.param_dict['TELESCOPE']['N_CCD']):
+                out_psf_cat.save_as_fits(psf_cats[i], ext_name='CCD_{}'.format(i))
 
     def go(self, seed=1234):
         """

@@ -12,13 +12,53 @@ import re
 import os
 
 import numpy as np
+
+from astropy.io import fits
 from astropy.wcs import WCS
+
 import sip_tpv as stp
 
 from shapepipe.pipeline.execute import execute
 from shapepipe.modules.module_decorator import module_runner
 from shapepipe.pipeline import file_io as io
 
+
+def get_ra_dec(xxx, yyy):
+    """Get ra/dec
+       
+       Transform xxx/yyy notation to ra/dec
+       
+       Parameters
+       ----------
+       xxx: int
+       yyy: int
+
+       Retunrs
+       -------
+       ra, dec: float, float
+    """
+
+    return xxx/2/np.cos((yyy/2-90)*np.pi/180), yyy/2-90
+
+def prep_single_image(image_path, tmp_dir, num):
+    """
+    """
+
+    single_num = re.findall('\d+', os.path.split(image_path)[1])[0]
+
+    new_image_path = tmp_dir + '/tmp_image{}-{}.fits'.format(num, single_num)
+
+    ori_image = fits.open(image_path)
+    primary_hdu = fits.PrimaryHDU()
+    hdu_list = fits.HDUList([primary_hdu])
+    for i in range(40):
+        tmp_header = ori_image[i+1].header
+        # stp.sip_to_pv(tmp_header)
+        hdu_list.append(fits.CompImageHDU(ori_image[i+1].data-tmp_header['IMMODE'], header=tmp_header, name='CCD_{}'.format(i)))
+        # hdu_list.append(fits.CompImageHDU(ori_image[i+1].data, header=tmp_header, name='CCD_{}'.format(i)))
+    hdu_list.writeto(new_image_path)
+    
+    return new_image_path
 
 def get_history(coadd_path, image_path_list):
     """ Get history
@@ -51,7 +91,7 @@ def get_history(coadd_path, image_path_list):
         n_hdu = len(f_tmp.get_ext_name())
         ccd_inter = 0
         for ext in range(1, n_hdu):
-            h_tmp = f_tmp._cat_data[ext].header
+            h_tmp = f_tmp._cat_data[ext].header.copy()
             stp.pv_to_sip(h_tmp)
             wcs_tmp = WCS(h_tmp)
             corner_tmp = wcs_tmp.calc_footprint().T
@@ -76,16 +116,18 @@ def get_history(coadd_path, image_path_list):
 @module_runner(version='1.0',
                file_pattern=['tile'],
                file_ext=['.txt'],
-               executes=['swarp'], depends=['numpy', 'astropy', 'sip_tpv'])
+               depends=['numpy', 'astropy', 'sip_tpv'])
 def swarp_runner(input_file_list, run_dirs, file_number_string,
                  config, w_log):
 
-    num = '-' + re.split('-', file_number_string)[1]
+    num = file_number_string
 
     exec_path = config.getexpanded("SWARP_RUNNER", "EXEC_PATH")
     dot_swarp = config.getexpanded("SWARP_RUNNER", "DOT_SWARP_FILE")
     image_prefix = config.get("SWARP_RUNNER", "IMAGE_PREFIX")
     weight_prefix = config.get("SWARP_RUNNER", "WEIGHT_PREFIX")
+    tmp_dir = config.get("SWARP_RUNNER", "TMP_DIR")
+    clear_tmp = config.getboolean("SWARP_RUNNER", "CLEAR_TMP")
 
     if config.has_option('SWARP_RUNNER', 'SUFFIX'):
         suffix = config.get('SWARP_RUNNER', 'SUFFIX')
@@ -103,29 +145,38 @@ def swarp_runner(input_file_list, run_dirs, file_number_string,
                                           output_weight_name)
 
     # Get center position
-    tmp = os.path.split(os.path.splitext(input_file_list[0])[0])[1]
-    tmp = re.split('_|-', tmp)
-    ra, dec = tmp[1], tmp[2]
+    # tmp = os.path.split(os.path.splitext(input_file_list[0])[0])[1]
+    # tmp = re.split('_|-', tmp)
+    # ra, dec = tmp[1], tmp[2]
+    tmp = re.findall('\d+', os.path.split(input_file_list[0])[1])
+    ra, dec = get_ra_dec(int(tmp[0]), int(tmp[1]))
 
     # Get weight list
+    new_image_list_path = tmp_dir + '/image_list{}.txt'.format(num)
+    new_image_list_file = open(new_image_list_path, 'w')
     image_file = open(input_file_list[0])
     image_list = image_file.readlines()
     image_file.close()
     weight_list = []
     for img_path in image_list:
+        new_path = prep_single_image(re.split('\n', img_path)[0], tmp_dir, num)
+        new_image_list_file.write(new_path + '\n')
         tmp = os.path.split(img_path)
         new_name = tmp[1].replace(image_prefix,
                                   weight_prefix).replace('\n', '')
         weight_list.append('/'.join([tmp[0], new_name]))
+    new_image_list_file.close()
 
     command_line = '{} @{} -c {}' \
                    ' -WEIGHT_IMAGE {}' \
                    ' -IMAGEOUT_NAME {} -WEIGHTOUT_NAME {}' \
                    ' -RESAMPLE_SUFFIX .resamp{}.fits ' \
                    ' -CENTER_TYPE MANUAL -CENTER {},{} ' \
-                   ''.format(exec_path, input_file_list[0], dot_swarp,
+                   ''.format(exec_path, new_image_list_path, dot_swarp,
                              ','.join(weight_list), output_image_path,
                              output_weight_path, num, ra, dec)
+
+    w_log.info(command_line)
 
     stderr, stdout = execute(command_line)
 
@@ -138,6 +189,16 @@ def swarp_runner(input_file_list, run_dirs, file_number_string,
         stderr2 = stdout
     if check_error2 == []:
         stderr2 = stdout
+
+    if clear_tmp:
+        new_image_list_file = open(new_image_list_path, 'r')
+        tmp_image_path = new_image_list_file.readlines()
+        new_image_list_file.close()
+        for image_path in tmp_image_path:
+            cmd_tmp = 'rm -f {}'.format(re.split('\n', image_path)[0])
+            _ = execute(cmd_tmp)
+        cmd_tmp = 'rm -f {}'.format(new_image_list_path)
+        _ = execute(cmd_tmp)
 
     get_history(output_image_path, image_list)
 
