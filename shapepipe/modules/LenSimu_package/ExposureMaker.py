@@ -30,6 +30,7 @@ class ExposureMaker(object):
 
         param_dict={'TELESCOPE': {'N_CCD': 40,
                                     'BACKGROUND_VALUE_KEY': 'IMMODE',
+                                    'PIXEL_SCALE_KEY': 'PIXSCAL1',
                                     'CCD_SIZE_X_KEY': 'NAXIS1',
                                     'CCD_SIZE_Y_KEY': 'NAXIS2',
                                     'MAG_ZP_KEY': 'PHOTZP',
@@ -115,7 +116,7 @@ class ExposureMaker(object):
 
         return self.gal_catalog[mask_gal], self.star_catalog[mask_star]
 
-    def running_func(self, ccd_number, seed):
+    def running_func(self, ccd_number, seed, seed_psf):
         """
         """
 
@@ -127,7 +128,8 @@ class ExposureMaker(object):
         ccd_obj = CCDMaker(ccd_number,
                            header,
                            self.param_dict,
-                           seed)
+                           seed,
+                           seed_psf)
         
         ccd_img, ccd_catalog, ccd_psf_catalog = ccd_obj.go(gal_catalog, star_catalog)
 
@@ -149,7 +151,7 @@ class ExposureMaker(object):
 
             seed = seed_ori + 10000*ccd_number
 
-            ccd_tmp, cat_tmp, psf_cat_tmp = self.running_func(ccd_number, seed)
+            ccd_tmp, cat_tmp, psf_cat_tmp = self.running_func(ccd_number, seed, seed_ori)
             single_exposure.append(ccd_tmp)
             single_exposure_cat.append(cat_tmp)
             single_exposure_psf_cat.append(psf_cat_tmp)

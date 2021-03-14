@@ -16,10 +16,12 @@ class CCDMaker(object):
 
     def __init__(self, ccd_number, header, 
                 param_dict,
-                seed):
+                seed,
+                seed_psf):
 
         self.param_dict = param_dict
         self.seed = seed
+        self.seed_psf = seed_psf
 
         self.ccd_number = ccd_number
         self.header = header
@@ -56,6 +58,12 @@ class CCDMaker(object):
         self.ccd_image.setOrigin(1,1)
         self.ccd_image.wcs = self.ccd_wcs
 
+        self.sky_image = galsim.ImageI(self.param_dict['ccd_size_x'],
+                                       self.param_dict['ccd_size_y'])
+        
+        self.sky_image.setOrigin(1,1)
+        self.sky_image.wcs = self.ccd_wcs
+
     def go(self, gal_catalog, star_catalog):
         """
         """
@@ -69,7 +77,7 @@ class CCDMaker(object):
         """
         """
 
-        _StarMaker = StarMaker(self.param_dict, self.seed)
+        _StarMaker = StarMaker(self.param_dict, self.seed_psf)
 
         final_catalog = {'id': [],
                          'mice_gal_id': [], 'mice_halo_id': [],
@@ -255,14 +263,17 @@ class CCDMaker(object):
         """
 
         sky_background = self.header[self.param_dict['TELESCOPE']['BACKGROUND_VALUE_KEY']]
-
+        # pixel_area = self.header[self.param_dict['TELESCOPE']['PIXEL_SCALE_KEY']]**2.
         # sky_background = 1
 
         noise = galsim.PoissonNoise(sky_level=sky_background, rng=self._ud)
 
-        self.ccd_image.addNoise(noise)
+        # self.ccd_wcs.makeSkyImage(self.sky_image, sky_background/pixel_area)
 
-        self.ccd_image += sky_background
+        # self.ccd_image += self.sky_image
+        # self.ccd_image += sky_background
+
+        self.ccd_image.addNoise(noise)
 
     def draw_stamp(self, galsim_obj, img_pos):
         """
