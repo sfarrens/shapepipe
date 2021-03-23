@@ -502,7 +502,8 @@ def save_psf_data(final_cat_file, galaxy_psf_path, w_log):
 def make_catalog_runner(input_file_list, run_dirs, file_number_string,
                         config, w_log):
 
-    tile_sexcat_path, sexcat_sm_path, galaxy_psf_path, shape1_cat_path = input_file_list[0:4]
+    #tile_sexcat_path, sexcat_sm_path, galaxy_psf_path, shape1_cat_path = input_file_list[0:4]
+    tile_sexcat_path, sexcat_sm_path = input_file_list[0:2]
     if len(input_file_list) == 5:
         shape2_cat_path = input_file_list[4]
 
@@ -520,10 +521,10 @@ def make_catalog_runner(input_file_list, run_dirs, file_number_string,
         if shape_type.lower() not in ["ngmix", "galsim"]:
             raise ValueError("SHAPE_MEASUREMENT_TYPE must be in [ngmix, galsim]")
 
-    if config.hasoption('MAKE_CATALOG_RUNNER', 'TILE_LIST'):
-        tile_list_path = config.getexpanded("MAKE_CATALOG_RUNNER", "TILE_LIST")
-    else:
-        tile_list_path = None
+    #if config.hasoption('MAKE_CATALOG_RUNNER', 'TILE_LIST'):
+    tile_list_path = config.getexpanded("MAKE_CATALOG_RUNNER", "TILE_LIST")
+    #else:
+    #    tile_list_path = None
 
     output_name = (run_dirs['output'] + '/final_cat' +
                    file_number_string + '.fits')
@@ -541,14 +542,14 @@ def make_catalog_runner(input_file_list, run_dirs, file_number_string,
         w_log.info('Flag overlapping objects')
         remove_common_elements(final_cat_file, tile_list_path)
 
-    w_log.info('Save shape measurement data')
-    for shape_type in shape_type_list:
-        if shape_type.lower() == "ngmix":
-            w_log.info('Save ngmix data')
-            save_ngmix_data(final_cat_file, shape1_cat_path)
-        elif shape_type.lower() == "galsim":
-            w_log.info('Save galsim data')
-            save_galsim_shapes(final_cat_file, shape2_cat_path)
+    #w_log.info('Save shape measurement data')
+    #for shape_type in shape_type_list:
+    #    if shape_type.lower() == "ngmix":
+    #        w_log.info('Save ngmix data')
+    #        save_ngmix_data(final_cat_file, shape1_cat_path)
+    #    elif shape_type.lower() == "galsim":
+    #        w_log.info('Save galsim data')
+    #        save_galsim_shapes(final_cat_file, shape2_cat_path)
 
     # PSF data from PSFExInterpol module: Very slow (sql -> numpy
     # transformation), and not required (ngmix has also PSF parameters)

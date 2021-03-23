@@ -52,17 +52,17 @@ class CCDMaker(object):
         """
         """
 
-        self.ccd_image = galsim.ImageI(self.param_dict['ccd_size_x'],
+        self.ccd_image = galsim.ImageD(self.param_dict['ccd_size_x'],
                                        self.param_dict['ccd_size_y'])
         
         self.ccd_image.setOrigin(1,1)
         self.ccd_image.wcs = self.ccd_wcs
 
-        self.sky_image = galsim.ImageI(self.param_dict['ccd_size_x'],
-                                       self.param_dict['ccd_size_y'])
+        #self.sky_image = galsim.ImageI(self.param_dict['ccd_size_x'],
+        #                               self.param_dict['ccd_size_y'])
         
-        self.sky_image.setOrigin(1,1)
-        self.sky_image.wcs = self.ccd_wcs
+        #self.sky_image.setOrigin(1,1)
+        #self.sky_image.wcs = self.ccd_wcs
 
     def go(self, gal_catalog, star_catalog):
         """
@@ -271,9 +271,10 @@ class CCDMaker(object):
         # self.ccd_wcs.makeSkyImage(self.sky_image, sky_background/pixel_area)
 
         # self.ccd_image += self.sky_image
-        # self.ccd_image += sky_background
+        self.ccd_image += sky_background
 
         self.ccd_image.addNoise(noise)
+        self.ccd_image.quantize()
 
     def draw_stamp(self, galsim_obj, img_pos):
         """

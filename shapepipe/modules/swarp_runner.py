@@ -54,8 +54,8 @@ def prep_single_image(image_path, tmp_dir, num):
     for i in range(40):
         tmp_header = ori_image[i+1].header
         # stp.sip_to_pv(tmp_header)
-        hdu_list.append(fits.CompImageHDU(ori_image[i+1].data-tmp_header['IMMODE'], header=tmp_header, name='CCD_{}'.format(i)))
-        # hdu_list.append(fits.CompImageHDU(ori_image[i+1].data, header=tmp_header, name='CCD_{}'.format(i)))
+        # hdu_list.append(fits.CompImageHDU(ori_image[i+1].data-tmp_header['IMMODE'], header=tmp_header, name='CCD_{}'.format(i)))
+        hdu_list.append(fits.CompImageHDU(ori_image[i+1].data, header=tmp_header, name='CCD_{}'.format(i)))
     hdu_list.writeto(new_image_path)
     
     return new_image_path
@@ -126,6 +126,8 @@ def swarp_runner(input_file_list, run_dirs, file_number_string,
     dot_swarp = config.getexpanded("SWARP_RUNNER", "DOT_SWARP_FILE")
     image_prefix = config.get("SWARP_RUNNER", "IMAGE_PREFIX")
     weight_prefix = config.get("SWARP_RUNNER", "WEIGHT_PREFIX")
+    bkg_sub_type = config.get("SWARP_RUNNER", "BKG_SUB_TYPE")
+    bkg_sub_value = config.get("SWARP_RUNNER", "BKG_SUB_VALUE")
     tmp_dir = config.get("SWARP_RUNNER", "TMP_DIR")
     clear_tmp = config.getboolean("SWARP_RUNNER", "CLEAR_TMP")
 
@@ -137,6 +139,18 @@ def swarp_runner(input_file_list, run_dirs, file_number_string,
             suffix = ''
     else:
         suffix = ''
+
+    if bkg_sub_type == "MANUAL":
+        try:
+            from_header= False
+            bkg_value = [str(float(bkg_sub_value))]
+        except:
+            from_header = True
+    elif bkg_sub_type == "AUTO":
+        from_header = False
+        bkg_values = ['0']
+    else:
+        raise ValueError("BKG_SUB_TYPE must be in [AUTO, MANUAL]")
 
     output_image_name = suffix + 'image{0}.fits'.format(num)
     output_weight_name = suffix + 'weight{0}.fits'.format(num)
@@ -152,31 +166,38 @@ def swarp_runner(input_file_list, run_dirs, file_number_string,
     ra, dec = get_ra_dec(int(tmp[0]), int(tmp[1]))
 
     # Get weight list
-    new_image_list_path = tmp_dir + '/image_list{}.txt'.format(num)
-    new_image_list_file = open(new_image_list_path, 'w')
+    #new_image_list_path = tmp_dir + '/image_list{}.txt'.format(num)
+    #new_image_list_file = open(new_image_list_path, 'w')
     image_file = open(input_file_list[0])
     image_list = image_file.readlines()
     image_file.close()
     weight_list = []
+    bkg_values = []
     for img_path in image_list:
-        new_path = prep_single_image(re.split('\n', img_path)[0], tmp_dir, num)
-        new_image_list_file.write(new_path + '\n')
+        #new_path = prep_single_image(re.split('\n', img_path)[0], tmp_dir, num)
+        #new_image_list_file.write(new_path + '\n')
         tmp = os.path.split(img_path)
         new_name = tmp[1].replace(image_prefix,
                                   weight_prefix).replace('\n', '')
         weight_list.append('/'.join([tmp[0], new_name]))
-    new_image_list_file.close()
+        if from_header:
+            h = fits.getheader(re.split('\n', img_path)[0], 1)
+            bkg_values.append(str(h[bkg_sub_value]))
+    # new_image_list_file.close()
 
     command_line = '{} @{} -c {}' \
                    ' -WEIGHT_IMAGE {}' \
                    ' -IMAGEOUT_NAME {} -WEIGHTOUT_NAME {}' \
-                   ' -RESAMPLE_SUFFIX .resamp{}.fits ' \
+                   ' -RESAMPLE_SUFFIX _resamp{}.fits ' \
                    ' -CENTER_TYPE MANUAL -CENTER {},{} ' \
-                   ''.format(exec_path, new_image_list_path, dot_swarp,
+                   ' -BACK_TYPE {} -BACK_DEFAULT {} ' \
+                   ''.format(exec_path, input_file_list[0], dot_swarp,
                              ','.join(weight_list), output_image_path,
-                             output_weight_path, num, ra, dec)
+                             output_weight_path, num, ra, dec,
+                             bkg_sub_type, ','.join(bkg_values))
 
     w_log.info(command_line)
+    print(command_line)
 
     stderr, stdout = execute(command_line)
 

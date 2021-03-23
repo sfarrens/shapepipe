@@ -162,12 +162,13 @@ def plot_meanshapes(starcat_path, output_path, nb_pixel, w_log,
         all_Y = all_Y[~bad_stars]
         flagmask = flagmask[~bad_stars]
 
-    w_log.info('TOTAL e1 residual RMSE: %.6e\n' % (
-        np.sqrt(np.mean((all_star_shapes[0, :] - all_psf_shapes[0, :]) ** 2))))
-    w_log.info('TOTAL e2 residual RMSE: %.6e\n' % (
-        np.sqrt(np.mean((all_star_shapes[1, :] - all_psf_shapes[1, :]) ** 2))))
-    w_log.info('TOTAL R2 residual RMSE: %.6e\n' % (
-        np.sqrt(np.mean((all_star_shapes[2, :] - all_psf_shapes[2, :]) ** 2))))
+    if not w_log is None:
+        w_log.info('TOTAL e1 residual RMSE: %.6e\n' % (
+            np.sqrt(np.mean((all_star_shapes[0, :] - all_psf_shapes[0, :]) ** 2))))
+        w_log.info('TOTAL e2 residual RMSE: %.6e\n' % (
+            np.sqrt(np.mean((all_star_shapes[1, :] - all_psf_shapes[1, :]) ** 2))))
+        w_log.info('TOTAL R2 residual RMSE: %.6e\n' % (
+            np.sqrt(np.mean((all_star_shapes[2, :] - all_psf_shapes[2, :]) ** 2))))
 
     # CCDs x star/model x (e1,e2,R2,nstars) x xpos x ypos
     ccd_maps = np.ones((40, 2, 4) + nb_pixel) * np.nan
@@ -229,7 +230,8 @@ def plot_meanshapes(starcat_path, output_path, nb_pixel, w_log,
         e1_res = ccd_maps[:, 0, 0] - ccd_maps[:, 1, 0]
         e1_res = e1_res[~np.isnan(e1_res)]
         rmse_e1 = np.sqrt(np.mean(e1_res ** 2))
-        w_log.info('Bins: e1 residual RMSE: %.6f\n' % rmse_e1)
+        if not w_log is None:
+            w_log.info('Bins: e1 residual RMSE: %.6f\n' % rmse_e1)
         vmax = np.nanmax(abs(ccd_maps[:, 0, 0] - ccd_maps[:, 1, 0]))
         vmin = -vmax
         wind = [vmin, vmax]
@@ -262,7 +264,8 @@ def plot_meanshapes(starcat_path, output_path, nb_pixel, w_log,
         e2_res = ccd_maps[:, 0, 1] - ccd_maps[:, 1, 1]
         e2_res = e2_res[~np.isnan(e2_res)]
         rmse_e2 = np.sqrt(np.mean(e2_res ** 2))
-        w_log.info('Bins: e2 residual RMSE: %.6f\n' % rmse_e2)
+        if not w_log is None:
+            w_log.info('Bins: e2 residual RMSE: %.6f\n' % rmse_e2)
         vmax = np.nanmax(abs(ccd_maps[:, 0, 1] - ccd_maps[:, 1, 1]))
         vmin = -vmax
         wind = [vmin, vmax]
@@ -297,7 +300,8 @@ def plot_meanshapes(starcat_path, output_path, nb_pixel, w_log,
         R2_res = (ccd_maps[:, 0, 2] - ccd_maps[:, 1, 2]) / ccd_maps[:, 0, 2]
         R2_res = R2_res[~np.isnan(R2_res)]
         rmse_r2 = np.sqrt(np.mean(R2_res ** 2))
-        w_log.info('Bins: R2 residual RMSE: %.6f\n' % rmse_r2)
+        if not w_log is None:
+            w_log.info('Bins: R2 residual RMSE: %.6f\n' % rmse_r2)
         vmax = np.nanmax(
             abs((ccd_maps[:, 0, 2] - ccd_maps[:, 1, 2]) / ccd_maps[:, 0, 2]))
         wind = [0, vmax]

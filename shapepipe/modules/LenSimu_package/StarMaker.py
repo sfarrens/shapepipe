@@ -17,6 +17,40 @@ import galsim
 from sqlitedict import SqliteDict
 
 
+def MegaCamFlip(xbins, ybins, ccd_nb, nb_pixel):
+    """ MegaCamFlip
+
+    Flip the CCDs to fit the MegaCam coordinates
+
+    Parameters
+    ----------
+    xbins : int
+        x position on the CCD
+     ybins : int
+         y position on the CCD
+    ccd_nb : int
+        CCD id
+    nb_pixel : list
+        Number of pixels on each axis [x_axis, y_axis]
+
+    Returns
+    -------
+    xbins : int
+        New x position on the CCD
+    ybins : int
+        New y position on the CCD
+
+    """
+
+    if ccd_nb < 18 or ccd_nb in [36,37]:
+        # swap x axis so origin is on top-right
+        xbins = nb_pixel[0] - xbins -1
+    else:
+        # swap y axis so origin is on bottom-left
+        ybins = nb_pixel[1] - ybins -1
+    return int(xbins), int(ybins)
+
+
 class seeing_distribution(object):
     """ Seeing distribution
 
@@ -148,10 +182,26 @@ class StarMaker(object):
         # Get ellipticity
         pos_x_msp = int((x-self.param_dict['TELESCOPE']['DATA_SEC'][0]) / self._mean_shape_plot['pix_size_x'])
         pos_y_msp = int((y-self.param_dict['TELESCOPE']['DATA_SEC'][2]) / self._mean_shape_plot['pix_size_y'])
-        g1 = self._e1_optic_array[ccd_number, pos_x_msp, pos_y_msp]
-        g2 = self._e2_optic_array[ccd_number, pos_x_msp, pos_y_msp]
+        x_pos_corrected, y_pos_corrected = MegaCamFlip(pos_x_msp, pos_y_msp, ccd_number,
+                                                       [self._mean_shape_plot['n_pix_x'],
+                                                        self._mean_shape_plot['n_pix_y']])
+        g1 = self._e1_optic_array[ccd_number, x_pos_corrected, y_pos_corrected]
+        g2 = self._e2_optic_array[ccd_number, x_pos_corrected, y_pos_corrected]
 
         # Final star
         star = star.shear(g1=g1, g2=g2)
 
         return star, g1, g2, self.atmo_fwhm
+
+    def _get_ccd_pos(self, ccd_n, x_pos, y_pos):
+        """
+        """
+
+        x_pos, y_pos = MegaCamFlip(x_pos, y_pos, ccd_n,
+                                   [self._mean_shape_plot['n_pix_x'],
+                                    self._mean_shape_plot['n_pix_y']])
+
+        x_img = np.mean([x_pos*self._mean_shape_plot['pix_size_x'], (x_pos+1)*self._mean_shape_plot['pix_size_x']])
+        y_img = np.mean([y_pos*self._mean_shape_plot['pix_size_y'], (y_pos+1)*self._mean_shape_plot['pix_size_y']])
+
+        return x_img, y_img

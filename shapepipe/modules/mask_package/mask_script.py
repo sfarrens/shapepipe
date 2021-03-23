@@ -55,6 +55,9 @@ class mask(object):
         self._output_dir = output_dir                                           # Path to the output directory
         self._path_external_flag = path_external_flag                           # Path to an external flag file
         self._outname_base = outname_base                                       # Output file base name
+        
+        self._CDS_stdout = ''
+        self._CDS_stderr = ''
 
         self._img_number = image_num
         if (image_suffix.lower() != 'none') & (image_suffix != ''):
@@ -770,6 +773,7 @@ class mask(object):
             external_flag = sc.FITSCatalog(path_external_flag, hdu_no=self._hdu)
             external_flag.open()
             if final_mask is not None:
+                final_mask = final_mask.astype(np.int16, copy=False)
                 final_mask += external_flag.get_data()[:, :]
             else:
                 final_mask = external_flag.get_data()[:, :]

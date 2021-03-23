@@ -92,7 +92,7 @@ def make_post_process(cat_path, f_wcs_path, pos_params, ccd_size):
             hist.append(i)
 
     exp_list = []
-    pattern = r'([0-9]*)p\.(.*)'
+    pattern = r'([0-9]*)\.(.*)'
     for i in hist:
         m = re.search(pattern, i)
         exp_list.append(m.group(1))
