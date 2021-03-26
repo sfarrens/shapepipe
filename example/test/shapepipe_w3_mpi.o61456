@@ -1,0 +1,274 @@
+
+-------------------------------------------------------------------------------
+[1m[36m
+ _______  __   __  _______  _______  _______  _______  ___   _______  _______
+|       ||  | |  ||   _   ||       ||       ||       ||   | |       ||       |
+|  _____||  |_|  ||  |_|  ||    _  ||    ___||    _  ||   | |    _  ||    ___|
+| |_____ |       ||       ||   |_| ||   |___ |   |_| ||   | |   |_| ||   |___
+|_____  ||       ||       ||    ___||    ___||    ___||   | |    ___||    ___|
+ _____| ||   _   ||   _   ||   |    |   |___ |   |    |   | |   |    |   |___
+|_______||__| |__||__| |__||___|    |_______||___|    |___| |___|    |_______|
+    [0m
+
+
+    Shape measurement pipeline developed at CosmoStat.
+
+    Authors: Samuel Farrens   <samuel.farrens@cea.fr>
+             Axel Guinot      <axel.guinot@cea.fr>
+
+    Main Contributors:
+             Martin Kilbinger
+             Tobias Liaudat
+             Morgan Schmitz
+
+    Version: 0.0.2
+
+-------------------------------------------------------------------------------
+    
+Starting ShapePipe Run: run_sp_exp_2020-08-17_15-34-16
+
+Checking Python Dependencies:
+ - numpy 1.19.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/numpy
+ - modopt 1.4.4 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/modopt
+ - sip_tpv 1.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sip_tpv
+ - mpi4py 3.0.3 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/mpi4py
+ - sqlitedict 1.6.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sqlitedict.py
+ - joblib 0.16.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/joblib
+ - astropy 4.0.1.post1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/astropy
+
+Checking System Executables:
+
+Checking Module Versions:
+ - split_exp_runner 1.0
+ - merge_headers_runner 1.0
+
+Running ShapePipe using mpi
+
+Starting job handler with:
+ - Module: split_exp_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 227
+ - Job Type: parallel
+ - Timeout Limit: 345600s
+ - process-2086592 PID: 239431 processing -2086592 ['/n17data/guinot/input_w3/input_single/image-2086592.fz']
+ - process-2086602 PID: 239432 processing -2086602 ['/n17data/guinot/input_w3/input_single/image-2086602.fz']
+ - process-2086586 PID: 239438 processing -2086586 ['/n17data/guinot/input_w3/input_single/image-2086586.fz']
+ - process-2086776 PID: 239433 processing -2086776 ['/n17data/guinot/input_w3/input_single/image-2086776.fz']
+ - process-2086782 PID: 239434 processing -2086782 ['/n17data/guinot/input_w3/input_single/image-2086782.fz']
+ - process-2113880 PID: 239435 processing -2113880 ['/n17data/guinot/input_w3/input_single/image-2113880.fz']
+ - process-2086777 PID: 239439 processing -2086777 ['/n17data/guinot/input_w3/input_single/image-2086777.fz']
+ - process-2091325 PID: 239442 processing -2091325 ['/n17data/guinot/input_w3/input_single/image-2091325.fz']
+ - process-2113606 PID: 239441 processing -2113606 ['/n17data/guinot/input_w3/input_single/image-2113606.fz']
+ - process-2113828 PID: 239451 processing -2113828 ['/n17data/guinot/input_w3/input_single/image-2113828.fz']
+ - process-2086274 PID: 239461 processing -2086274 ['/n17data/guinot/input_w3/input_single/image-2086274.fz']
+ - process-2086296 PID: 239437 processing -2086296 ['/n17data/guinot/input_w3/input_single/image-2086296.fz']
+ - process-2086770 PID: 239440 processing -2086770 ['/n17data/guinot/input_w3/input_single/image-2086770.fz']
+ - process-2086589 PID: 239444 processing -2086589 ['/n17data/guinot/input_w3/input_single/image-2086589.fz']
+ - process-2086773 PID: 239446 processing -2086773 ['/n17data/guinot/input_w3/input_single/image-2086773.fz']
+ - process-2086585 PID: 239449 processing -2086585 ['/n17data/guinot/input_w3/input_single/image-2086585.fz']
+ - process-2086273 PID: 239445 processing -2086273 ['/n17data/guinot/input_w3/input_single/image-2086273.fz']
+ - process-2086591 PID: 239452 processing -2086591 ['/n17data/guinot/input_w3/input_single/image-2086591.fz']
+ - process-2104273 PID: 239459 processing -2104273 ['/n17data/guinot/input_w3/input_single/image-2104273.fz']
+ - process-2086590 PID: 239455 processing -2086590 ['/n17data/guinot/input_w3/input_single/image-2086590.fz']
+ - process-2086781 PID: 239447 processing -2086781 ['/n17data/guinot/input_w3/input_single/image-2086781.fz']
+ - process-2086783 PID: 239436 processing -2086783 ['/n17data/guinot/input_w3/input_single/image-2086783.fz']
+ - process-2086746 PID: 239453 processing -2086746 ['/n17data/guinot/input_w3/input_single/image-2086746.fz']
+ - process-2086769 PID: 239450 processing -2086769 ['/n17data/guinot/input_w3/input_single/image-2086769.fz']
+ - process-2086272 PID: 239443 processing -2086272 ['/n17data/guinot/input_w3/input_single/image-2086272.fz']
+ - process-2120993 PID: 239470 processing -2120993 ['/n17data/guinot/input_w3/input_single/image-2120993.fz']
+ - process-2086780 PID: 239448 processing -2086780 ['/n17data/guinot/input_w3/input_single/image-2086780.fz']
+ - process-2079616 PID: 239454 processing -2079616 ['/n17data/guinot/input_w3/input_single/image-2079616.fz']
+ - process-2086747 PID: 239473 processing -2086747 ['/n17data/guinot/input_w3/input_single/image-2086747.fz']
+ - process-2104272 PID: 239457 processing -2104272 ['/n17data/guinot/input_w3/input_single/image-2104272.fz']
+ - process-2079617 PID: 239456 processing -2079617 ['/n17data/guinot/input_w3/input_single/image-2079617.fz']
+ - process-2105227 PID: 239468 processing -2105227 ['/n17data/guinot/input_w3/input_single/image-2105227.fz']
+ - process-2105603 PID: 239469 processing -2105603 ['/n17data/guinot/input_w3/input_single/image-2105603.fz']
+ - process-2079623 PID: 239474 processing -2079623 ['/n17data/guinot/input_w3/input_single/image-2079623.fz']
+ - process-2086766 PID: 239462 processing -2086766 ['/n17data/guinot/input_w3/input_single/image-2086766.fz']
+ - process-2099938 PID: 239466 processing -2099938 ['/n17data/guinot/input_w3/input_single/image-2099938.fz']
+ - process-2104130 PID: 239476 processing -2104130 ['/n17data/guinot/input_w3/input_single/image-2104130.fz']
+ - process-2086583 PID: 239463 processing -2086583 ['/n17data/guinot/input_w3/input_single/image-2086583.fz']
+ - process-2086767 PID: 239475 processing -2086767 ['/n17data/guinot/input_w3/input_single/image-2086767.fz']
+ - process-2086582 PID: 239460 processing -2086582 ['/n17data/guinot/input_w3/input_single/image-2086582.fz']
+ - process-2099931 PID: 239464 processing -2099931 ['/n17data/guinot/input_w3/input_single/image-2099931.fz']
+ - process-2105402 PID: 239458 processing -2105402 ['/n17data/guinot/input_w3/input_single/image-2105402.fz']
+ - process-2104131 PID: 239467 processing -2104131 ['/n17data/guinot/input_w3/input_single/image-2104131.fz']
+ - process-2105604 PID: 239477 processing -2105604 ['/n17data/guinot/input_w3/input_single/image-2105604.fz']
+ - process-2105829 PID: 239471 processing -2105829 ['/n17data/guinot/input_w3/input_single/image-2105829.fz']
+ - process-2099932 PID: 239465 processing -2099932 ['/n17data/guinot/input_w3/input_single/image-2099932.fz']
+ - process-2105393 PID: 244678 processing -2105393 ['/n17data/guinot/input_w3/input_single/image-2105393.fz']
+ - process-2104133 PID: 244664 processing -2104133 ['/n17data/guinot/input_w3/input_single/image-2104133.fz']
+ - process-2104139 PID: 244666 processing -2104139 ['/n17data/guinot/input_w3/input_single/image-2104139.fz']
+ - process-2105392 PID: 244675 processing -2105392 ['/n17data/guinot/input_w3/input_single/image-2105392.fz']
+ - process-2099953 PID: 244686 processing -2099953 ['/n17data/guinot/input_w3/input_single/image-2099953.fz']
+ - process-2106095 PID: 244681 processing -2106095 ['/n17data/guinot/input_w3/input_single/image-2106095.fz']
+ - process-2105225 PID: 244672 processing -2105225 ['/n17data/guinot/input_w3/input_single/image-2105225.fz']
+ - process-2105382 PID: 244673 processing -2105382 ['/n17data/guinot/input_w3/input_single/image-2105382.fz']
+ - process-2099940 PID: 244667 processing -2099940 ['/n17data/guinot/input_w3/input_single/image-2099940.fz']
+ - process-2104147 PID: 244680 processing -2104147 ['/n17data/guinot/input_w3/input_single/image-2104147.fz']
+ - process-2106096 PID: 244690 processing -2106096 ['/n17data/guinot/input_w3/input_single/image-2106096.fz']
+ - process-2105383 PID: 244682 processing -2105383 ['/n17data/guinot/input_w3/input_single/image-2105383.fz']
+ - process-2104146 PID: 244679 processing -2104146 ['/n17data/guinot/input_w3/input_single/image-2104146.fz']
+ - process-2099947 PID: 244677 processing -2099947 ['/n17data/guinot/input_w3/input_single/image-2099947.fz']
+ - process-2086760 PID: 244695 processing -2086760 ['/n17data/guinot/input_w3/input_single/image-2086760.fz']
+ - process-2079624 PID: 244685 processing -2079624 ['/n17data/guinot/input_w3/input_single/image-2079624.fz']
+ - process-2105395 PID: 244689 processing -2105395 ['/n17data/guinot/input_w3/input_single/image-2105395.fz']
+ - process-2105396 PID: 244699 processing -2105396 ['/n17data/guinot/input_w3/input_single/image-2105396.fz']
+ - process-2099939 PID: 239472 processing -2099939 ['/n17data/guinot/input_w3/input_single/image-2099939.fz']
+ - process-2086576 PID: 244684 processing -2086576 ['/n17data/guinot/input_w3/input_single/image-2086576.fz']
+ - process-2086577 PID: 244683 processing -2086577 ['/n17data/guinot/input_w3/input_single/image-2086577.fz']
+ - process-2086761 PID: 244687 processing -2086761 ['/n17data/guinot/input_w3/input_single/image-2086761.fz']
+ - process-2105231 PID: 244674 processing -2105231 ['/n17data/guinot/input_w3/input_single/image-2105231.fz']
+ - process-2086268 PID: 244691 processing -2086268 ['/n17data/guinot/input_w3/input_single/image-2086268.fz']
+ - process-2105224 PID: 244676 processing -2105224 ['/n17data/guinot/input_w3/input_single/image-2105224.fz']
+ - process-2086578 PID: 244692 processing -2086578 ['/n17data/guinot/input_w3/input_single/image-2086578.fz']
+ - process-2113873 PID: 244694 processing -2113873 ['/n17data/guinot/input_w3/input_single/image-2113873.fz']
+ - process-2086762 PID: 244693 processing -2086762 ['/n17data/guinot/input_w3/input_single/image-2086762.fz']
+ - process-2116298 PID: 244696 processing -2116298 ['/n17data/guinot/input_w3/input_single/image-2116298.fz']
+ - process-2105233 PID: 244688 processing -2105233 ['/n17data/guinot/input_w3/input_single/image-2105233.fz']
+ - process-2105589 PID: 244704 processing -2105589 ['/n17data/guinot/input_w3/input_single/image-2105589.fz']
+ - process-2105385 PID: 244702 processing -2105385 ['/n17data/guinot/input_w3/input_single/image-2105385.fz']
+ - process-2086594 PID: 244706 processing -2086594 ['/n17data/guinot/input_w3/input_single/image-2086594.fz']
+ - process-2086772 PID: 244707 processing -2086772 ['/n17data/guinot/input_w3/input_single/image-2086772.fz']
+ - process-2086584 PID: 244705 processing -2086584 ['/n17data/guinot/input_w3/input_single/image-2086584.fz']
+ - process-2086588 PID: 244711 processing -2086588 ['/n17data/guinot/input_w3/input_single/image-2086588.fz']
+ - process-2086768 PID: 244703 processing -2086768 ['/n17data/guinot/input_w3/input_single/image-2086768.fz']
+ - process-2105384 PID: 244710 processing -2105384 ['/n17data/guinot/input_w3/input_single/image-2105384.fz']
+ - process-2104127 PID: 244670 processing -2104127 ['/n17data/guinot/input_w3/input_single/image-2104127.fz']
+ - process-2105226 PID: 244700 processing -2105226 ['/n17data/guinot/input_w3/input_single/image-2105226.fz']
+ - process-2086595 PID: 244709 processing -2086595 ['/n17data/guinot/input_w3/input_single/image-2086595.fz']
+ - process-2104122 PID: 244697 processing -2104122 ['/n17data/guinot/input_w3/input_single/image-2104122.fz']
+ - process-2104129 PID: 244698 processing -2104129 ['/n17data/guinot/input_w3/input_single/image-2104129.fz']
+ - process-2105220 PID: 244701 processing -2105220 ['/n17data/guinot/input_w3/input_single/image-2105220.fz']
+ - process-2104123 PID: 244708 processing -2104123 ['/n17data/guinot/input_w3/input_single/image-2104123.fz']
+ - process-2106089 PID: 244668 processing -2106089 ['/n17data/guinot/input_w3/input_single/image-2106089.fz']
+ - process-2105831 PID: 244671 processing -2105831 ['/n17data/guinot/input_w3/input_single/image-2105831.fz']
+ - process-2104128 PID: 244669 processing -2104128 ['/n17data/guinot/input_w3/input_single/image-2104128.fz']
+ - process-2105830 PID: 244665 processing -2105830 ['/n17data/guinot/input_w3/input_single/image-2105830.fz']
+ - process-2086779 PID: 99743 processing -2086779 ['/n17data/guinot/input_w3/input_single/image-2086779.fz']
+ - process-2086792 PID: 99744 processing -2086792 ['/n17data/guinot/input_w3/input_single/image-2086792.fz']
+ - process-2086793 PID: 99745 processing -2086793 ['/n17data/guinot/input_w3/input_single/image-2086793.fz']
+ - process-2105232 PID: 99760 processing -2105232 ['/n17data/guinot/input_w3/input_single/image-2105232.fz']
+ - process-2086587 PID: 99748 processing -2086587 ['/n17data/guinot/input_w3/input_single/image-2086587.fz']
+ - process-2099946 PID: 99746 processing -2099946 ['/n17data/guinot/input_w3/input_single/image-2099946.fz']
+ - process-2086791 PID: 99753 processing -2086791 ['/n17data/guinot/input_w3/input_single/image-2086791.fz']
+ - process-2105401 PID: 99756 processing -2105401 ['/n17data/guinot/input_w3/input_single/image-2105401.fz']
+ - process-2086778 PID: 99752 processing -2086778 ['/n17data/guinot/input_w3/input_single/image-2086778.fz']
+ - process-2086759 PID: 99755 processing -2086759 ['/n17data/guinot/input_w3/input_single/image-2086759.fz']
+ - process-2104532 PID: 99758 processing -2104532 ['/n17data/guinot/input_w3/input_single/image-2104532.fz']
+ - process-2086771 PID: 99751 processing -2086771 ['/n17data/guinot/input_w3/input_single/image-2086771.fz']
+ - process-2086575 PID: 99754 processing -2086575 ['/n17data/guinot/input_w3/input_single/image-2086575.fz']
+ - process-2086271 PID: 99747 processing -2086271 ['/n17data/guinot/input_w3/input_single/image-2086271.fz']
+ - process-2105394 PID: 99761 processing -2105394 ['/n17data/guinot/input_w3/input_single/image-2105394.fz']
+ - process-2086593 PID: 99750 processing -2086593 ['/n17data/guinot/input_w3/input_single/image-2086593.fz']
+ - process-2099945 PID: 99757 processing -2099945 ['/n17data/guinot/input_w3/input_single/image-2099945.fz']
+ - process-2086796 PID: 99765 processing -2086796 ['/n17data/guinot/input_w3/input_single/image-2086796.fz']
+ - process-2099952 PID: 99749 processing -2099952 ['/n17data/guinot/input_w3/input_single/image-2099952.fz']
+ - process-2079622 PID: 99762 processing -2079622 ['/n17data/guinot/input_w3/input_single/image-2079622.fz']
+ - process-2106094 PID: 99759 processing -2106094 ['/n17data/guinot/input_w3/input_single/image-2106094.fz']
+ - process-2086598 PID: 99764 processing -2086598 ['/n17data/guinot/input_w3/input_single/image-2086598.fz']
+ - process-2099948 PID: 99766 processing -2099948 ['/n17data/guinot/input_w3/input_single/image-2099948.fz']
+ - process-2104148 PID: 99768 processing -2104148 ['/n17data/guinot/input_w3/input_single/image-2104148.fz']
+ - process-2079618 PID: 99769 processing -2079618 ['/n17data/guinot/input_w3/input_single/image-2079618.fz']
+ - process-2086755 PID: 99772 processing -2086755 ['/n17data/guinot/input_w3/input_single/image-2086755.fz']
+ - process-2086599 PID: 99763 processing -2086599 ['/n17data/guinot/input_w3/input_single/image-2086599.fz']
+ - process-2086748 PID: 99771 processing -2086748 ['/n17data/guinot/input_w3/input_single/image-2086748.fz']
+ - process-2106097 PID: 99773 processing -2106097 ['/n17data/guinot/input_w3/input_single/image-2106097.fz']
+ - process-2099954 PID: 99767 processing -2099954 ['/n17data/guinot/input_w3/input_single/image-2099954.fz']
+ - process-2105403 PID: 99770 processing -2105403 ['/n17data/guinot/input_w3/input_single/image-2105403.fz']
+ - process-2104540 PID: 99775 processing -2104540 ['/n17data/guinot/input_w3/input_single/image-2104540.fz']
+ - process-2086287 PID: 99785 processing -2086287 ['/n17data/guinot/input_w3/input_single/image-2086287.fz']
+ - process-2079613 PID: 99776 processing -2079613 ['/n17data/guinot/input_w3/input_single/image-2079613.fz']
+ - process-2086610 PID: 99786 processing -2086610 ['/n17data/guinot/input_w3/input_single/image-2086610.fz']
+ - process-2086757 PID: 99782 processing -2086757 ['/n17data/guinot/input_w3/input_single/image-2086757.fz']
+ - process-2105606 PID: 99788 processing -2105606 ['/n17data/guinot/input_w3/input_single/image-2105606.fz']
+ - process-2086573 PID: 99780 processing -2086573 ['/n17data/guinot/input_w3/input_single/image-2086573.fz']
+ - process-2105607 PID: 99790 processing -2105607 ['/n17data/guinot/input_w3/input_single/image-2105607.fz']
+ - process-2106087 PID: 99774 processing -2106087 ['/n17data/guinot/input_w3/input_single/image-2106087.fz']
+ - process-2086574 PID: 99781 processing -2086574 ['/n17data/guinot/input_w3/input_single/image-2086574.fz']
+ - process-2104271 PID: 262836 processing -2104271 ['/n17data/guinot/input_w3/input_single/image-2104271.fz']
+ - process-2106090 PID: 262838 processing -2106090 ['/n17data/guinot/input_w3/input_single/image-2106090.fz']
+ - process-2086764 PID: 262840 processing -2086764 ['/n17data/guinot/input_w3/input_single/image-2086764.fz']
+ - process-2113874 PID: 262842 processing -2113874 ['/n17data/guinot/input_w3/input_single/image-2113874.fz']
+ - process-2116299 PID: 262844 processing -2116299 ['/n17data/guinot/input_w3/input_single/image-2116299.fz']
+ - process-2105832 PID: 262830 processing -2105832 ['/n17data/guinot/input_w3/input_single/image-2105832.fz']
+ - process-2086269 PID: 262831 processing -2086269 ['/n17data/guinot/input_w3/input_single/image-2086269.fz']
+ - process-2086581 PID: 262834 processing -2086581 ['/n17data/guinot/input_w3/input_single/image-2086581.fz']
+ - process-2104140 PID: 262837 processing -2104140 ['/n17data/guinot/input_w3/input_single/image-2104140.fz']
+ - process-2105590 PID: 262841 processing -2105590 ['/n17data/guinot/input_w3/input_single/image-2105590.fz']
+ - process-2086765 PID: 262835 processing -2086765 ['/n17data/guinot/input_w3/input_single/image-2086765.fz']
+ - process-2105219 PID: 262833 processing -2105219 ['/n17data/guinot/input_w3/input_single/image-2105219.fz']
+ - process-2114066 PID: 262843 processing -2114066 ['/n17data/guinot/input_w3/input_single/image-2114066.fz']
+ - process-2079614 PID: 99777 processing -2079614 ['/n17data/guinot/input_w3/input_single/image-2079614.fz']
+ - process-2079620 PID: 99779 processing -2079620 ['/n17data/guinot/input_w3/input_single/image-2079620.fz']
+ - process-2099934 PID: 99789 processing -2099934 ['/n17data/guinot/input_w3/input_single/image-2099934.fz']
+ - process-2086758 PID: 99783 processing -2086758 ['/n17data/guinot/input_w3/input_single/image-2086758.fz']
+ - process-2079615 PID: 99784 processing -2079615 ['/n17data/guinot/input_w3/input_single/image-2079615.fz']
+ - process-2079621 PID: 99778 processing -2079621 ['/n17data/guinot/input_w3/input_single/image-2079621.fz']
+ - process-2086745 PID: 262845 processing -2086745 ['/n17data/guinot/input_w3/input_single/image-2086745.fz']
+ - process-2104134 PID: 99787 processing -2104134 ['/n17data/guinot/input_w3/input_single/image-2104134.fz']
+ - process-2086270 PID: 262832 processing -2086270 ['/n17data/guinot/input_w3/input_single/image-2086270.fz']
+ - process-2086580 PID: 262839 processing -2086580 ['/n17data/guinot/input_w3/input_single/image-2086580.fz']
+ - process-2104141 PID: 262849 processing -2104141 ['/n17data/guinot/input_w3/input_single/image-2104141.fz']
+ - process-2105400 PID: 262846 processing -2105400 ['/n17data/guinot/input_w3/input_single/image-2105400.fz']
+ - process-2099942 PID: 262848 processing -2099942 ['/n17data/guinot/input_w3/input_single/image-2099942.fz']
+ - process-2099941 PID: 262847 processing -2099941 ['/n17data/guinot/input_w3/input_single/image-2099941.fz']
+ - process-2106091 PID: 262850 processing -2106091 ['/n17data/guinot/input_w3/input_single/image-2106091.fz']
+ - process-2086744 PID: 272353 processing -2086744 ['/n17data/guinot/input_w3/input_single/image-2086744.fz']
+ - process-2104270 PID: 272356 processing -2104270 ['/n17data/guinot/input_w3/input_single/image-2104270.fz']
+ - process-2086794 PID: 272354 processing -2086794 ['/n17data/guinot/input_w3/input_single/image-2086794.fz']
+ - process-2104269 PID: 272359 processing -2104269 ['/n17data/guinot/input_w3/input_single/image-2104269.fz']
+ - process-2105230 PID: 272357 processing -2105230 ['/n17data/guinot/input_w3/input_single/image-2105230.fz']
+ - process-2105399 PID: 272358 processing -2105399 ['/n17data/guinot/input_w3/input_single/image-2105399.fz']
+ - process-2086596 PID: 272352 processing -2086596 ['/n17data/guinot/input_w3/input_single/image-2086596.fz']
+ - process-2086285 PID: 272355 processing -2086285 ['/n17data/guinot/input_w3/input_single/image-2086285.fz']
+ - process-2099935 PID: 272365 processing -2099935 ['/n17data/guinot/input_w3/input_single/image-2099935.fz']
+ - process-2099936 PID: 272372 processing -2099936 ['/n17data/guinot/input_w3/input_single/image-2099936.fz']
+ - process-2079619 PID: 272360 processing -2079619 ['/n17data/guinot/input_w3/input_single/image-2079619.fz']
+ - process-2086763 PID: 272362 processing -2086763 ['/n17data/guinot/input_w3/input_single/image-2086763.fz']
+ - process-2086774 PID: 272368 processing -2086774 ['/n17data/guinot/input_w3/input_single/image-2086774.fz']
+ - process-2105833 PID: 272376 processing -2105833 ['/n17data/guinot/input_w3/input_single/image-2105833.fz']
+ - process-2086579 PID: 272361 processing -2086579 ['/n17data/guinot/input_w3/input_single/image-2086579.fz']
+ - process-2086597 PID: 272364 processing -2086597 ['/n17data/guinot/input_w3/input_single/image-2086597.fz']
+ - process-2105398 PID: 272363 processing -2105398 ['/n17data/guinot/input_w3/input_single/image-2105398.fz']
+ - process-2086275 PID: 239430 processing -2086275 ['/n17data/guinot/input_w3/input_single/image-2086275.fz']
+ - process-2086795 PID: 272366 processing -2086795 ['/n17data/guinot/input_w3/input_single/image-2086795.fz']
+ - process-2105608 PID: 272369 processing -2105608 ['/n17data/guinot/input_w3/input_single/image-2105608.fz']
+ - process-2159176 PID: 272373 processing -2159176 ['/n17data/guinot/input_w3/input_single/image-2159176.fz']
+ - process-2120994 PID: 272375 processing -2120994 ['/n17data/guinot/input_w3/input_single/image-2120994.fz']
+ - process-2104135 PID: 272367 processing -2104135 ['/n17data/guinot/input_w3/input_single/image-2104135.fz']
+ - process-2114073 PID: 272370 processing -2114073 ['/n17data/guinot/input_w3/input_single/image-2114073.fz']
+ - process-2086606 PID: 272380 processing -2086606 ['/n17data/guinot/input_w3/input_single/image-2086606.fz']
+ - process-2086284 PID: 272377 processing -2086284 ['/n17data/guinot/input_w3/input_single/image-2086284.fz']
+ - process-2104136 PID: 272371 processing -2104136 ['/n17data/guinot/input_w3/input_single/image-2104136.fz']
+ - process-2105218 PID: 272390 processing -2105218 ['/n17data/guinot/input_w3/input_single/image-2105218.fz']
+ - process-2159706 PID: 272384 processing -2159706 ['/n17data/guinot/input_w3/input_single/image-2159706.fz']
+ - process-2086607 PID: 272379 processing -2086607 ['/n17data/guinot/input_w3/input_single/image-2086607.fz']
+ - process-2086283 PID: 272382 processing -2086283 ['/n17data/guinot/input_w3/input_single/image-2086283.fz']
+ - process-2104120 PID: 272386 processing -2104120 ['/n17data/guinot/input_w3/input_single/image-2104120.fz']
+ - process-2159710 PID: 272374 processing -2159710 ['/n17data/guinot/input_w3/input_single/image-2159710.fz']
+ - process-2159707 PID: 272385 processing -2159707 ['/n17data/guinot/input_w3/input_single/image-2159707.fz']
+ - process-2086604 PID: 272381 processing -2086604 ['/n17data/guinot/input_w3/input_single/image-2086604.fz']
+ - process-2104126 PID: 272388 processing -2104126 ['/n17data/guinot/input_w3/input_single/image-2104126.fz']
+ - process-2104121 PID: 272387 processing -2104121 ['/n17data/guinot/input_w3/input_single/image-2104121.fz']
+ - process-2159709 PID: 272378 processing -2159709 ['/n17data/guinot/input_w3/input_single/image-2159709.fz']
+ - process-2105223 PID: 272391 processing -2105223 ['/n17data/guinot/input_w3/input_single/image-2105223.fz']
+ - process-2086289 PID: 272396 processing -2086289 ['/n17data/guinot/input_w3/input_single/image-2086289.fz']
+ - process-2086603 PID: 272383 processing -2086603 ['/n17data/guinot/input_w3/input_single/image-2086603.fz']
+ - process-2086797 PID: 272395 processing -2086797 ['/n17data/guinot/input_w3/input_single/image-2086797.fz']
+ - process-2114067 PID: 272398 processing -2114067 ['/n17data/guinot/input_w3/input_single/image-2114067.fz']
+ - process-2105217 PID: 272389 processing -2105217 ['/n17data/guinot/input_w3/input_single/image-2105217.fz']
+ - process-2105591 PID: 272397 processing -2105591 ['/n17data/guinot/input_w3/input_single/image-2105591.fz']
+ - process-2105381 PID: 272392 processing -2105381 ['/n17data/guinot/input_w3/input_single/image-2105381.fz']
+ - process-2159708 PID: 272394 processing -2159708 ['/n17data/guinot/input_w3/input_single/image-2159708.fz']
+ - process-2086605 PID: 272393 processing -2086605 ['/n17data/guinot/input_w3/input_single/image-2086605.fz']
+ - process-2116300 PID: 272399 processing -2116300 ['/n17data/guinot/input_w3/input_single/image-2116300.fz']
+* JOBID: 61456.cmaster
+* USER: guinot
+* GROUP: guinot
+* JOBNAME: shapepipe_w3_mpi
+* SESSIONID: 239322
+* RESOURCESLIST: neednodes=n01:ppn=48+n02:ppn=48+n03:ppn=48+n08:ppn=21+n09:ppn=48,nodes=n01:ppn=48+n02:ppn=48+n03:ppn=48+n08:ppn=21+n09:ppn=48,walltime=48:00:00
+* RESOURCESUSED: cput=00:09:34,mem=9474968kb,vmem=79142676kb,walltime=00:00:42
+* QUEUE: batch
+* JOB EXIT STATUS: 271

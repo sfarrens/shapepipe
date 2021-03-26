@@ -1,0 +1,5 @@
+/var/spool/torque/mom_priv/jobs/61454.cmaster.SC: line 5: [DEFAULT]: command not found
+/var/spool/torque/mom_priv/jobs/61454.cmaster.SC: line 8: VERBOSE: command not found
+/var/spool/torque/mom_priv/jobs/61454.cmaster.SC: line 11: RUN_NAME: command not found
+/var/spool/torque/mom_priv/jobs/61454.cmaster.SC: line 14: syntax error near unexpected token `;'
+/var/spool/torque/mom_priv/jobs/61454.cmaster.SC: line 14: `; RUN_DATETIME = False'
