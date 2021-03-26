@@ -1,0 +1,40 @@
+Traceback (most recent call last):
+  File "shapepipe_run.py", line 408, in main
+    pipe = ShapePipe()
+  File "shapepipe_run.py", line 46, in __init__
+    self.filehd = FileHandler(self._run_name, self.modules, self.config)
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe/pipeline/file_handler.py", line 93, in __init__
+    self.module_runners = get_module_runners(self._module_list)
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe/modules/module_runners.py", line 35, in get_module_runners
+    for module in modules])
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe/modules/module_runners.py", line 35, in <listcomp>
+    for module in modules])
+  File "/home/guinot/.conda/envs/shapepipe_github/lib/python3.7/importlib/__init__.py", line 127, in import_module
+    return _bootstrap._gcd_import(name[level:], package, level)
+  File "<frozen importlib._bootstrap>", line 1006, in _gcd_import
+  File "<frozen importlib._bootstrap>", line 983, in _find_and_load
+  File "<frozen importlib._bootstrap>", line 967, in _find_and_load_unlocked
+  File "<frozen importlib._bootstrap>", line 677, in _load_unlocked
+  File "<frozen importlib._bootstrap_external>", line 728, in exec_module
+  File "<frozen importlib._bootstrap>", line 219, in _call_with_frames_removed
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe/modules/merge_headers_runner.py", line 17, in <module>
+    from sqlitedict import SqliteDict
+ModuleNotFoundError: No module named 'sqlitedict'
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "shapepipe_run.py", line 432, in <module>
+    sys.exit(main())
+  File "shapepipe_run.py", line 427, in main
+    catch_error(err, pipe.log)
+UnboundLocalError: local variable 'pipe' referenced before assignment
+* JOBID: 61453.cmaster
+* USER: guinot
+* GROUP: guinot
+* JOBNAME: shapepipe_w3_mpi
+* SESSIONID: 238492
+* RESOURCESLIST: neednodes=n01:ppn=48+n02:ppn=48+n03:ppn=48+n08:ppn=21+n09:ppn=48,nodes=n01:ppn=48+n02:ppn=48+n03:ppn=48+n08:ppn=21+n09:ppn=48,walltime=48:00:00
+* RESOURCESUSED: cput=00:30:35,mem=5321320kb,vmem=40015112kb,walltime=00:00:46
+* QUEUE: batch
+* JOB EXIT STATUS: 271

@@ -1,0 +1,1370 @@
+
+-------------------------------------------------------------------------------
+[1m[36m
+ _______  __   __  _______  _______  _______  _______  ___   _______  _______
+|       ||  | |  ||   _   ||       ||       ||       ||   | |       ||       |
+|  _____||  |_|  ||  |_|  ||    _  ||    ___||    _  ||   | |    _  ||    ___|
+| |_____ |       ||       ||   |_| ||   |___ |   |_| ||   | |   |_| ||   |___
+|_____  ||       ||       ||    ___||    ___||    ___||   | |    ___||    ___|
+ _____| ||   _   ||   _   ||   |    |   |___ |   |    |   | |   |    |   |___
+|_______||__| |__||__| |__||___|    |_______||___|    |___| |___|    |_______|
+    [0m
+
+
+    Shape measurement pipeline developed at CosmoStat.
+
+    Authors: Samuel Farrens   <samuel.farrens@cea.fr>
+             Axel Guinot      <axel.guinot@cea.fr>
+
+    Main Contributors:
+             Martin Kilbinger
+             Tobias Liaudat
+             Morgan Schmitz
+
+    Version: 0.0.2
+
+-------------------------------------------------------------------------------
+    
+Starting ShapePipe Run: run_sp_MaSxPsViSmVi_2021-03-23_18-19-08
+
+Checking Python Dependencies:
+ - numpy 1.19.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/numpy
+ - sqlitedict 1.6.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sqlitedict.py
+ - sf_tools 2.0.4 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sf_tools
+ - joblib 0.16.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/joblib
+ - galsim 2.2.4 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/galsim
+ - astropy 4.0.1.post1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/astropy
+ - modopt 1.4.4 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/modopt
+ - mpi4py 3.0.3 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/mpi4py
+
+Checking System Executables:
+ - ww /home/guinot/.conda/envs/shapepipe_github/bin/ww
+ - findgsc2.2 /home/guinot/.conda/envs/shapepipe_github/bin/findgsc2.2
+ - sex /home/guinot/.conda/envs/shapepipe_github/bin/sex
+
+Checking Module Versions:
+ - mask_runner 1.0
+ - sextractor_runner 1.0.1
+ - psfex_interp_runner 1.0
+ - vignetmaker_runner 0.0
+ - spread_model_runner 1.0
+ - vignetmaker_runner2 0.0
+
+Running ShapePipe using smp
+
+Starting job handler with:
+ - Module: mask_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+ - process-236-293 PID: 11851 
+ - process-247-288 PID: 11851 
+ - process-256-287 PID: 11851 
+ - process-266-286 PID: 11851 
+ - process-232-294 PID: 11851 
+ - process-240-290 PID: 11851 
+ - process-249-291 PID: 11851 
+ - process-260-287 PID: 11851 
+ - process-274-282 PID: 11851 
+ - process-243-292 PID: 11851 processing -243-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-292.fits']
+ - process-236-294 PID: 11851 processing -236-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-294.fits']
+ - process-265-282 PID: 11851 processing -265-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-282.fits']
+ - process-262-287 PID: 11851 processing -262-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-287.fits']
+ - process-232-295 PID: 11851 
+ - process-244-289 PID: 11851 
+ - process-248-291 PID: 11851 
+ - process-252-290 PID: 11851 
+ - process-258-287 PID: 11851 
+ - process-265-282 PID: 11851 
+ - process-228-295 PID: 11851 
+ - process-245-292 PID: 11851 
+ - process-251-290 PID: 11851 
+ - process-261-286 PID: 11851 
+ - process-272-284 PID: 11851 
+ - process-235-294 PID: 11851 processing -235-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-294.fits']
+All processes complete
+
+Starting job handler with:
+ - Module: sextractor_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+All processes complete
+
+Starting job handler with:
+ - Module: psfex_interp_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+All processes complete
+
+Starting job handler with:
+ - Module: vignetmaker_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+All processes complete
+
+Starting job handler with:
+ - Module: spread_model_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+All processes complete
+
+Starting job handler with:
+ - Module: vignetmaker_runner2
+ - Number of available CPUs: 48
+ - Total number of processes: 208
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+ - process-234-295 PID: 11845 
+ - process-242-293 PID: 11845 
+ - process-252-289 PID: 11845 
+ - process-262-286 PID: 11845 
+ - process-277-282 PID: 11845 
+ - process-239-292 PID: 11845 
+ - process-247-289 PID: 11845 
+ - process-257-284 PID: 11845 
+ - process-267-285 PID: 11845 
+ - process-232-295 PID: 11845 processing -232-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-295.fits']
+ - process-255-285 PID: 11845 processing -255-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-285.fits']
+ - process-269-285 PID: 11845 processing -269-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-285.fits']
+ - process-248-289 PID: 11845 processing -248-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-289.fits']
+ - process-265-285 PID: 11845 processing -265-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-285.fits']
+ - process-236-293 PID: 11845 
+ - process-241-293 PID: 11845 
+ - process-246-290 PID: 11845 
+ - process-250-291 PID: 11845 
+ - process-255-287 PID: 11845 
+ - process-262-286 PID: 11845 
+ - process-268-284 PID: 11845 
+ - process-231-294 PID: 11845 
+ - process-244-292 PID: 11845 
+ - process-258-285 PID: 11845 
+ - process-269-282 PID: 11845 
+ - process-229-294 PID: 11845 processing -229-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-229-294.fits']
+ - process-235-293 PID: 11847 
+ - process-245-292 PID: 11847 
+ - process-255-287 PID: 11847 
+ - process-265-286 PID: 11847 
+ - process-231-293 PID: 11847 
+ - process-249-287 PID: 11847 
+ - process-258-288 PID: 11847 
+ - process-269-284 PID: 11847 
+ - process-241-291 PID: 11847 processing -241-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-291.fits']
+ - process-237-295 PID: 11847 processing -237-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-295.fits']
+ - process-271-284 PID: 11847 processing -271-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-284.fits']
+ - process-257-287 PID: 11847 processing -257-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-287.fits']
+ - process-233-295 PID: 11847 
+ - process-240-291 PID: 11847 
+ - process-252-289 PID: 11847 
+ - process-258-285 PID: 11847 
+ - process-264-285 PID: 11847 
+ - process-227-295 PID: 11847 
+ - process-244-290 PID: 11847 
+ - process-251-286 PID: 11847 
+ - process-259-288 PID: 11847 
+ - process-273-283 PID: 11847 
+ - process-233-292 PID: 11847 processing -233-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-292.fits']
+ - process-238-293 PID: 11861 
+ - process-243-293 PID: 11861 
+ - process-253-289 PID: 11861 
+ - process-263-286 PID: 11861 
+ - process-227-294 PID: 11861 
+ - process-240-291 PID: 11861 
+ - process-255-285 PID: 11861 
+ - process-267-283 PID: 11861 
+ - process-256-286 PID: 11861 processing -256-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-286.fits']
+ - process-259-284 PID: 11861 processing -259-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-284.fits']
+ - process-267-284 PID: 11861 processing -267-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-284.fits']
+ - process-258-284 PID: 11861 processing -258-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-284.fits']
+ - process-266-284 PID: 11861 processing -266-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-284.fits']
+ - process-236-295 PID: 11861 
+ - process-238-294 PID: 11861 
+ - process-249-288 PID: 11861 
+ - process-254-287 PID: 11861 
+ - process-263-286 PID: 11861 
+ - process-251-287 PID: 11861 processing -251-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-287.fits']
+ - process-226-295 PID: 11776 
+ - process-240-291 PID: 11776 
+ - process-250-287 PID: 11776 
+ - process-259-287 PID: 11776 
+ - process-271-282 PID: 11776 
+ - process-236-294 PID: 11776 
+ - process-241-292 PID: 11776 
+ - process-252-286 PID: 11776 
+ - process-260-285 PID: 11776 
+ - process-272-283 PID: 11776 
+ - process-235-293 PID: 11776 processing -235-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-293.fits']
+ - process-242-290 PID: 11776 processing -242-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-290.fits']
+ - process-255-287 PID: 11776 processing -255-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-287.fits']
+ - process-244-291 PID: 11776 processing -244-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-291.fits']
+ - process-266-285 PID: 11776 processing -266-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-285.fits']
+ - process-237-293 PID: 11776 
+ - process-269-285 PID: 11776 
+ - process-234-293 PID: 11776 
+ - process-245-291 PID: 11776 
+ - process-255-286 PID: 11776 
+ - process-262-286 PID: 11776 
+ - process-228-294 PID: 11776 processing -228-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-228-294.fits']
+ - process-224-295 PID: 11773 
+ - process-239-294 PID: 11773 
+ - process-249-291 PID: 11773 
+ - process-259-286 PID: 11773 
+ - process-270-284 PID: 11773 
+ - process-236-293 PID: 11773 
+ - process-245-288 PID: 11773 
+ - process-251-289 PID: 11773 
+ - process-262-284 PID: 11773 
+ - process-272-284 PID: 11773 
+ - process-225-295 PID: 11773 processing -225-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-225-295.fits']
+ - process-250-290 PID: 11773 processing -250-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-290.fits']
+ - process-265-284 PID: 11773 processing -265-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-284.fits']
+ - process-252-287 PID: 11773 processing -252-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-287.fits']
+ - process-264-283 PID: 11773 processing -264-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-283.fits']
+ - process-238-293 PID: 11773 
+ - process-240-294 PID: 11773 
+ - process-245-292 PID: 11773 
+ - process-249-290 PID: 11773 
+ - process-254-288 PID: 11773 
+ - process-265-284 PID: 11773 
+ - process-228-294 PID: 11773 
+ - process-246-289 PID: 11773 
+ - process-255-287 PID: 11773 
+ - process-265-283 PID: 11773 
+ - process-240-292 PID: 11773 processing -240-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-292.fits']
+ - process-237-293 PID: 11858 
+ - process-246-288 PID: 11858 
+ - process-255-288 PID: 11858 
+ - process-266-282 PID: 11858 
+ - process-231-294 PID: 11858 
+ - process-241-293 PID: 11858 
+ - process-254-288 PID: 11858 
+ - process-263-285 PID: 11858 
+ - process-237-292 PID: 11858 processing -237-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-292.fits']
+ - process-237-291 PID: 11858 processing -237-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-291.fits']
+ - process-269-282 PID: 11858 processing -269-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-282.fits']
+ - process-263-284 PID: 11858 processing -263-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-284.fits']
+ - process-274-282 PID: 11858 processing -274-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-274-282.fits']
+ - process-239-290 PID: 11858 
+ - process-241-290 PID: 11858 
+ - process-257-285 PID: 11858 
+ - process-263-283 PID: 11858 
+ - process-273-283 PID: 11858 
+ - process-237-292 PID: 11858 
+ - process-241-290 PID: 11858 
+ - process-252-287 PID: 11858 
+ - process-261-285 PID: 11858 
+ - process-271-282 PID: 11858 
+ - process-233-294 PID: 11858 processing -233-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-294.fits']
+ - process-236-292 PID: 11858 processing -236-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-292.fits']
+ - process-237-295 PID: 11859 
+ - process-242-291 PID: 11859 
+ - process-252-287 PID: 11859 
+ - process-262-284 PID: 11859 
+ - process-275-283 PID: 11859 
+ - process-239-291 PID: 11859 
+ - process-244-289 PID: 11859 
+ - process-254-287 PID: 11859 
+ - process-265-285 PID: 11859 
+ - process-243-293 PID: 11859 processing -243-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-293.fits']
+ - process-243-290 PID: 11859 processing -243-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-290.fits']
+ - process-252-290 PID: 11859 processing -252-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-290.fits']
+ - process-260-285 PID: 11859 processing -260-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-285.fits']
+ - process-275-282 PID: 11859 processing -275-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-275-282.fits']
+ - process-237-295 PID: 11859 
+ - process-241-291 PID: 11859 
+ - process-246-288 PID: 11859 
+ - process-250-288 PID: 11859 
+ - process-255-285 PID: 11859 
+ - process-262-287 PID: 11859 
+ - process-269-283 PID: 11859 
+ - process-232-293 PID: 11859 
+ - process-246-291 PID: 11859 
+ - process-257-286 PID: 11859 
+ - process-265-285 PID: 11859 
+ - process-273-282 PID: 11859 
+ - process-243-292 PID: 11859 processing -243-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-292.fits']
+ - process-250-290 PID: 11859 processing -250-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-290.fits']
+ - process-238-294 PID: 11863 
+ - process-243-290 PID: 11863 
+ - process-252-290 PID: 11863 
+ - process-262-287 PID: 11863 
+ - process-278-282 PID: 11863 
+ - process-239-293 PID: 11863 
+ - process-248-287 PID: 11863 
+ - process-257-288 PID: 11863 
+ - process-266-286 PID: 11863 
+ - process-240-292 PID: 11863 processing -240-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-292.fits']
+ - process-236-292 PID: 11863 processing -236-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-292.fits']
+ - process-240-294 PID: 11863 processing -240-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-294.fits']
+ - process-268-283 PID: 11863 processing -268-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-283.fits']
+ - process-228-295 PID: 11863 
+ - process-242-290 PID: 11863 
+ - process-246-291 PID: 11863 
+ - process-250-289 PID: 11863 
+ - process-255-286 PID: 11863 
+ - process-261-287 PID: 11863 
+ - process-273-282 PID: 11863 
+ - process-236-292 PID: 11863 
+ - process-240-293 PID: 11863 
+ - process-257-287 PID: 11863 
+ - process-267-283 PID: 11863 
+ - process-228-295 PID: 11863 processing -228-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-228-295.fits']
+ - process-237-293 PID: 11863 processing -237-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-293.fits']
+ - process-268-284 PID: 11863 processing -268-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-284.fits']
+ - process-231-293 PID: 11785 
+ - process-246-291 PID: 11785 
+ - process-256-286 PID: 11785 
+ - process-266-285 PID: 11785 
+ - process-232-293 PID: 11785 
+ - process-242-292 PID: 11785 
+ - process-250-287 PID: 11785 
+ - process-259-288 PID: 11785 
+ - process-271-282 PID: 11785 
+ - process-245-292 PID: 11785 processing -245-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-292.fits']
+ - process-234-294 PID: 11785 processing -234-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-294.fits']
+ - process-250-289 PID: 11785 processing -250-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-289.fits']
+ - process-248-291 PID: 11785 processing -248-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-291.fits']
+ - process-231-294 PID: 11785 
+ - process-240-290 PID: 11785 
+ - process-245-288 PID: 11785 
+ - process-249-287 PID: 11785 
+ - process-253-288 PID: 11785 
+ - process-260-284 PID: 11785 
+ - process-267-283 PID: 11785 
+ - process-235-292 PID: 11785 
+ - process-244-289 PID: 11785 
+ - process-256-287 PID: 11785 
+ - process-268-282 PID: 11785 
+ - process-246-288 PID: 11785 processing -246-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-288.fits']
+ - process-239-291 PID: 11785 processing -239-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-291.fits']
+ - process-262-285 PID: 11785 processing -262-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-285.fits']
+ - process-237-292 PID: 11857 
+ - process-248-287 PID: 11857 
+ - process-257-287 PID: 11857 
+ - process-268-283 PID: 11857 
+ - process-234-292 PID: 11857 
+ - process-245-291 PID: 11857 
+ - process-255-288 PID: 11857 
+ - process-265-283 PID: 11857 
+ - process-246-289 PID: 11857 processing -246-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-289.fits']
+ - process-241-293 PID: 11857 processing -241-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-293.fits']
+ - process-267-283 PID: 11857 processing -267-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-283.fits']
+ - process-269-283 PID: 11857 processing -269-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-283.fits']
+ - process-229-294 PID: 11857 
+ - process-243-289 PID: 11857 
+ - process-247-289 PID: 11857 
+ - process-251-286 PID: 11857 
+ - process-255-288 PID: 11857 
+ - process-262-284 PID: 11857 
+ - process-272-283 PID: 11857 
+ - process-236-294 PID: 11857 
+ - process-241-292 PID: 11857 
+ - process-252-290 PID: 11857 
+ - process-260-284 PID: 11857 
+ - process-272-282 PID: 11857 
+ - process-245-292 PID: 11857 processing -245-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-292.fits']
+ - process-238-292 PID: 11857 processing -238-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-292.fits']
+ - process-264-284 PID: 11857 processing -264-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-284.fits']
+ - process-259-287 PID: 11857 processing -259-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-287.fits']
+ - process-239-290 PID: 11864 
+ - process-245-290 PID: 11864 
+ - process-255-286 PID: 11864 
+ - process-265-285 PID: 11864 
+ - process-230-295 PID: 11864 
+ - process-246-292 PID: 11864 
+ - process-253-287 PID: 11864 
+ - process-265-282 PID: 11864 
+ - process-236-295 PID: 11864 processing -236-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-295.fits']
+ - process-238-291 PID: 11864 processing -238-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-291.fits']
+ - process-274-283 PID: 11864 processing -274-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-274-283.fits']
+ - process-250-287 PID: 11864 processing -250-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-287.fits']
+ - process-270-282 PID: 11864 processing -270-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-282.fits']
+ - process-239-293 PID: 11864 
+ - process-245-289 PID: 11864 
+ - process-249-289 PID: 11864 
+ - process-254-285 PID: 11864 
+ - process-261-284 PID: 11864 
+ - process-268-283 PID: 11864 
+ - process-230-295 PID: 11864 
+ - process-249-289 PID: 11864 
+ - process-258-286 PID: 11864 
+ - process-269-284 PID: 11864 
+ - process-245-288 PID: 11864 processing -245-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-288.fits']
+ - process-237-295 PID: 11864 processing -237-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-295.fits']
+ - process-252-290 PID: 11864 processing -252-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-290.fits']
+ - process-259-285 PID: 11864 processing -259-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-285.fits']
+ - process-225-295 PID: 11775 
+ - process-240-293 PID: 11775 
+ - process-250-290 PID: 11775 
+ - process-260-285 PID: 11775 
+ - process-272-282 PID: 11775 
+ - process-237-291 PID: 11775 
+ - process-244-291 PID: 11775 
+ - process-257-287 PID: 11775 
+ - process-269-283 PID: 11775 
+ - process-239-294 PID: 11775 processing -239-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-294.fits']
+ - process-236-291 PID: 11775 processing -236-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-291.fits']
+ - process-254-288 PID: 11775 processing -254-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-288.fits']
+ - process-259-286 PID: 11775 processing -259-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-286.fits']
+ - process-224-295 PID: 11775 
+ - process-240-293 PID: 11775 
+ - process-257-288 PID: 11775 
+ - process-267-282 PID: 11775 
+ - process-232-295 PID: 11775 
+ - process-240-292 PID: 11775 
+ - process-253-287 PID: 11775 
+ - process-262-283 PID: 11775 
+ - process-277-282 PID: 11775 
+ - process-240-293 PID: 11775 processing -240-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-293.fits']
+ - process-259-284 PID: 11775 processing -259-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-284.fits']
+ - process-268-285 PID: 11775 processing -268-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-285.fits']
+ - process-269-283 PID: 11775 processing -269-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-283.fits']
+ - process-237-291 PID: 11854 
+ - process-247-291 PID: 11854 
+ - process-257-285 PID: 11854 
+ - process-267-285 PID: 11854 
+ - process-234-293 PID: 11854 
+ - process-243-292 PID: 11854 
+ - process-252-290 PID: 11854 
+ - process-261-285 PID: 11854 
+ - process-238-294 PID: 11854 processing -238-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-294.fits']
+ - process-239-291 PID: 11854 processing -239-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-291.fits']
+ - process-250-291 PID: 11854 processing -250-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-291.fits']
+ - process-253-286 PID: 11854 processing -253-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-286.fits']
+ - process-230-295 PID: 11854 
+ - process-242-289 PID: 11854 
+ - process-245-291 PID: 11854 
+ - process-249-291 PID: 11854 
+ - process-253-290 PID: 11854 
+ - process-261-286 PID: 11854 
+ - process-269-282 PID: 11854 
+ - process-234-292 PID: 11854 
+ - process-243-290 PID: 11854 
+ - process-250-290 PID: 11854 
+ - process-259-287 PID: 11854 
+ - process-271-283 PID: 11854 
+ - process-233-293 PID: 11854 processing -233-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-293.fits']
+ - process-248-287 PID: 11854 processing -248-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-287.fits']
+ - process-253-290 PID: 11854 processing -253-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-290.fits']
+ - process-270-283 PID: 11854 processing -270-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-283.fits']
+ - process-239-291 PID: 11865 
+ - process-243-289 PID: 11865 
+ - process-253-286 PID: 11865 
+ - process-263-283 PID: 11865 
+ - process-224-295 PID: 11865 
+ - process-243-289 PID: 11865 
+ - process-255-289 PID: 11865 
+ - process-264-285 PID: 11865 
+ - process-244-292 PID: 11865 processing -244-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-292.fits']
+ - process-270-284 PID: 11865 processing -270-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-284.fits']
+ - process-242-289 PID: 11865 processing -242-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-289.fits']
+ - process-247-292 PID: 11865 processing -247-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-292.fits']
+ - process-230-294 PID: 11865 
+ - process-239-293 PID: 11865 
+ - process-246-290 PID: 11865 
+ - process-253-289 PID: 11865 
+ - process-264-283 PID: 11865 
+ - process-245-290 PID: 11865 processing -245-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-290.fits']
+ - process-260-287 PID: 11865 processing -260-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-287.fits']
+ - process-264-285 PID: 11865 processing -264-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-285.fits']
+ - process-272-284 PID: 11865 processing -272-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-284.fits']
+ - process-241-293 PID: 14525 processing -241-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-293.fits']
+ - process-271-284 PID: 14525 processing -271-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-284.fits']
+ - process-256-285 PID: 14525 processing -256-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-285.fits']
+ - process-227-294 PID: 11774 
+ - process-240-294 PID: 11774 
+ - process-250-291 PID: 11774 
+ - process-260-286 PID: 11774 
+ - process-272-283 PID: 11774 
+ - process-237-292 PID: 11774 
+ - process-243-290 PID: 11774 
+ - process-254-285 PID: 11774 
+ - process-264-283 PID: 11774 
+ - process-245-290 PID: 11774 processing -245-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-290.fits']
+ - process-239-290 PID: 11774 processing -239-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-290.fits']
+ - process-271-282 PID: 11774 processing -271-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-282.fits']
+ - process-256-289 PID: 11774 processing -256-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-289.fits']
+ - process-229-295 PID: 11774 
+ - process-243-291 PID: 11774 
+ - process-247-291 PID: 11774 
+ - process-258-286 PID: 11774 
+ - process-264-284 PID: 11774 
+ - process-276-282 PID: 11774 
+ - process-237-294 PID: 11774 
+ - process-247-289 PID: 11774 
+ - process-256-285 PID: 11774 
+ - process-265-286 PID: 11774 
+ - process-239-294 PID: 11774 processing -239-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-294.fits']
+ - process-237-294 PID: 11774 processing -237-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-294.fits']
+ - process-269-285 PID: 11774 processing -269-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-285.fits']
+ - process-244-291 PID: 11774 processing -244-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-291.fits']
+ - process-239-293 PID: 14606 processing -239-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-293.fits']
+ - process-250-291 PID: 14606 processing -250-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-291.fits']
+ - process-247-291 PID: 14606 processing -247-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-291.fits']
+ - process-228-294 PID: 11779 
+ - process-241-293 PID: 11779 
+ - process-251-290 PID: 11779 
+ - process-261-287 PID: 11779 
+ - process-274-282 PID: 11779 
+ - process-238-292 PID: 11779 
+ - process-243-293 PID: 11779 
+ - process-256-288 PID: 11779 
+ - process-265-286 PID: 11779 
+ - process-246-288 PID: 11779 processing -246-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-288.fits']
+ - process-249-288 PID: 11779 processing -249-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-288.fits']
+ - process-251-286 PID: 11779 processing -251-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-286.fits']
+ - process-259-288 PID: 11779 processing -259-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-288.fits']
+ - process-227-294 PID: 11779 
+ - process-270-282 PID: 11779 
+ - process-233-294 PID: 11779 
+ - process-247-290 PID: 11779 
+ - process-253-290 PID: 11779 
+ - process-268-283 PID: 11779 
+ - process-226-295 PID: 11779 processing -226-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-226-295.fits']
+ - process-231-295 PID: 11779 processing -231-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-295.fits']
+ - process-255-286 PID: 11779 processing -255-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-286.fits']
+ - process-258-286 PID: 11779 processing -258-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-286.fits']
+ - process-231-294 PID: 11837 
+ - process-249-288 PID: 11837 
+ - process-258-288 PID: 11837 
+ - process-269-285 PID: 11837 
+ - process-235-295 PID: 11837 
+ - process-244-292 PID: 11837 
+ - process-251-288 PID: 11837 
+ - process-262-283 PID: 11837 
+ - process-230-294 PID: 11837 processing -230-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-294.fits']
+ - process-261-284 PID: 11837 processing -261-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-284.fits']
+ - process-265-286 PID: 11837 processing -265-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-286.fits']
+ - process-270-283 PID: 11837 processing -270-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-283.fits']
+ - process-236-291 PID: 11837 
+ - process-246-289 PID: 11837 
+ - process-250-290 PID: 11837 
+ - process-254-289 PID: 11837 
+ - process-263-284 PID: 11837 
+ - process-275-282 PID: 11837 
+ - process-238-293 PID: 11837 
+ - process-242-293 PID: 11837 
+ - process-257-288 PID: 11837 
+ - process-270-283 PID: 11837 
+ - process-225-295 PID: 11837 processing -225-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-225-295.fits']
+ - process-242-291 PID: 11837 processing -242-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-291.fits']
+ - process-252-288 PID: 11837 processing -252-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-288.fits']
+ - process-251-289 PID: 11837 processing -251-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-289.fits']
+ - process-230-294 PID: 11782 
+ - process-247-292 PID: 11782 
+ - process-257-284 PID: 11782 
+ - process-267-284 PID: 11782 
+ - process-233-294 PID: 11782 
+ - process-242-293 PID: 11782 
+ - process-252-288 PID: 11782 
+ - process-261-286 PID: 11782 
+ - process-271-283 PID: 11782 
+ - process-231-293 PID: 11782 processing -231-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-293.fits']
+ - process-248-290 PID: 11782 processing -248-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-290.fits']
+ - process-272-282 PID: 11782 processing -272-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-282.fits']
+ - process-254-286 PID: 11782 processing -254-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-286.fits']
+ - process-234-295 PID: 11782 
+ - process-239-294 PID: 11782 
+ - process-277-282 PID: 11782 
+ - process-238-291 PID: 11782 
+ - process-243-293 PID: 11782 
+ - process-254-288 PID: 11782 
+ - process-267-284 PID: 11782 
+ - process-240-290 PID: 11782 processing -240-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-290.fits']
+ - process-237-291 PID: 11782 processing -237-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-291.fits']
+ - process-257-286 PID: 11782 processing -257-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-286.fits']
+ - process-268-283 PID: 11782 processing -268-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-283.fits']
+ - process-233-295 PID: 11838 
+ - process-241-291 PID: 11838 
+ - process-251-288 PID: 11838 
+ - process-261-285 PID: 11838 
+ - process-273-283 PID: 11838 
+ - process-238-291 PID: 11838 
+ - process-249-289 PID: 11838 
+ - process-258-286 PID: 11838 
+ - process-267-284 PID: 11838 
+ - process-244-289 PID: 11838 processing -244-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-289.fits']
+ - process-243-289 PID: 11838 processing -243-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-289.fits']
+ - process-255-286 PID: 11838 processing -255-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-286.fits']
+ - process-251-288 PID: 11838 processing -251-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-288.fits']
+ - process-228-294 PID: 11838 
+ - process-271-283 PID: 11838 
+ - process-233-295 PID: 11838 
+ - process-239-294 PID: 11838 
+ - process-251-288 PID: 11838 
+ - process-262-287 PID: 11838 
+ - process-236-295 PID: 11838 processing -236-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-295.fits']
+ - process-249-288 PID: 11838 processing -249-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-288.fits']
+ - process-254-288 PID: 11838 processing -254-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-288.fits']
+ - process-258-287 PID: 11838 processing -258-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-287.fits']
+ - process-233-294 PID: 11843 
+ - process-248-288 PID: 11843 
+ - process-257-288 PID: 11843 
+ - process-268-284 PID: 11843 
+ - process-234-295 PID: 11843 
+ - process-247-292 PID: 11843 
+ - process-256-285 PID: 11843 
+ - process-268-282 PID: 11843 
+ - process-245-288 PID: 11843 processing -245-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-288.fits']
+ - process-242-292 PID: 11843 processing -242-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-292.fits']
+ - process-266-286 PID: 11843 processing -266-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-286.fits']
+ - process-258-287 PID: 11843 processing -258-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-287.fits']
+ - process-271-283 PID: 11843 processing -271-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-283.fits']
+ - process-239-291 PID: 11843 
+ - process-238-292 PID: 11843 
+ - process-241-293 PID: 11843 
+ - process-256-286 PID: 11843 
+ - process-265-282 PID: 11843 
+ - process-230-294 PID: 11843 processing -230-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-294.fits']
+ - process-267-282 PID: 11843 processing -267-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-282.fits']
+ - process-249-289 PID: 11843 processing -249-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-289.fits']
+ - process-261-286 PID: 11843 processing -261-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-286.fits']
+ - process-239-292 PID: 11866 
+ - process-249-287 PID: 11866 
+ - process-258-287 PID: 11866 
+ - process-269-284 PID: 11866 
+ - process-235-294 PID: 11866 
+ - process-241-290 PID: 11866 
+ - process-252-287 PID: 11866 
+ - process-260-286 PID: 11866 
+ - process-272-282 PID: 11866 
+ - process-251-290 PID: 11866 processing -251-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-290.fits']
+ - process-224-295 PID: 11866 processing -224-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-224-295.fits']
+ - process-264-286 PID: 11866 processing -264-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-286.fits']
+ - process-246-291 PID: 11866 processing -246-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-291.fits']
+ - process-235-293 PID: 11866 
+ - process-258-288 PID: 11866 
+ - process-266-284 PID: 11866 
+ - process-278-282 PID: 11866 
+ - process-237-291 PID: 11866 
+ - process-243-289 PID: 11866 
+ - process-251-289 PID: 11866 
+ - process-264-284 PID: 11866 
+ - process-272-283 PID: 11866 
+ - process-234-292 PID: 11866 processing -234-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-292.fits']
+ - process-227-294 PID: 11866 processing -227-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-227-294.fits']
+ - process-272-282 PID: 11866 processing -272-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-282.fits']
+ - process-248-291 PID: 11866 processing -248-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-291.fits']
+ - process-227-295 PID: 11777 
+ - process-241-290 PID: 11777 
+ - process-251-286 PID: 11777 
+ - process-260-287 PID: 11777 
+ - process-272-284 PID: 11777 
+ - process-237-294 PID: 11777 
+ - process-242-289 PID: 11777 
+ - process-253-288 PID: 11777 
+ - process-261-287 PID: 11777 
+ - process-242-293 PID: 11777 processing -242-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-293.fits']
+ - process-240-291 PID: 11777 processing -240-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-291.fits']
+ - process-267-285 PID: 11777 processing -267-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-285.fits']
+ - process-258-286 PID: 11777 processing -258-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-286.fits']
+ - process-230-293 PID: 11777 
+ - process-256-289 PID: 11777 
+ - process-263-286 PID: 11777 
+ - process-225-295 PID: 11777 
+ - process-245-289 PID: 11777 
+ - process-256-288 PID: 11777 
+ - process-267-282 PID: 11777 
+ - process-244-289 PID: 11777 processing -244-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-289.fits']
+ - process-234-294 PID: 11777 processing -234-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-294.fits']
+ - process-255-288 PID: 11777 processing -255-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-288.fits']
+ - process-262-287 PID: 11777 processing -262-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-287.fits']
+ - process-248-290 PID: 14527 processing -248-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-290.fits']
+ - process-247-289 PID: 14527 processing -247-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-289.fits']
+ - process-277-282 PID: 14527 processing -277-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-277-282.fits']
+ - process-238-292 PID: 11862 
+ - process-247-289 PID: 11862 
+ - process-256-289 PID: 11862 
+ - process-267-283 PID: 11862 
+ - process-233-293 PID: 11862 
+ - process-247-288 PID: 11862 
+ - process-253-289 PID: 11862 
+ - process-264-286 PID: 11862 
+ - process-240-290 PID: 11862 processing -240-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-290.fits']
+ - process-234-295 PID: 11862 processing -234-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-295.fits']
+ - process-247-289 PID: 11862 processing -247-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-289.fits']
+ - process-266-282 PID: 11862 processing -266-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-282.fits']
+ - process-278-282 PID: 11862 processing -278-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-278-282.fits']
+ - process-238-294 PID: 11862 
+ - process-239-290 PID: 11862 
+ - process-240-291 PID: 11862 
+ - process-250-287 PID: 11862 
+ - process-260-285 PID: 11862 
+ - process-271-284 PID: 11862 
+ - process-243-291 PID: 11862 processing -243-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-291.fits']
+ - process-227-295 PID: 11862 processing -227-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-227-295.fits']
+ - process-248-288 PID: 11862 processing -248-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-288.fits']
+ - process-252-289 PID: 11862 processing -252-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-289.fits']
+ - process-234-294 PID: 11844 
+ - process-243-292 PID: 11844 
+ - process-253-288 PID: 11844 
+ - process-263-285 PID: 11844 
+ - process-226-295 PID: 11844 
+ - process-242-290 PID: 11844 
+ - process-251-290 PID: 11844 
+ - process-260-284 PID: 11844 
+ - process-271-284 PID: 11844 
+ - process-233-294 PID: 11844 processing -233-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-294.fits']
+ - process-236-293 PID: 11844 processing -236-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-293.fits']
+ - process-254-287 PID: 11844 processing -254-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-287.fits']
+ - process-258-288 PID: 11844 processing -258-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-288.fits']
+ - process-233-294 PID: 11844 
+ - process-239-292 PID: 11844 
+ - process-248-287 PID: 11844 
+ - process-253-286 PID: 11844 
+ - process-261-287 PID: 11844 
+ - process-232-293 PID: 11844 processing -232-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-293.fits']
+ - process-236-291 PID: 11844 processing -236-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-291.fits']
+ - process-249-290 PID: 11844 processing -249-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-290.fits']
+ - process-257-287 PID: 11844 processing -257-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-287.fits']
+ - process-232-295 PID: 11840 
+ - process-245-289 PID: 11840 
+ - process-255-285 PID: 11840 
+ - process-265-283 PID: 11840 
+ - process-230-293 PID: 11840 
+ - process-242-291 PID: 11840 
+ - process-257-286 PID: 11840 
+ - process-266-282 PID: 11840 
+ - process-233-295 PID: 11840 processing -233-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-295.fits']
+ - process-229-295 PID: 11840 processing -229-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-229-295.fits']
+ - process-263-283 PID: 11840 processing -263-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-283.fits']
+ - process-259-287 PID: 11840 processing -259-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-287.fits']
+ - process-273-283 PID: 11840 processing -273-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-273-283.fits']
+ - process-237-291 PID: 11840 
+ - process-240-292 PID: 11840 
+ - process-257-284 PID: 11840 
+ - process-266-285 PID: 11840 
+ - process-229-294 PID: 11840 
+ - process-245-290 PID: 11840 
+ - process-255-289 PID: 11840 
+ - process-266-282 PID: 11840 
+ - process-243-293 PID: 11840 processing -243-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-293.fits']
+ - process-230-295 PID: 11840 processing -230-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-295.fits']
+ - process-262-283 PID: 11840 processing -262-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-283.fits']
+ - process-260-284 PID: 11840 processing -260-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-284.fits']
+ - process-239-293 PID: 11867 
+ - process-242-292 PID: 11867 
+ - process-252-288 PID: 11867 
+ - process-262-285 PID: 11867 
+ - process-276-282 PID: 11867 
+ - process-239-290 PID: 11867 
+ - process-246-290 PID: 11867 
+ - process-253-286 PID: 11867 
+ - process-263-284 PID: 11867 
+ - process-245-289 PID: 11867 processing -245-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-289.fits']
+ - process-231-294 PID: 11867 processing -231-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-294.fits']
+ - process-257-286 PID: 11867 processing -257-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-286.fits']
+ - process-260-284 PID: 11867 processing -260-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-284.fits']
+ - process-231-295 PID: 11867 
+ - process-239-291 PID: 11867 
+ - process-240-294 PID: 11867 
+ - process-252-286 PID: 11867 
+ - process-262-285 PID: 11867 
+ - process-278-282 PID: 11867 
+ - process-239-292 PID: 11867 processing -239-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-292.fits']
+ - process-245-291 PID: 11867 processing -245-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-291.fits']
+ - process-240-294 PID: 11867 processing -240-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-294.fits']
+ - process-262-286 PID: 11867 processing -262-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-286.fits']
+ - process-236-294 PID: 11853 
+ - process-248-289 PID: 11853 
+ - process-258-284 PID: 11853 
+ - process-268-285 PID: 11853 
+ - process-234-294 PID: 11853 
+ - process-241-291 PID: 11853 
+ - process-251-287 PID: 11853 
+ - process-262-287 PID: 11853 
+ - process-276-282 PID: 11853 
+ - process-233-292 PID: 11853 processing -233-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-292.fits']
+ - process-230-295 PID: 11853 processing -230-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-295.fits']
+ - process-266-283 PID: 11853 processing -266-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-283.fits']
+ - process-247-291 PID: 11853 processing -247-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-291.fits']
+ - process-233-292 PID: 11853 
+ - process-244-292 PID: 11853 
+ - process-249-288 PID: 11853 
+ - process-254-286 PID: 11853 
+ - process-260-286 PID: 11853 
+ - process-270-283 PID: 11853 
+ - process-233-292 PID: 11853 
+ - process-242-290 PID: 11853 
+ - process-251-287 PID: 11853 
+ - process-260-286 PID: 11853 
+ - process-276-282 PID: 11853 
+ - process-235-295 PID: 11853 processing -235-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-295.fits']
+ - process-236-293 PID: 11853 processing -236-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-293.fits']
+ - process-250-289 PID: 11853 processing -250-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-289.fits']
+ - process-254-286 PID: 11853 processing -254-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-286.fits']
+ - process-229-295 PID: 11783 
+ - process-246-292 PID: 11783 
+ - process-256-288 PID: 11783 
+ - process-267-282 PID: 11783 
+ - process-233-292 PID: 11783 
+ - process-240-292 PID: 11783 
+ - process-250-288 PID: 11783 
+ - process-259-287 PID: 11783 
+ - process-274-283 PID: 11783 
+ - process-240-293 PID: 11783 processing -240-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-293.fits']
+ - process-260-287 PID: 11783 processing -260-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-287.fits']
+ - process-249-289 PID: 11783 processing -249-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-289.fits']
+ - process-255-289 PID: 11783 processing -255-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-289.fits']
+ - process-236-294 PID: 11783 
+ - process-245-290 PID: 11783 
+ - process-250-287 PID: 11783 
+ - process-254-287 PID: 11783 
+ - process-260-287 PID: 11783 
+ - process-271-282 PID: 11783 
+ - process-235-294 PID: 11783 
+ - process-240-290 PID: 11783 
+ - process-249-291 PID: 11783 
+ - process-259-286 PID: 11783 
+ - process-270-284 PID: 11783 
+ - process-231-293 PID: 11783 processing -231-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-293.fits']
+ - process-240-291 PID: 11783 processing -240-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-240-291.fits']
+ - process-257-288 PID: 11783 processing -257-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-288.fits']
+ - process-259-286 PID: 11783 processing -259-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-286.fits']
+ - process-234-292 PID: 11841 
+ - process-249-290 PID: 11841 
+ - process-259-285 PID: 11841 
+ - process-270-283 PID: 11841 
+ - process-236-292 PID: 11841 
+ - process-246-289 PID: 11841 
+ - process-256-287 PID: 11841 
+ - process-266-284 PID: 11841 
+ - process-278-282 PID: 11841 
+ - process-246-292 PID: 11841 processing -246-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-292.fits']
+ - process-237-294 PID: 11841 processing -237-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-294.fits']
+ - process-256-287 PID: 11841 processing -256-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-287.fits']
+ - process-249-291 PID: 11841 processing -249-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-291.fits']
+ - process-231-293 PID: 11841 
+ - process-272-282 PID: 11841 
+ - process-234-295 PID: 11841 
+ - process-244-291 PID: 11841 
+ - process-252-288 PID: 11841 
+ - process-270-282 PID: 11841 
+ - process-269-284 PID: 11841 processing -269-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-284.fits']
+ - process-235-292 PID: 11841 processing -235-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-292.fits']
+ - process-254-287 PID: 11841 processing -254-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-287.fits']
+ - process-247-292 PID: 11841 processing -247-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-292.fits']
+ - process-230-293 PID: 11781 
+ - process-242-290 PID: 11781 
+ - process-252-286 PID: 11781 
+ - process-262-283 PID: 11781 
+ - process-275-282 PID: 11781 
+ - process-238-293 PID: 11781 
+ - process-246-291 PID: 11781 
+ - process-258-284 PID: 11781 
+ - process-267-282 PID: 11781 
+ - process-226-295 PID: 11781 processing -226-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-226-295.fits']
+ - process-241-290 PID: 11781 processing -241-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-290.fits']
+ - process-264-285 PID: 11781 processing -264-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-285.fits']
+ - process-277-282 PID: 11781 processing -277-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-277-282.fits']
+ - process-225-295 PID: 11781 
+ - process-241-292 PID: 11781 
+ - process-257-287 PID: 11781 
+ - process-263-285 PID: 11781 
+ - process-224-295 PID: 11781 
+ - process-247-292 PID: 11781 
+ - process-253-288 PID: 11781 
+ - process-264-285 PID: 11781 
+ - process-275-282 PID: 11781 
+ - process-246-292 PID: 11781 processing -246-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-292.fits']
+ - process-238-291 PID: 11781 processing -238-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-291.fits']
+ - process-262-284 PID: 11781 processing -262-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-284.fits']
+ - process-266-282 PID: 11781 processing -266-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-282.fits']
+ - process-236-292 PID: 11852 
+ - process-244-291 PID: 11852 
+ - process-254-286 PID: 11852 
+ - process-264-285 PID: 11852 
+ - process-228-295 PID: 11852 
+ - process-245-292 PID: 11852 
+ - process-254-286 PID: 11852 
+ - process-263-283 PID: 11852 
+ - process-251-287 PID: 11852 processing -251-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-287.fits']
+ - process-245-291 PID: 11852 processing -245-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-291.fits']
+ - process-250-288 PID: 11852 processing -250-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-288.fits']
+ - process-276-282 PID: 11852 processing -276-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-276-282.fits']
+ - process-232-293 PID: 11852 
+ - process-252-288 PID: 11852 
+ - process-259-287 PID: 11852 
+ - process-267-285 PID: 11852 
+ - process-233-293 PID: 11852 
+ - process-248-288 PID: 11852 
+ - process-258-284 PID: 11852 
+ - process-266-283 PID: 11852 
+ - process-230-293 PID: 11852 processing -230-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-293.fits']
+ - process-244-290 PID: 11852 processing -244-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-290.fits']
+ - process-265-282 PID: 11852 processing -265-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-282.fits']
+ - process-253-286 PID: 11852 processing -253-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-286.fits']
+ - process-236-291 PID: 11850 
+ - process-240-292 PID: 11850 
+ - process-250-289 PID: 11850 
+ - process-260-284 PID: 11850 
+ - process-271-284 PID: 11850 
+ - process-236-295 PID: 11850 
+ - process-249-290 PID: 11850 
+ - process-258-285 PID: 11850 
+ - process-269-282 PID: 11850 
+ - process-249-287 PID: 11850 processing -249-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-287.fits']
+ - process-242-291 PID: 11850 processing -242-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-291.fits']
+ - process-262-283 PID: 11850 processing -262-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-283.fits']
+ - process-259-285 PID: 11850 processing -259-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-285.fits']
+ - process-261-287 PID: 11850 processing -261-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-287.fits']
+ - process-238-292 PID: 11850 
+ - process-244-290 PID: 11850 
+ - process-248-288 PID: 11850 
+ - process-252-287 PID: 11850 
+ - process-256-285 PID: 11850 
+ - process-262-285 PID: 11850 
+ - process-274-283 PID: 11850 
+ - process-237-293 PID: 11850 
+ - process-243-291 PID: 11850 
+ - process-256-289 PID: 11850 
+ - process-266-285 PID: 11850 
+ - process-247-290 PID: 11850 processing -247-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-290.fits']
+ - process-243-290 PID: 11850 processing -243-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-290.fits']
+ - process-266-283 PID: 11850 processing -266-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-283.fits']
+ - process-260-286 PID: 11850 processing -260-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-286.fits']
+ - process-236-295 PID: 11855 
+ - process-244-289 PID: 11855 
+ - process-254-285 PID: 11855 
+ - process-264-284 PID: 11855 
+ - process-228-294 PID: 11855 
+ - process-239-294 PID: 11855 
+ - process-250-289 PID: 11855 
+ - process-262-285 PID: 11855 
+ - process-277-282 PID: 11855 
+ - process-239-292 PID: 11855 processing -239-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-292.fits']
+ - process-241-292 PID: 11855 processing -241-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-292.fits']
+ - process-255-288 PID: 11855 processing -255-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-288.fits']
+ - process-256-285 PID: 11855 processing -256-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-285.fits']
+ - process-226-295 PID: 11855 
+ - process-243-290 PID: 11855 
+ - process-246-292 PID: 11855 
+ - process-251-287 PID: 11855 
+ - process-255-289 PID: 11855 
+ - process-262-283 PID: 11855 
+ - process-272-284 PID: 11855 
+ - process-236-291 PID: 11855 
+ - process-241-291 PID: 11855 
+ - process-250-291 PID: 11855 
+ - process-262-284 PID: 11855 
+ - process-274-282 PID: 11855 
+ - process-235-293 PID: 11855 processing -235-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-293.fits']
+ - process-241-292 PID: 11855 processing -241-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-292.fits']
+ - process-271-282 PID: 11855 processing -271-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-282.fits']
+ - process-254-289 PID: 11855 processing -254-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-289.fits']
+ - process-230-295 PID: 11784 
+ - process-246-289 PID: 11784 
+ - process-255-289 PID: 11784 
+ - process-266-283 PID: 11784 
+ - process-231-295 PID: 11784 
+ - process-247-290 PID: 11784 
+ - process-254-289 PID: 11784 
+ - process-268-284 PID: 11784 
+ - process-228-294 PID: 11784 processing -228-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-228-294.fits']
+ - process-253-289 PID: 11784 processing -253-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-289.fits']
+ - process-268-285 PID: 11784 processing -268-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-285.fits']
+ - process-260-286 PID: 11784 processing -260-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-286.fits']
+ - process-234-292 PID: 11784 
+ - process-243-292 PID: 11784 
+ - process-248-289 PID: 11784 
+ - process-253-287 PID: 11784 
+ - process-261-285 PID: 11784 
+ - process-268-282 PID: 11784 
+ - process-231-293 PID: 11784 
+ - process-243-292 PID: 11784 
+ - process-254-285 PID: 11784 
+ - process-265-284 PID: 11784 
+ - process-242-293 PID: 11784 processing -242-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-293.fits']
+ - process-224-295 PID: 11784 processing -224-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-224-295.fits']
+ - process-250-288 PID: 11784 processing -250-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-288.fits']
+ - process-258-288 PID: 11784 processing -258-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-288.fits']
+ - process-234-293 PID: 11842 
+ - process-245-291 PID: 11842 
+ - process-254-289 PID: 11842 
+ - process-265-284 PID: 11842 
+ - process-230-294 PID: 11842 
+ - process-240-293 PID: 11842 
+ - process-251-286 PID: 11842 
+ - process-261-284 PID: 11842 
+ - process-275-283 PID: 11842 
+ - process-234-293 PID: 11842 processing -234-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-293.fits']
+ - process-257-284 PID: 11842 processing -257-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-284.fits']
+ - process-256-288 PID: 11842 processing -256-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-288.fits']
+ - process-257-285 PID: 11842 processing -257-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-285.fits']
+ - process-235-294 PID: 11842 
+ - process-243-293 PID: 11842 
+ - process-248-290 PID: 11842 
+ - process-253-286 PID: 11842 
+ - process-259-286 PID: 11842 
+ - process-265-285 PID: 11842 
+ - process-274-282 PID: 11842 
+ - process-236-295 PID: 11842 
+ - process-247-288 PID: 11842 
+ - process-258-288 PID: 11842 
+ - process-269-283 PID: 11842 
+ - process-256-286 PID: 11842 processing -256-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-286.fits']
+ - process-243-289 PID: 11842 processing -243-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-289.fits']
+ - process-269-282 PID: 11842 processing -269-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-282.fits']
+ - process-249-291 PID: 11842 processing -249-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-291.fits']
+ - process-238-291 PID: 11860 
+ - process-242-289 PID: 11860 
+ - process-251-289 PID: 11860 
+ - process-261-286 PID: 11860 
+ - process-274-283 PID: 11860 
+ - process-238-294 PID: 11860 
+ - process-245-290 PID: 11860 
+ - process-253-290 PID: 11860 
+ - process-262-286 PID: 11860 
+ - process-273-283 PID: 11860 
+ - process-235-295 PID: 11860 processing -235-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-295.fits']
+ - process-238-292 PID: 11860 processing -238-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-292.fits']
+ - process-268-284 PID: 11860 processing -268-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-284.fits']
+ - process-254-285 PID: 11860 processing -254-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-285.fits']
+ - process-258-285 PID: 11860 processing -258-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-285.fits']
+ - process-237-294 PID: 11860 
+ - process-259-285 PID: 11860 
+ - process-266-283 PID: 11860 
+ - process-231-295 PID: 11860 
+ - process-249-287 PID: 11860 
+ - process-255-288 PID: 11860 
+ - process-263-283 PID: 11860 
+ - process-238-294 PID: 11860 processing -238-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-294.fits']
+ - process-239-290 PID: 11860 processing -239-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-290.fits']
+ - process-264-286 PID: 11860 processing -264-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-286.fits']
+ - process-257-285 PID: 11860 processing -257-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-285.fits']
+ - process-233-293 PID: 11836 
+ - process-248-291 PID: 11836 
+ - process-258-286 PID: 11836 
+ - process-269-283 PID: 11836 
+ - process-235-293 PID: 11836 
+ - process-248-291 PID: 11836 
+ - process-259-284 PID: 11836 
+ - process-270-283 PID: 11836 
+ - process-235-294 PID: 11836 processing -235-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-294.fits']
+ - process-246-290 PID: 11836 processing -246-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-290.fits']
+ - process-265-283 PID: 11836 processing -265-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-283.fits']
+ - process-272-284 PID: 11836 processing -272-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-284.fits']
+ - process-272-283 PID: 11836 processing -272-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-283.fits']
+ - process-239-292 PID: 11836 
+ - process-253-289 PID: 11836 
+ - process-259-288 PID: 11836 
+ - process-267-284 PID: 11836 
+ - process-230-294 PID: 11836 
+ - process-249-290 PID: 11836 
+ - process-259-285 PID: 11836 
+ - process-268-284 PID: 11836 
+ - process-274-283 PID: 11836 
+ - process-251-290 PID: 11836 processing -251-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-290.fits']
+ - process-261-284 PID: 11836 processing -261-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-284.fits']
+ - process-265-286 PID: 11836 processing -265-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-286.fits']
+ - process-255-289 PID: 11836 processing -255-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-289.fits']
+ - process-232-293 PID: 11786 
+ - process-244-292 PID: 11786 
+ - process-254-287 PID: 11786 
+ - process-264-286 PID: 11786 
+ - process-229-294 PID: 11786 
+ - process-240-294 PID: 11786 
+ - process-250-291 PID: 11786 
+ - process-263-286 PID: 11786 
+ - process-275-282 PID: 11786 
+ - process-243-291 PID: 11786 processing -243-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-243-291.fits']
+ - process-237-293 PID: 11786 processing -237-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-293.fits']
+ - process-252-288 PID: 11786 processing -252-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-288.fits']
+ - process-252-286 PID: 11786 processing -252-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-286.fits']
+ - process-235-295 PID: 11786 
+ - process-242-292 PID: 11786 
+ - process-247-290 PID: 11786 
+ - process-251-289 PID: 11786 
+ - process-256-288 PID: 11786 
+ - process-265-283 PID: 11786 
+ - process-230-293 PID: 11786 
+ - process-242-292 PID: 11786 
+ - process-254-286 PID: 11786 
+ - process-266-286 PID: 11786 
+ - process-232-294 PID: 11786 processing -232-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-294.fits']
+ - process-253-289 PID: 11786 processing -253-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-289.fits']
+ - process-268-282 PID: 11786 processing -268-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-282.fits']
+ - process-246-291 PID: 11786 processing -246-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-291.fits']
+ - process-235-295 PID: 11849 
+ - process-245-288 PID: 11849 
+ - process-254-288 PID: 11849 
+ - process-265-282 PID: 11849 
+ - process-229-295 PID: 11849 
+ - process-248-289 PID: 11849 
+ - process-259-285 PID: 11849 
+ - process-270-284 PID: 11849 
+ - process-228-295 PID: 11849 processing -228-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-228-295.fits']
+ - process-248-287 PID: 11849 processing -248-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-287.fits']
+ - process-262-284 PID: 11849 processing -262-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-284.fits']
+ - process-263-286 PID: 11849 processing -263-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-286.fits']
+ - process-275-283 PID: 11849 processing -275-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-275-283.fits']
+ - process-237-292 PID: 11849 
+ - process-242-291 PID: 11849 
+ - process-247-288 PID: 11849 
+ - process-251-288 PID: 11849 
+ - process-256-286 PID: 11849 
+ - process-264-283 PID: 11849 
+ - process-275-283 PID: 11849 
+ - process-237-295 PID: 11849 
+ - process-242-289 PID: 11849 
+ - process-250-288 PID: 11849 
+ - process-260-287 PID: 11849 
+ - process-237-292 PID: 11849 processing -237-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-237-292.fits']
+ - process-241-290 PID: 11849 processing -241-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-290.fits']
+ - process-242-289 PID: 11849 processing -242-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-289.fits']
+ - process-276-282 PID: 11849 processing -276-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-276-282.fits']
+ - process-232-294 PID: 11817 
+ - process-240-290 PID: 11817 
+ - process-250-288 PID: 11817 
+ - process-259-288 PID: 11817 
+ - process-271-283 PID: 11817 
+ - process-237-293 PID: 11817 
+ - process-248-288 PID: 11817 
+ - process-257-285 PID: 11817 
+ - process-270-282 PID: 11817 
+ - process-233-293 PID: 11817 processing -233-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-293.fits']
+ - process-227-294 PID: 11817 processing -227-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-227-294.fits']
+ - process-249-290 PID: 11817 processing -249-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-290.fits']
+ - process-251-289 PID: 11817 processing -251-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-289.fits']
+ - process-234-293 PID: 11817 
+ - process-244-291 PID: 11817 
+ - process-248-287 PID: 11817 
+ - process-252-286 PID: 11817 
+ - process-256-287 PID: 11817 
+ - process-264-286 PID: 11817 
+ - process-229-295 PID: 11817 
+ - process-245-288 PID: 11817 
+ - process-250-289 PID: 11817 
+ - process-261-284 PID: 11817 
+ - process-244-292 PID: 11817 processing -244-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-292.fits']
+ - process-257-284 PID: 11817 processing -257-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-284.fits']
+ - process-256-288 PID: 11817 processing -256-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-288.fits']
+ - process-252-286 PID: 11817 processing -252-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-286.fits']
+All processes complete
+
+A total of 0 errors were recorded.
+Finishing ShapePipe Run
+
+-------------------------------------------------------------------------------
+    
+ - process-265-285 PID: 16206 processing -265-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-285.fits']
+ - process-267-283 PID: 15170 processing -267-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-283.fits']
+ - process-263-284 PID: 15170 processing -263-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-284.fits']
+ - process-266-284 PID: 15170 processing -266-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-284.fits']
+ - process-254-285 PID: 15508 processing -254-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-285.fits']
+ - process-258-285 PID: 15508 processing -258-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-285.fits']
+ - process-263-286 PID: 15682 processing -263-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-286.fits']
+ - process-271-283 PID: 15682 processing -271-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-271-283.fits']
+ - process-270-284 PID: 14632 processing -270-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-284.fits']
+ - process-267-284 PID: 14632 processing -267-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-284.fits']
+ - process-252-287 PID: 14632 processing -252-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-287.fits']
+ - process-266-285 PID: 14632 processing -266-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-285.fits']
+ - process-242-292 PID: 14464 processing -242-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-292.fits']
+ - process-267-285 PID: 14464 processing -267-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-285.fits']
+ - process-260-285 PID: 14464 processing -260-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-260-285.fits']
+ - process-273-283 PID: 14464 processing -273-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-273-283.fits']
+ - process-238-293 PID: 14592 processing -238-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-293.fits']
+ - process-274-283 PID: 14592 processing -274-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-274-283.fits']
+ - process-263-285 PID: 14592 processing -263-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-285.fits']
+ - process-272-283 PID: 14592 processing -272-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-272-283.fits']
+ - process-275-282 PID: 16109 processing -275-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-275-282.fits']
+ - process-256-287 PID: 15149 processing -256-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-287.fits']
+ - process-256-289 PID: 15149 processing -256-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-256-289.fits']
+ - process-278-282 PID: 15149 processing -278-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-278-282.fits']
+ - process-235-294 PID: 11848 
+ - process-248-290 PID: 11848 
+ - process-258-285 PID: 11848 
+ - process-269-282 PID: 11848 
+ - process-235-292 PID: 11848 
+ - process-243-291 PID: 11848 
+ - process-252-289 PID: 11848 
+ - process-266-283 PID: 11848 
+ - process-230-293 PID: 11848 processing -230-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-230-293.fits']
+ - process-244-290 PID: 11848 processing -244-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-244-290.fits']
+ - process-253-287 PID: 11848 processing -253-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-287.fits']
+ - process-247-288 PID: 11848 processing -247-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-288.fits']
+ - process-227-295 PID: 11848 
+ - process-271-284 PID: 11848 
+ - process-236-293 PID: 11848 
+ - process-247-291 PID: 11848 
+ - process-259-284 PID: 11848 
+ - process-269-285 PID: 11848 
+ - process-241-291 PID: 11848 processing -241-291 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-241-291.fits']
+ - process-231-294 PID: 11848 processing -231-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-294.fits']
+ - process-265-284 PID: 11848 processing -265-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-284.fits']
+ - process-251-288 PID: 11848 processing -251-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-288.fits']
+ - process-264-283 PID: 11848 processing -264-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-283.fits']
+ - process-235-292 PID: 11846 
+ - process-244-290 PID: 11846 
+ - process-253-290 PID: 11846 
+ - process-264-283 PID: 11846 
+ - process-227-295 PID: 11846 
+ - process-249-288 PID: 11846 
+ - process-255-287 PID: 11846 
+ - process-266-285 PID: 11846 
+ - process-247-290 PID: 11846 processing -247-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-290.fits']
+ - process-238-293 PID: 11846 processing -238-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-238-293.fits']
+ - process-253-290 PID: 11846 processing -253-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-290.fits']
+ - process-261-286 PID: 11846 processing -261-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-286.fits']
+ - process-234-294 PID: 11846 
+ - process-270-284 PID: 11846 
+ - process-235-295 PID: 11846 
+ - process-246-292 PID: 11846 
+ - process-257-285 PID: 11846 
+ - process-264-286 PID: 11846 
+ - process-233-295 PID: 11846 processing -233-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-233-295.fits']
+ - process-229-295 PID: 11846 processing -229-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-229-295.fits']
+ - process-263-283 PID: 11846 processing -263-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-283.fits']
+ - process-253-288 PID: 11846 processing -253-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-288.fits']
+ - process-275-283 PID: 11846 processing -275-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-275-283.fits']
+ - process-228-295 PID: 11778 
+ - process-246-290 PID: 11778 
+ - process-256-285 PID: 11778 
+ - process-266-284 PID: 11778 
+ - process-232-295 PID: 11778 
+ - process-245-289 PID: 11778 
+ - process-256-289 PID: 11778 
+ - process-268-285 PID: 11778 
+ - process-232-294 PID: 11778 processing -232-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-294.fits']
+ - process-227-295 PID: 11778 processing -227-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-227-295.fits']
+ - process-262-285 PID: 11778 processing -262-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-285.fits']
+ - process-263-285 PID: 11778 processing -263-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-263-285.fits']
+ - process-273-282 PID: 11778 processing -273-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-273-282.fits']
+ - process-238-291 PID: 11778 
+ - process-268-285 PID: 11778 
+ - process-235-293 PID: 11778 
+ - process-246-288 PID: 11778 
+ - process-255-285 PID: 11778 
+ - process-268-285 PID: 11778 
+ - process-249-287 PID: 11778 processing -249-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-249-287.fits']
+ - process-236-294 PID: 11778 processing -236-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-236-294.fits']
+ - process-255-287 PID: 11778 processing -255-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-287.fits']
+ - process-250-287 PID: 11778 processing -250-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-250-287.fits']
+ - process-273-282 PID: 11778 processing -273-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-273-282.fits']
+ - process-233-292 PID: 11839 
+ - process-249-289 PID: 11839 
+ - process-259-284 PID: 11839 
+ - process-270-282 PID: 11839 
+ - process-236-291 PID: 11839 
+ - process-248-290 PID: 11839 
+ - process-255-286 PID: 11839 
+ - process-265-284 PID: 11839 
+ - process-232-293 PID: 11839 processing -232-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-293.fits']
+ - process-239-293 PID: 11839 processing -239-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-239-293.fits']
+ - process-248-288 PID: 11839 processing -248-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-288.fits']
+ - process-252-289 PID: 11839 processing -252-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-252-289.fits']
+ - process-232-294 PID: 11839 
+ - process-258-284 PID: 11839 
+ - process-266-282 PID: 11839 
+ - process-226-295 PID: 11839 
+ - process-248-291 PID: 11839 
+ - process-257-284 PID: 11839 
+ - process-267-285 PID: 11839 
+ - process-232-295 PID: 11839 processing -232-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-232-295.fits']
+ - process-255-285 PID: 11839 processing -255-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-255-285.fits']
+ - process-265-283 PID: 11839 processing -265-283 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-265-283.fits']
+ - process-247-288 PID: 11839 processing -247-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-247-288.fits']
+ - process-274-282 PID: 11839 processing -274-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-274-282.fits']
+ - process-237-294 PID: 11856 
+ - process-247-290 PID: 11856 
+ - process-257-286 PID: 11856 
+ - process-268-282 PID: 11856 
+ - process-233-295 PID: 11856 
+ - process-246-288 PID: 11856 
+ - process-256-286 PID: 11856 
+ - process-264-284 PID: 11856 
+ - process-273-282 PID: 11856 
+ - process-234-292 PID: 11856 processing -234-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-292.fits']
+ - process-231-295 PID: 11856 processing -231-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-231-295.fits']
+ - process-257-288 PID: 11856 processing -257-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-257-288.fits']
+ - process-254-289 PID: 11856 processing -254-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-254-289.fits']
+ - process-235-292 PID: 11856 
+ - process-259-284 PID: 11856 
+ - process-266-286 PID: 11856 
+ - process-227-294 PID: 11856 
+ - process-242-291 PID: 11856 
+ - process-252-289 PID: 11856 
+ - process-263-284 PID: 11856 
+ - process-275-283 PID: 11856 
+ - process-234-293 PID: 11856 processing -234-293 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-293.fits']
+ - process-242-290 PID: 11856 processing -242-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-242-290.fits']
+ - process-266-286 PID: 11856 processing -266-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-266-286.fits']
+ - process-248-289 PID: 11856 processing -248-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-248-289.fits']
+ - process-261-287 PID: 11856 processing -261-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-287.fits']
+ - process-229-294 PID: 11780 
+ - process-241-292 PID: 11780 
+ - process-251-287 PID: 11780 
+ - process-261-284 PID: 11780 
+ - process-273-282 PID: 11780 
+ - process-237-295 PID: 11780 
+ - process-244-290 PID: 11780 
+ - process-250-290 PID: 11780 
+ - process-259-286 PID: 11780 
+ - process-269-285 PID: 11780 
+ - process-269-284 PID: 11780 processing -269-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-269-284.fits']
+ - process-267-282 PID: 11780 processing -267-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-267-282.fits']
+ - process-264-284 PID: 11780 processing -264-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-264-284.fits']
+ - process-253-288 PID: 11780 processing -253-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-288.fits']
+ - process-261-285 PID: 11780 processing -261-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-285.fits']
+ - process-236-292 PID: 11780 
+ - process-242-293 PID: 11780 
+ - process-247-292 PID: 11780 
+ - process-251-290 PID: 11780 
+ - process-257-286 PID: 11780 
+ - process-265-286 PID: 11780 
+ - process-232-294 PID: 11780 
+ - process-248-289 PID: 11780 
+ - process-258-287 PID: 11780 
+ - process-266-284 PID: 11780 
+ - process-245-289 PID: 11780 processing -245-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-245-289.fits']
+ - process-246-290 PID: 11780 processing -246-290 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-290.fits']
+ - process-251-286 PID: 11780 processing -251-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-251-286.fits']
+ - process-258-284 PID: 11780 processing -258-284 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-258-284.fits']
+ - process-261-285 PID: 11780 processing -261-285 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-261-285.fits']
+ - process-231-295 PID: 11787 
+ - process-243-291 PID: 11787 
+ - process-253-287 PID: 11787 
+ - process-263-284 PID: 11787 
+ - process-225-295 PID: 11787 
+ - process-247-291 PID: 11787 
+ - process-258-287 PID: 11787 
+ - process-268-283 PID: 11787 
+ - process-229-294 PID: 11787 processing -229-294 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-229-294.fits']
+ - process-235-292 PID: 11787 processing -235-292 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-235-292.fits']
+ - process-268-282 PID: 11787 processing -268-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-268-282.fits']
+ - process-262-286 PID: 11787 processing -262-286 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-262-286.fits']
+ - process-233-293 PID: 11787 
+ - process-260-285 PID: 11787 
+ - process-269-284 PID: 11787 
+ - process-234-294 PID: 11787 
+ - process-248-290 PID: 11787 
+ - process-254-289 PID: 11787 
+ - process-263-285 PID: 11787 
+ - process-246-289 PID: 11787 processing -246-289 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-246-289.fits']
+ - process-234-295 PID: 11787 processing -234-295 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-234-295.fits']
+ - process-253-287 PID: 11787 processing -253-287 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-253-287.fits']
+ - process-259-288 PID: 11787 processing -259-288 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-259-288.fits']
+ - process-270-282 PID: 11787 processing -270-282 ['/automnt/n17data/guinot/simu_W3/pipeline_output/run_sp_MaSxPsViSmVi_2021-03-23_18-19-08/sextractor_runner/output/sexcat_sexcat-270-282.fits']
+* JOBID: 70871.cmaster
+* USER: guinot
+* GROUP: guinot
+* JOBNAME: shapepipe_smp
+* SESSIONID: 11257
+* RESOURCESLIST: neednodes=n01:ppn=48,nodes=n01:ppn=48,walltime=48:00:00
+* RESOURCESUSED: cput=33:49:12,mem=119268088kb,vmem=154891596kb,walltime=03:47:13
+* QUEUE: batch
+* JOB EXIT STATUS: 0
