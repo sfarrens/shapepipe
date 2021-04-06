@@ -298,8 +298,8 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
                 output_dict['NGMIX_SNR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['s2n'][ind[0]]
                 output_dict['NGMIX_FLUX_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flux'][ind[0]]
                 output_dict['NGMIX_FLUX_ERR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flux_err'][ind[0]]
-                #output_dict['NGMIX_MAG_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['mag'][ind[0]]
-                #output_dict['NGMIX_MAG_ERR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['mag_err'][ind[0]]
+                output_dict['NGMIX_MAG_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['mag'][ind[0]]
+                output_dict['NGMIX_MAG_ERR_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['mag_err'][ind[0]]
                 output_dict['NGMIX_FLAGS_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['flags'][ind[0]]
 
                 output_dict['NGMIX_ELL_PSFo_{}'.format(key)][i][0] = ngmix_cat_file.get_data(key)['g1_psfo_ngmix'][ind[0]]

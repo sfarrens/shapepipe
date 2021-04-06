@@ -5,6 +5,7 @@ YWIN_WORLD
 # tile ID, for plot of tile-dependent additive bias.
 # Can maybe be removed.
 TILE_ID
+NUMBER
 
 # flags
 FLAGS
@@ -75,6 +76,8 @@ NGMIX_FLUX_ERR_1P
 NGMIX_FLUX_ERR_2M
 NGMIX_FLUX_ERR_2P
 NGMIX_FLUX_ERR_NOSHEAR
+NGMIX_MAG_NOSHEAR
+NGMIX_MAG_ERR_NOSHEAR
 
 # Flag for multiple objects due to overlapping
 # tiles
