@@ -1,0 +1,115 @@
+intelpython/3(9):ERROR:150: Module 'intelpython/3' conflicts with the currently loaded module(s) 'intelpython/3-2020.1'
+intelpython/3(9):ERROR:102: Tcl command execution failed: conflict		$software
+
+
+-------------------------------------------------------------------------------
+
+ _______  __   __  _______  _______  _______  _______  ___   _______  _______
+|       ||  | |  ||   _   ||       ||       ||       ||   | |       ||       |
+|  _____||  |_|  ||  |_|  ||    _  ||    ___||    _  ||   | |    _  ||    ___|
+| |_____ |       ||       ||   |_| ||   |___ |   |_| ||   | |   |_| ||   |___
+|_____  ||       ||       ||    ___||    ___||    ___||   | |    ___||    ___|
+ _____| ||   _   ||   _   ||   |    |   |___ |   |    |   | |   |    |   |___
+|_______||__| |__||__| |__||___|    |_______||___|    |___| |___|    |_______|
+    
+
+
+    Shape measurement pipeline developed at CosmoStat.
+
+    Authors: Samuel Farrens   <samuel.farrens@cea.fr>
+             Axel Guinot      <axel.guinot@cea.fr>
+
+    Main Contributors:
+             Martin Kilbinger
+             Tobias Liaudat
+             Morgan Schmitz
+
+    Version: 0.0.2
+
+-------------------------------------------------------------------------------
+    
+Starting ShapePipe Run: run_sp_tile_2021-04-22_14-40-27
+
+Checking Python Dependencies:
+ - mpi4py 3.0.3 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/mpi4py
+ - astropy 4.2.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/astropy
+ - galsim 2.2.5 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/galsim
+ - ngmix 2.0.0rc1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/ngmix-2.0.0rc1-py3.7.egg/ngmix
+ - joblib 1.0.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/joblib
+ - sqlitedict 1.7.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sqlitedict.py
+ - modopt 1.5.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/modopt
+ - numpy 1.19.5 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/numpy
+
+Checking System Executables:
+
+Checking Module Versions:
+ - ngmix_runner_old 0.0.1
+
+Running ShapePipe using smp
+
+Starting job handler with:
+ - Module: ngmix_runner_old
+ - Number of available CPUs: 48
+ - Total number of processes: 43
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+ - process-268-284 PID: 136039 
+ - process-264-284 PID: 135973 
+ - process-265-285 PID: 135977 
+ - process-267-284 PID: 136033 
+ - process-264-285 PID: 135975 
+ - process-266-284 PID: 136004 
+ - process-268-282 PID: 135984 
+ - process-267-285 PID: 135982 
+ - process-276-282 PID: 136058 
+ - process-270-283 PID: 136044 
+ - process-266-285 PID: 135980 
+ - process-265-284 PID: 135976 
+ - process-269-285 PID: 136042 
+ - process-268-283 PID: 136035 
+ - process-274-283 PID: 136055 
+ - process-265-283 PID: 135972 
+ - process-269-283 PID: 136041 
+ - process-272-282 PID: 136049 
+ - process-266-282 PID: 135979 
+ - process-270-284 PID: 136045 
+ - process-267-282 PID: 136034 
+ - process-274-282 PID: 136054 
+ - process-265-286 PID: 135978 
+ - process-277-282 PID: 136059 
+ - process-272-284 PID: 136050 
+ - process-266-283 PID: 135981 
+ - process-269-284 PID: 136040 
+ - process-275-283 PID: 136057 
+ - process-264-283 PID: 135974 
+ - process-265-282 PID: 135970 
+ - process-267-283 PID: 135983 
+ - process-275-282 PID: 136056 
+ - process-270-282 PID: 136043 
+ - process-272-283 PID: 136051 
+ - process-273-283 PID: 136053 
+ - process-268-285 PID: 136036 
+ - process-273-282 PID: 136052 
+ - process-266-286 PID: 136038 
+ - process-269-282 PID: 136037 
+ - process-271-282 PID: 136046 
+ - process-271-284 PID: 136048 
+ - process-271-283 PID: 136047 
+All processes complete
+
+A total of 0 errors were recorded.
+Finishing ShapePipe Run
+
+-------------------------------------------------------------------------------
+    
+ - process-264-286 PID: 135971 
+* JOBID: 72594.cmaster
+* USER: guinot
+* GROUP: guinot
+* JOBNAME: shapepipe_smp
+* SESSIONID: 135804
+* RESOURCESLIST: neednodes=n08:ppn=47,nodes=n08:ppn=47,walltime=96:00:00
+* RESOURCESUSED: cput=763:58:45,mem=48132080kb,vmem=97219852kb,walltime=26:30:24
+* QUEUE: batch
+* JOB EXIT STATUS: 0
