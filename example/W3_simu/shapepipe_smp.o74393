@@ -1,0 +1,411 @@
+intelpython/3(9):ERROR:150: Module 'intelpython/3' conflicts with the currently loaded module(s) 'intelpython/3-2020.1'
+intelpython/3(9):ERROR:102: Tcl command execution failed: conflict		$software
+
+
+-------------------------------------------------------------------------------
+
+ _______  __   __  _______  _______  _______  _______  ___   _______  _______
+|       ||  | |  ||   _   ||       ||       ||       ||   | |       ||       |
+|  _____||  |_|  ||  |_|  ||    _  ||    ___||    _  ||   | |    _  ||    ___|
+| |_____ |       ||       ||   |_| ||   |___ |   |_| ||   | |   |_| ||   |___
+|_____  ||       ||       ||    ___||    ___||    ___||   | |    ___||    ___|
+ _____| ||   _   ||   _   ||   |    |   |___ |   |    |   | |   |    |   |___
+|_______||__| |__||__| |__||___|    |_______||___|    |___| |___|    |_______|
+    
+
+
+    Shape measurement pipeline developed at CosmoStat.
+
+    Authors: Samuel Farrens   <samuel.farrens@cea.fr>
+             Axel Guinot      <axel.guinot@cea.fr>
+
+    Main Contributors:
+             Martin Kilbinger
+             Tobias Liaudat
+             Morgan Schmitz
+
+    Version: 0.0.2
+
+-------------------------------------------------------------------------------
+    
+Starting ShapePipe Run: run_sp_Mc_2021-04-29_10-41-25
+
+Checking Python Dependencies:
+ - numpy 1.19.5 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/numpy
+ - joblib 1.0.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/joblib
+ - modopt 1.5.1 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/modopt
+ - sqlitedict 1.7.0 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/sqlitedict.py
+ - mpi4py 3.0.3 /home/guinot/.conda/envs/shapepipe_github/lib/python3.7/site-packages/mpi4py
+
+Checking System Executables:
+
+Checking Module Versions:
+ - make_catalog_runner 1.0
+
+Running ShapePipe using smp
+
+Starting job handler with:
+ - Module: make_catalog_runner
+ - Number of available CPUs: 48
+ - Total number of processes: 166
+ - Job Type: parallel
+ - Batch size: 48
+ - Timeout Limit: 345600s
+ERROR: A total of 166 errors were recorded.
+ERROR: A total of 166 errors were recorded.
+Traceback (most recent call last):
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe_run.py", line 443, in main
+    run_smp(pipe)
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe_run.py", line 310, in run_smp
+    pipe.close_pipeline_log()
+  File "/home/guinot/ShapePipe_github/shapepipe/shapepipe_run.py", line 123, in close_pipeline_log
+    raise RuntimeError(final_error_count)
+RuntimeError: A total of 166 errors were recorded.
+All processes complete
+
+A total of 166 errors were recorded.
+Finishing ShapePipe Run
+
+-------------------------------------------------------------------------------
+    
+ - process-233-295 PID: 16989 
+ - process-240-290 PID: 16989 
+ - process-250-291 PID: 16989 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-232-295 PID: 16937 
+ - process-246-291 PID: 16937 
+ - process-265-282 PID: 16937 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-237-295 PID: 17011 
+ - process-244-290 PID: 17011 
+ - process-265-283 PID: 17011 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-229-295 PID: 16932 
+ - process-242-290 PID: 16932 
+ - process-253-290 PID: 16932 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-236-292 PID: 17002 
+ - process-243-291 PID: 17002 
+ - process-254-286 PID: 17002 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-230-294 PID: 16931 
+ - process-247-291 PID: 16931 
+ - process-266-284 PID: 16931 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-236-295 PID: 17005 
+ - process-245-291 PID: 17005 
+ - process-252-288 PID: 17005 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-229-294 PID: 16930 
+ - process-247-288 PID: 16930 
+ - process-267-284 PID: 16930 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-238-293 PID: 17014 
+ - process-241-293 PID: 17014 
+ - process-254-287 PID: 17014 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-237-293 PID: 17008 
+ - process-246-289 PID: 17008 
+ - process-266-283 PID: 17008 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-236-293 PID: 17003 
+ - process-248-287 PID: 17003 
+ - process-255-285 PID: 17003 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-235-293 PID: 16996 
+ - process-242-293 PID: 16996 
+ - process-253-288 PID: 16996 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-231-293 PID: 16988 
+ - process-242-292 PID: 16988 
+ - process-265-286 PID: 16988 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-233-292 PID: 16985 
+ - process-246-288 PID: 16985 
+ - process-252-286 PID: 16985 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-233-294 PID: 16987 
+ - process-246-292 PID: 16987 
+ - process-254-288 PID: 16987 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-235-294 PID: 16997 
+ - process-247-290 PID: 16997 
+ - process-253-286 PID: 16997 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-237-294 PID: 17010 
+ - process-248-288 PID: 17010 
+ - process-266-285 PID: 17010 
+ - process-235-295 PID: 17000 
+ - process-244-292 PID: 17000 
+ - process-253-289 PID: 17000 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-231-295 PID: 16983 
+ - process-247-289 PID: 16983 
+ - process-267-285 PID: 16983 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-238-294 PID: 17015 
+ - process-249-288 PID: 17015 
+ - process-267-282 PID: 17015 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-239-292 PID: 17017 
+ - process-248-289 PID: 17017 
+ - process-266-286 PID: 17017 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-237-291 PID: 17006 
+ - process-243-293 PID: 17006 
+ - process-252-289 PID: 17006 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-239-293 PID: 17018 
+ - process-248-291 PID: 17018 
+ - process-268-283 PID: 17018 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-234-292 PID: 16990 
+ - process-249-289 PID: 16990 
+ - process-268-282 PID: 16990 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-230-295 PID: 16933 
+ - process-249-290 PID: 16933 
+ - process-268-284 PID: 16933 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-232-293 PID: 16991 
+ - process-248-290 PID: 16991 
+ - process-267-283 PID: 16991 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-238-292 PID: 17012 
+ - process-242-289 PID: 17012 
+ - process-251-287 PID: 17012 
+ - process-269-283 PID: 17012 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-228-294 PID: 16927 
+ - process-241-291 PID: 16927 
+ - process-249-291 PID: 16927 
+ - process-269-284 PID: 16927 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-230-293 PID: 16929 
+ - process-239-294 PID: 16929 
+ - process-250-289 PID: 16929 
+ - process-270-283 PID: 16929 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-237-292 PID: 17007 
+ - process-241-290 PID: 17007 
+ - process-250-288 PID: 17007 
+ - process-270-282 PID: 17007 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-226-295 PID: 16926 
+ - process-243-290 PID: 16926 
+ - process-251-286 PID: 16926 
+ - process-268-285 PID: 16926 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-228-295 PID: 16928 
+ - process-240-292 PID: 16928 
+ - process-250-290 PID: 16928 
+ - process-269-282 PID: 16928 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-235-292 PID: 16994 
+ - process-242-291 PID: 16994 
+ - process-251-290 PID: 16994 
+ - process-269-285 PID: 16994 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-231-294 PID: 16979 
+ - process-245-290 PID: 16979 
+ - process-254-285 PID: 16979 
+ - process-276-282 PID: 16979 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-232-294 PID: 16984 
+ - process-246-290 PID: 16984 
+ - process-252-287 PID: 16984 
+ - process-272-284 PID: 16984 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-224-295 PID: 16922 
+ - process-240-291 PID: 16922 
+ - process-250-287 PID: 16922 
+ - process-271-283 PID: 16922 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-236-294 PID: 17004 
+ - process-243-289 PID: 17004 
+ - process-251-288 PID: 17004 
+ - process-270-284 PID: 17004 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-227-294 PID: 16923 
+ - process-240-294 PID: 16923 
+ - process-265-285 PID: 16923 
+ - process-271-282 PID: 16923 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-227-295 PID: 16924 
+ - process-241-292 PID: 16924 
+ - process-252-290 PID: 16924 
+ - process-275-283 PID: 16924 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-238-291 PID: 17009 
+ - process-245-292 PID: 17009 
+ - process-264-284 PID: 17009 
+ - process-272-283 PID: 17009 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-225-295 PID: 16925 
+ - process-240-293 PID: 16925 
+ - process-266-282 PID: 16925 
+ - process-275-282 PID: 16925 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-239-291 PID: 17016 
+ - process-243-292 PID: 17016 
+ - process-264-286 PID: 17016 
+ - process-277-282 PID: 17016 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-234-295 PID: 16995 
+ - process-247-292 PID: 16995 
+ - process-265-284 PID: 16995 
+ - process-274-283 PID: 16995 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-233-293 PID: 16986 
+ - process-245-289 PID: 16986 
+ - process-264-283 PID: 16986 
+ - process-273-283 PID: 16986 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-236-291 PID: 17001 
+ - process-244-291 PID: 17001 
+ - process-264-285 PID: 17001 
+ - process-272-282 PID: 17001 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-239-290 PID: 17013 
+ - process-244-289 PID: 17013 
+ - process-254-289 PID: 17013 
+ - process-274-282 PID: 17013 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-234-294 PID: 16993 
+ - process-249-287 PID: 16993 
+ - process-253-287 PID: 16993 
+ - process-273-282 PID: 16993 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ - process-234-293 PID: 16992 
+ - process-245-288 PID: 16992 
+ - process-251-289 PID: 16992 
+ - process-271-284 PID: 16992 
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+ERROR: "Key 'mcal_flags' does not exist."
+* JOBID: 74393.cmaster
+* USER: guinot
+* GROUP: guinot
+* JOBNAME: shapepipe_smp
+* SESSIONID: 16431
+* RESOURCESLIST: neednodes=n02:ppn=48,nodes=n02:ppn=48,walltime=48:00:00
+* RESOURCESUSED: cput=00:08:20,mem=9536448kb,vmem=36923948kb,walltime=00:01:03
+* QUEUE: batch
+* JOB EXIT STATUS: 0

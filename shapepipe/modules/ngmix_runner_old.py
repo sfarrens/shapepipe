@@ -62,7 +62,7 @@ def MegaCamFlip(vign, ccd_nb):
         return vign
 
 
-def get_prior(rng, g_sigma = 0.4):
+def get_prior(rng, g_sigma = 0.3, galsim=True):
     """ Get prior
 
     Return prior for the different parameters
@@ -88,24 +88,38 @@ def get_prior(rng, g_sigma = 0.4):
     row_sigma, col_sigma = 0.186, 0.186  # pixel size of DES
     cen_prior = ngmix.priors.CenPrior(row, col, row_sigma, col_sigma, rng=rng)
 
-    # T prior.  This one is flat, but another uninformative you might
-    # try is the two-sided error function (TwoSidedErf)
-    Tminval = -10.0  # arcsec squared
-    Tmaxval = 1.e6
-    T_prior = ngmix.priors.FlatPrior(Tminval, Tmaxval, rng=rng)
-
     # similar for flux.  Make sure the bounds make sense for
     # your images
-    Fminval = -1.e4
+    Fminval = -1.e2
     Fmaxval = 1.e9
     F_prior = ngmix.priors.FlatPrior(Fminval, Fmaxval, rng=rng)
 
-    # now make a joint prior.  This one takes priors
-    # for each parameter separately
-    prior = ngmix.joint_prior.PriorSimpleSep(cen_prior,
-                                             g_prior,
-                                             T_prior,
-                                             F_prior)
+    if galsim:
+        # T prior.  This one is flat, but another uninformative you might
+        # try is the two-sided error function (TwoSidedErf)
+        Tminval = -1.0  # arcsec squared
+        Tmaxval = 1.e2
+        r50_prior = ngmix.priors.FlatPrior(Tminval, Tmaxval, rng=rng)
+
+        # now make a joint prior.  This one takes priors
+        # for each parameter separately
+        prior = ngmix.joint_prior.PriorGalsimSimpleSep(cen_prior,
+                                                 g_prior,
+                                                 r50_prior,
+                                                 F_prior)
+    else:
+        # T prior.  This one is flat, but another uninformative you might
+        # try is the two-sided error function (TwoSidedErf)
+        Tminval = -1.0  # arcsec squared
+        Tmaxval = 1.e2
+        T_prior = ngmix.priors.FlatPrior(Tminval, Tmaxval, rng=rng)
+
+        # now make a joint prior.  This one takes priors
+        # for each parameter separately
+        prior = ngmix.joint_prior.PriorSimpleSep(cen_prior,
+                                                 g_prior,
+                                                 T_prior,
+                                                 F_prior)
 
     return prior
 
@@ -370,7 +384,7 @@ def make_gal(flux=10000, g1=0., g2=0., r_50=0.5,
     obj = galsim.Convolve((gal, psf))
     offset = galsim.PositionD(dx, dy)
     obj_img = obj.drawImage(nx=51, ny=51, wcs=wcs, offset=offset,
-                            method='phot', rng=rng)
+                            method='auto',)# rng=rng)
 
     psf_img = psf.drawImage(nx=51, ny=51, wcs=wcs)
 
@@ -389,16 +403,17 @@ def make_star(flux=10000, g1=0., g2=0., r_50=0.5,
     """
     """
 
-    star = galsim.Gaussian(fwhm=0.00001).withFlux(flux)
+    #star = galsim.Gaussian(fwhm=0.00001).withFlux(flux)
 
-    psf = galsim.Gaussian(fwhm=psf_fwhm)
+    psf = galsim.Gaussian(fwhm=psf_fwhm).withFlux(flux)
 
     wcs=galsim.JacobianWCS(dudx=dudx, dudy=dudy, dvdx=dvdx, dvdy=dvdy)
 
-    obj = galsim.Convolve((star, psf))
+    #obj = galsim.Convolve((star, psf))
+    obj = psf
     offset = galsim.PositionD(dx, dy)
     obj_img = obj.drawImage(nx=51, ny=51, wcs=wcs, offset=offset,
-                            method='phot', rng=rng)
+                            method='auto')#, rng=rng)
 
     psf_img = psf.drawImage(nx=51, ny=51, wcs=wcs)
 
@@ -413,10 +428,10 @@ def make_fake_gals(np_rng,
                    n_epoch=1, n_obj=1,
                    psf_fwhm=0.6,
                    pixel_scale=0.187, sigma_wcs=0.01,
-                   flux_range=[1000, 50000],
-                   r_50_range = [0.05, 1.5],
-                   bkg_range=[10, 10],
-                   offset_range=[-1, 1],
+                   flux_range=[10000, 10000],
+                   r_50_range = [0.3, 0.5],
+                   bkg_range=[250, 250],
+                   offset_range=[-0.5, 0.5],
                    verbose=False):
     """
     """
@@ -433,24 +448,30 @@ def make_fake_gals(np_rng,
     bkg_list = []
     flux_gal = int(np_rng.uniform(low=flux_range[0], high=flux_range[1]))
     r_50_gal = np_rng.uniform(low=r_50_range[0], high=r_50_range[1])
-    g1_shear = 0.02
-    g2_shear = 0.
-    g1_int, g2_int = np_rng.normal(size=2) * 0.3
-    g1_gal = g1_shear + g1_int
-    g2_gal = g2_shear + g2_int
-    while np.abs(g1_gal + g2_gal*1j) > 1:
-        g1_int, g2_int = np_rng.normal(size=2) * 0.3
-        g1_gal = g1_shear + g1_int
-        g2_gal = g2_shear + g2_int
-    #g1_gal = g2_gal = 0
+    
+    #g1_shear = 0.02
+    #g2_shear = 0.
+    #g1_int, g2_int = np_rng.normal(size=2) * 0.3
+    #g1_gal = g1_shear + g1_int
+    #g2_gal = g2_shear + g2_int
+    #while np.abs(g1_gal + g2_gal*1j) > 1:
+    #    g1_int, g2_int = np_rng.normal(size=2) * 0.3
+    #    g1_gal = g1_shear + g1_int
+    #    g2_gal = g2_shear + g2_int
+    g1_gal = 0.02
+    g2_gal = 0.1
+    #bkg = int(np_rng.uniform(low=bkg_range[0], high=bkg_range[1]))
     for n_e in range(n_epoch):
         if verbose:
             print('Epoch {}\n'.format(n_e))
-        #dx = dy = np_rng.uniform(low=offset_range[0],
-        #                            high=offset_range[1]) #* pixel_scale
+        #dx = np_rng.uniform(low=offset_range[0],
+        #                         high=offset_range[1]) #* pixel_scale
+        #dy = np_rng.uniform(low=offset_range[0],
+        #                         high=offset_range[1]) #* pixel_scale
         dx = dy = 0
         bkg = int(np_rng.uniform(low=bkg_range[0], high=bkg_range[1]))
-        g1_wcs, g2_wcs = np_rng.normal(size=2) * sigma_wcs
+        #g1_wcs, g2_wcs = np_rng.normal(size=2) * sigma_wcs
+        g1_wcs = g2_wcs = 0
         wcs = galsim.ShearWCS(scale=pixel_scale,
                               shear=galsim.Shear(g1=g1_wcs, g2=g2_wcs)).jacobian()
         if verbose:
@@ -483,7 +504,7 @@ def make_fake_gals(np_rng,
 
     print('True g1,g2: {:.4f} {:.4f}'.format(g1_gal, g2_gal))
 
-    return gals, psfs, flags, weights, jacob_list, psfs_sigma, offset_list, bkg_list, flux_gal, r_50_gal
+    return gals, psfs, flags, weights, jacob_list, psfs_sigma, offset_list, bkg_list, flux_gal, r_50_gal, np.array([g1_gal, g2_gal])
 
 
 # def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_list,
@@ -965,12 +986,14 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
 
     """
 
-    n_epoch = len(gals)
+    #n_epoch = len(gals)
     n_epoch = 3
 
     #gals, psfs = make_fake_gals(psfs, jacob_list, bkg_list)
-    gals, psfs, flags, weights, jacob_list, psfs_sigma, offset_list, bkg_list, tile_flux, tile_r50 = make_fake_gals(rng, n_epoch)
+    gals, psfs, flags, weights, jacob_list, psfs_sigma, offset_list, bkg_list, tile_flux, tile_r50, true_g = make_fake_gals(rng, n_epoch)
     #gals = np.copy(psfs)
+
+    #n_epoch = 1
 
     pixel_scale = 0.187
 
@@ -981,16 +1004,14 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
     gal_obs_list = ObsList()
     T_guess_psf = []
     psf_res_gT = {'g_PSFo': np.array([0., 0.]),
-                  'g_err_PSFo': np.array([0., 0.]),
-                  'T_PSFo': 0.,
-                  'T_err_PSFo': 0.}
+                  'T_PSFo': 0.}
     gal_guess = []
     gal_img = []
     gal_guess_flag = True
     wsum = 0.
     for n_e in range(n_epoch):
-        psf_jacob = ngmix.Jacobian(x=(psfs[0].shape[0]-1)/2. + 0.5,
-                                   y=(psfs[0].shape[1]-1)/2. + 0.5,
+        psf_jacob = ngmix.Jacobian(x=(psfs[0].shape[0]-1)/2.,# + 0.5,
+                                   y=(psfs[0].shape[1]-1)/2.,# + 0.5,
                                    dudx=jacob_list[n_e].dudx,
                                    dudy=jacob_list[n_e].dudy,
                                    dvdx=jacob_list[n_e].dvdx,
@@ -1004,73 +1025,92 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
         #psf_obs = Observation(psf_im, jacobian=psf_jacob, weight=psf_weight)
         psf_obs = Observation(psfs[n_e]/np.sum(psfs[n_e]), jacobian=psf_jacob, weight=psf_weight)
 
-        psf_T = 2. * psfs_sigma[n_e]**2.
+        psf_T = 2. * (psfs_sigma[n_e]*pixel_scale)**2.
         #psf_T = psfs_sigma[n_e]*1.17741*pixel_scale
 
-        psf_guess = np.array([0., 0., 0., 0., psf_T, 1.])
-        try:
-            psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess, rng, None)
+        #psf_guess = np.array([0., 0., 0., 0., psf_T, 1.])
+        #try:
+        #    psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess, rng, None)
 
-            # Set PSF GMix object
-            pars_psf = psf_res['pars']
-            #pars_psf[4] = (pars_psf[4]/1.17741)**2. * 2.
-            psf_gmix = ngmix.GMixModel(pars_psf, 'gauss')
-            #psf_obs.set_gmix(psf_gmix)
-        except:
-            continue
+        #    # Set PSF GMix object
+        #    pars_psf = psf_res['pars']
+        #    #pars_psf[4] = (pars_psf[4]/1.17741)**2. * 2.
+        #    psf_gmix = ngmix.GMixModel(pars_psf, 'gauss')
+        #    #psf_obs.set_gmix(psf_gmix)
+        #except:
+        #    continue
+
+        
 
         # Original PSF fit
-        sig_noise = bkg_list[n_e]
-        w = np.ones_like(gals[n_e]) * 1/sig_noise
-        w_tmp = np.sum(w)
-        psf_res_gT['g_PSFo'] += psf_res['g']*w_tmp
-        psf_res_gT['g_err_PSFo'] += np.array([psf_res['pars_err'][2], psf_res['pars_err'][3]])*w_tmp
-        psf_res_gT['T_PSFo'] += psf_res['T']*w_tmp
-        psf_res_gT['T_err_PSFo'] += psf_res['T_err']*w_tmp
-        wsum += w_tmp
+        #sig_noise = bkg_list[n_e]
+        #w = np.ones_like(gals[n_e]) * 1/sig_noise
+        #w_tmp = np.sum(w)
+        #psf_res_gT['g_PSFo'] += psf_res['g']*w_tmp
+        #psf_res_gT['g_err_PSFo'] += np.array([psf_res['pars_err'][2], psf_res['pars_err'][3]])*w_tmp
+        #psf_res_gT['T_PSFo'] += psf_res['T']*w_tmp
+        #psf_res_gT['T_err_PSFo'] += psf_res['T_err']*w_tmp
+        #wsum += w_tmp
 
         # Noise handling
         sig_noise = bkg_list[n_e]
+        #print("Sigma^2 noise : {}".format(sig_noise))
 
-        noise_img = rng.normal(size=gals[n_e].shape)*np.sqrt(sig_noise)
-        noise_img_gal = rng.normal(size=gals[n_e].shape)*np.sqrt(sig_noise)
+        #noise_img = rng.normal(size=gals[n_e].shape)*np.sqrt(sig_noise)
+        #noise_img_gal = rng.normal(size=gals[n_e].shape)*np.sqrt(sig_noise)
+        noise_img = rng.poisson(lam=sig_noise, size=gals[n_e].shape)-sig_noise
+        noise_img_gal = rng.poisson(lam=sig_noise, size=gals[n_e].shape)-sig_noise
 
+        # Weight
+        weight_img = np.ones_like(gals[n_e]) * 1/sig_noise
+        #print(weight_img[0,0])
+
+        # Fit original PSF
+        try:
+            ntry = 5
+            psf_ngauss = 5
+            # psf_fitter = ngmix.fitting.CoellipFitter(ngauss=psf_ngauss)
+            #psf_guesser = ngmix.guessers.CoellipPSFGuesser(rng=rng,
+            #                                               ngauss=psf_ngauss)
+            psf_fitter = ngmix.em.EMFitter()
+            psf_guesser = ngmix.guessers.GMixPSFGuesser(rng=rng,
+                                                        ngauss=psf_ngauss)
+            psf_runner = ngmix.runners.PSFRunner(fitter=psf_fitter, 
+                                                 guesser=psf_guesser,
+                                                 ntry=ntry)
+            psf_res = psf_runner.go(psf_obs)
+            psf_g1, psf_g2, psf_T = psf_res.get_gmix().get_g1g2T()
+            
+            wtmp = np.sum(weight_img)
+            psf_res_gT['g_PSFo'] += np.array([psf_g1, psf_g2]) * wtmp
+            psf_res_gT['T_PSFo'] += psf_T * wtmp
+            wsum += wtmp
+        except:
+            continue
+
+        # Handle masks
         gal_masked = np.copy(gals[n_e])
         if (len(np.where(flags[n_e] != 0)[0]) != 0):
             gal_masked[flags[n_e] != 0] = noise_img_gal[flags[n_e] != 0]
+            weight_img[flags[n_e] != 0] = 0
 
-        w = np.ones_like(gal_masked) * 1/sig_noise
-
-        # Gal guess
-        try:
-            gal_guess_tmp = get_guess(gal_masked, pixel_scale=pixel_scale, guess_size_type='T', guess_centroid_unit='img')
-        except:
-            gal_guess_flag = False
-            gal_guess_tmp = np.array([0., 0., 0., 0., 1, 100])
-
-        gal_jacob = ngmix.Jacobian(x=(gals[0].shape[0]-1)/2. + offset_list[n_e][0] + 0.5,# + offset_list[n_e][0],
-                                   y=(gals[0].shape[1]-1)/2. + offset_list[n_e][1] + 0.5,# + offset_list[n_e][1],
+        gal_jacob = ngmix.Jacobian(x=(gals[0].shape[0]-1)/2. + offset_list[n_e][0],# + 0.5,# + offset_list[n_e][0],
+                                   y=(gals[0].shape[1]-1)/2. + offset_list[n_e][1],# + 0.5,# + offset_list[n_e][1],
                                    dudx=jacob_list[n_e].dudx,
                                    dudy=jacob_list[n_e].dudy,
                                    dvdx=jacob_list[n_e].dvdx,
                                    dvdy=jacob_list[n_e].dvdy)
 
         gal_img_tmp = gal_masked
-        gal_img.append(gal_img_tmp)
-        gal_obs = Observation(gal_img_tmp, weight=w, jacobian=gal_jacob,
+        #gal_img.append(gal_img_tmp)
+        #print(weight_img[0,0])
+        gal_obs = Observation(gal_img_tmp, weight=weight_img, jacobian=gal_jacob,
                               psf=psf_obs, noise=noise_img,
                               bmask=flags[n_e].astype(np.int32),
                               ormask=flags[n_e].astype(np.int32))
 
-        if gal_guess_flag:
-            gal_guess_tmp[:2] = 0
-            #gal_guess_tmp[4] = tile_r50
-            gal_guess_tmp[5] = tile_flux
-            gal_guess.append(gal_guess_tmp)
-
         gal_obs_list.append(gal_obs)
         T_guess_psf.append(psf_T)
-        gal_guess_flag = True
 
     if wsum == 0:
         raise ZeroDivisionError('Sum of weights = 0, division by zero')
@@ -1081,144 +1121,155 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
 
     Tguess = np.mean(T_guess_psf)
 
-    # Gal guess handling
-    fail_get_guess = False
-    if len(gal_guess) == 0:
-        fail_get_guess = True
-        gal_pars = [0., 0., 0., 0., Tguess, 100]
-    else:
-        gal_pars = np.mean(gal_guess, 0)
+    #print("T guess : {}".format(Tguess))
+    #print("Ngmix T guess : {}".format(psf_res_gT['T_PSFo']))
 
     psf_model = 'gauss'
     gal_model = 'gauss'
 
     psf_reconv = 'gauss'
+    #psf_reconv = galsim.Gaussian(sigma=np.sqrt(Tguess/2)*(1+0.02)).withFlux(1)
 
     # metacal specific parameters
-    metacal_pars = {'types': ['noshear', '1p', '1m', '2p', '2m'],
-                    'step': 0.01,
-                    'psf': psf_reconv,
-                    'fixnoise': True,
-                    'use_noise_image': True,
-                    'rng': rng}
+    #metacal_pars = {'types': ['noshear', '1p', '1m', '2p', '2m'],
+    #                'step': 0.01,
+    #                'psf': psf_reconv,
+    #                'fixnoise': True,
+    #                'use_noise_image': True,
+    #                'rng': rng}
 
     # obs_dict_mcal = ngmix.metacal.get_all_metacal(gal_obs_list, **metacal_pars)
     # res = {'mcal_flags': 0}
     # obs_dict_mcal['noshear'] = gal_obs_list
 
-    gal_pars = np.array([0., 0., 0., 0., (tile_r50/1.17741)**2 * 2, tile_flux])
+    #gal_pars = np.array([0., 0., 0., 0., (tile_r50/1.17741)**2 * 2, tile_flux])
     #gal_pars = np.array([0., 0., 0., 0., 1., tile_flux])
 
     ntry = 5
 
-    fitter = ngmix.fitting.Fitter(model=gal_model, prior=prior)
-    guesser = ngmix.geussers.TPSFFluxAndPriorGuesser(rng=rng,
-                                                     T=T_guess_psf,
+    prior = get_prior(rng=rng, galsim=True)
+
+    #fitter = ngmix.fitting.Fitter(model=gal_model, prior=prior)
+    fitter = ngmix.fitting.GalsimFitter(model=gal_model, prior=prior)
+    guesser = ngmix.guessers.TPSFFluxAndPriorGuesser(rng=rng,
+                                                     T=Tguess,
                                                      prior=prior)
+    #guesser = ngmix.guessers.R50FluxGuesser(
+    #    rng=rng,
+    #    r50=tile_r50,
+    #    flux=tile_flux,
+    #    prior=prior,
+    #)
+    #fitter = ngmix.fitting.GalsimFitter(model=gal_model, prior=prior)
     
-    psf_ngauss = 5
-    psf_fitter = ngmix.fitting.CoellipFitter(ngaus=psf_ngauss)
-    psf_geusser = ngmix.guessers.CoellipPSFGuesser(rng=rng,
+    psf_ngauss = 1
+    psf_fitter = ngmix.fitting.CoellipFitter(ngauss=psf_ngauss)
+    psf_guesser = ngmix.guessers.CoellipPSFGuesser(rng=rng,
                                                    ngauss=psf_ngauss)
+    #psf_fitter = ngmix.em.EMFitter()
+    #psf_guesser = ngmix.guessers.GMixPSFGuesser(rng=rng,
+    #                                            ngauss=psf_ngauss)
 
     psf_runner = ngmix.runners.PSFRunner(fitter=psf_fitter, 
                                          guesser=psf_guesser,
                                          ntry=ntry)
 
-    runner = ngmixrunners.Runner(fitter=fitter,
-                                 guesser=guesser,
-                                 ntry=ntry)
+    runner = ngmix.runners.Runner(fitter=fitter,
+                                  guesser=guesser,
+                                  ntry=ntry)
 
+    boot_no_mcal = ngmix.bootstrap.Bootstrapper(runner=runner,
+                                                psf_runner=psf_runner)
     boot = ngmix.metacal.MetacalBootstrapper(runner=runner, 
-                                           psf_runner=psf_runner,
-                                           psf=psf_reconv,
-                                           rng=rng,
-                                           types=['noshear', '1p', '1m', '2p', '2m'])
+                                             psf_runner=psf_runner,
+                                             psf=psf_reconv,
+                                             rng=rng,
+                                             step=0.01,
+                                             types=['noshear', '1p', '1m', '2p', '2m'],
+                                             use_noise_image=True)
 
     res, obs_dict_mcal = boot.go(gal_obs_list)
+    res_no_mcal = boot_no_mcal.go(gal_obs_list)
+    res['no_mcal'] = res_no_mcal
+
+    #for key in res.keys():
+        #print(obs_dict_mcal[key][0].psf.meta['result'])
+    #    res[key]['Tpsf'] = obs_dict_mcal[key][0].psf.meta['result']['T']
 
 
-    # for key in sorted(obs_dict_mcal):
+    for key in sorted(obs_dict_mcal):
 
     #     fres = make_galsimfit(obs_dict_mcal[key],
     #                           gal_model, gal_pars,
     #                           rng,
     #                           prior=prior)
 
-    #     res['mcal_flags'] |= fres['flags']
-    #     tres = {}
+        fres = res[key]
 
-    #     for name in fres.keys():
-    #         tres[name] = fres[name]
-    #     tres['flags'] = fres['flags']
+        #res['mcal_flags'] |= fres['flags']
+        tres = {}
 
-    #     wsum = 0.0
-    #     Tpsf_sum = 0.0
-    #     gpsf_sum = np.zeros(2)
-    #     npsf = 0
-    #     for n_e, obs in enumerate(obs_dict_mcal[key]):
+        for name in fres.keys():
+            tres[name] = fres[name]
+        tres['flags'] = fres['flags']
 
-    #         if hasattr(obs, 'psf_nopix'):
-    #             try:
-    #                 psf_res = make_galsimfit(obs.psf_nopix,
-    #                                          psf_model,
-    #                                          np.array([0., 0., 0., 0., T_guess_psf[n_e], 1.]),
-    #                                          rng,
-    #                                          prior=None,
-    #                                          ntry=ntry)
-    #             except:
-    #                 continue
-    #             g1, g2 = psf_res['g']
-    #             T = psf_res['T']
-    #         else:
-    #             try:
-    #                 psf_res = make_galsimfit(obs.psf,
-    #                                          psf_model,
-    #                                          np.array([0., 0., 0., 0., T_guess_psf[n_e], 1.]),
-    #                                          rng,
-    #                                          prior=None,
-    #                                          ntry=ntry)
-    #             except:
-    #                 continue
-    #             g1, g2 = psf_res['g']
-    #             T = psf_res['T']
+        wsum = 0.0
+        Tpsf_sum = 0.0
+        gpsf_sum = np.zeros(2)
+        npsf = 0
+        for n_e, obs in enumerate(obs_dict_mcal[key]):
 
-    #         # TODO we sometimes use other weights
-    #         twsum = obs.weight.sum()
+            try:
+                psf_res = obs.psf.meta['result']
+            except:
+                continue
+            g1, g2 = psf_res['g']
+            T = psf_res['T']
 
-    #         wsum += twsum
-    #         gpsf_sum[0] += g1*twsum
-    #         gpsf_sum[1] += g2*twsum
-    #         Tpsf_sum += T*twsum
-    #         npsf += 1
+            # TODO we sometimes use other weights
+            twsum = obs.weight.sum()
 
-    #     tres['gpsf'] = gpsf_sum/wsum
-    #     tres['Tpsf'] = Tpsf_sum/wsum
+            wsum += twsum
+            gpsf_sum[0] += g1*twsum
+            gpsf_sum[1] += g2*twsum
+            Tpsf_sum += T*twsum
+            npsf += 1
 
-    #     res[key] = tres
+        tres['gpsf'] = gpsf_sum/wsum
+        tres['Tpsf'] = Tpsf_sum/wsum
+
+        res[key] = tres
+
+    #res['true_g'] = true_g
 
     
     print()
-    print('Gal guess')
-    print(gal_guess_tmp)
     print('Final res')
-    print(res['noshear']['pars'])
+    try:
+        print(res['noshear']['pars'], res['noshear']['s2n'])
+    except:
+        print(res['noshear']['pars'], res['noshear']['s2n_r'])
+    print('Final res no mcal')
+    try:
+        print(res_no_mcal['pars'], res_no_mcal['s2n'])
+    except:
+        print(res_no_mcal['pars'], res_no_mcal['s2n_r'])
     print('Final res err')
     print(np.sqrt(res['noshear']['pars_err']))
-    print('T psf: {}'.format(res['noshear']['Tpsf']))
+    #print('T psf: {}'.format(res['noshear']['Tpsf']))
     print()
-    res_mcal = make_galsimfit(obs_dict_mcal['noshear'][0], gal_model, gal_pars, rng, prior=prior)
-    print('Galsim fit mcal')
-    print('g1 : {}\ng2 : {}'.format(res_mcal['pars'][2], res_mcal['pars'][3]))
-    res_no_mcal = make_galsimfit(gal_obs_list[0], gal_model, gal_pars, rng, prior=prior)
-    print('Galsim fit no mcal')
-    print('g1 : {}\ng2 : {}'.format(res_no_mcal['pars'][2], res_no_mcal['pars'][3]))
-    print('HSM mcal')
-    try:
-        s = galsim.hsm.FindAdaptiveMom(galsim.Image(obs_dict_mcal['noshear'][0].image, wcs=obs_dict_mcal['noshear'][0].jacobian.get_galsim_wcs()))
-        print('g1 : {}\ng2 : {}'.format(s.observed_shape.g1, s.observed_shape.g2))
-    except:
-        print('Fails')
+    #res_mcal = make_galsimfit(obs_dict_mcal['noshear'][0], gal_model, gal_pars, rng, prior=prior)
+    #print('Galsim fit mcal')
+    #print('g1 : {}\ng2 : {}'.format(res_mcal['pars'][2], res_mcal['pars'][3]))
+    #res_no_mcal = make_galsimfit(gal_obs_list[0], gal_model, gal_pars, rng, prior=prior)
+    #print('Galsim fit no mcal')
+    #print('g1 : {}\ng2 : {}'.format(res_no_mcal['pars'][2], res_no_mcal['pars'][3]))
+    #print('HSM mcal')
+    #try:
+    #    s = galsim.hsm.FindAdaptiveMom(galsim.Image(obs_dict_mcal['noshear'][0].image, wcs=obs_dict_mcal['noshear'][0].jacobian.get_galsim_wcs()))
+    #    print('g1 : {}\ng2 : {}'.format(s.observed_shape.g1, s.observed_shape.g2))
+    #except:
+    #    print('Fails')
     print('HSM no mcal')
     try:
         s = galsim.hsm.FindAdaptiveMom(galsim.Image(gal_obs_list[0].image, wcs=gal_obs_list[0].jacobian.get_galsim_wcs()))
@@ -1227,11 +1278,15 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
         print('Fails')
     print("True flux : {}".format(tile_flux))
     print("Meas flux : {}".format(res['noshear']['flux']))
+    print("True mag : {}".format(-2.5 * np.log10(tile_flux) + 30))
+    print("Meas mag : {}".format(-2.5 * np.log10(res['noshear']['flux']) + 30))
     print("True r50 : {}".format(tile_r50))
-    print("Meas r50 : {}".format(np.sqrt(res['noshear']['pars'][4]/2)*1.17741))
-
+    #print("Meas r50 : {}".format(np.sqrt(np.abs(res['noshear']['pars'][4])/2)*1.17741))
+    print("Meas r50 : {}".format(res['noshear']['pars'][4]))
+    
     ####
     fig_dir = '/automnt/n17data/guinot/simu_W3/plot_ngmix/'
+    
     ####
     plt.figure()
     plt.imshow(obs_dict_mcal['noshear'][n_e].psf.image, cmap='gist_stern')
@@ -1243,29 +1298,31 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
     #print(s.observed_shape.g1, s.observed_shape.g2, s.moments_sigma*2.355*0.187)
     #print(g1, g2, T/1.17741*2.355)
     ####
-    plt.figure()
-    plt.imshow(gal_obs_list[n_e].psf.image, cmap='gist_stern')
-    plt.colorbar()
-    plt.savefig(fig_dir + '/psf_ori_{}_{}.png'.format(id_tmp, n_e))
+    #plt.figure()
+    #plt.imshow(gal_obs_list[n_e].psf.image, cmap='gist_stern')
+    #plt.colorbar()
+    #plt.savefig(fig_dir + '/psf_ori_{}_{}.png'.format(id_tmp, n_e))
     ####
-    psf_profile = np.sum(obs_dict_mcal['noshear'][n_e].psf.image, 0)
-    plt.figure()
-    plt.semilogy(psf_profile)
-    plt.savefig(fig_dir + '/psf_profile_{}_{}.png'.format(id_tmp, n_e))
+    #psf_profile = np.sum(obs_dict_mcal['noshear'][n_e].psf.image, 0)
+    #plt.figure()
+    #plt.semilogy(psf_profile)
+    #plt.savefig(fig_dir + '/psf_profile_{}_{}.png'.format(id_tmp, n_e))
     ####
-    plt.figure()
-    plt.imshow(flags[n_e])
-    plt.colorbar()
-    plt.savefig(fig_dir + '/flags_ori_{}_{}.png'.format(id_tmp, n_e))
+    #plt.figure()
+    #plt.imshow(flags[n_e])
+    #plt.colorbar()
+    #plt.savefig(fig_dir + '/flags_ori_{}_{}.png'.format(id_tmp, n_e))
     ####
-    plt.figure()
-    plt.imshow(w)
-    plt.colorbar()
-    plt.savefig(fig_dir + '/weight_ori_{}_{}.png'.format(id_tmp, n_e))
+    #plt.figure()
+    #plt.imshow(w)
+    #plt.colorbar()
+    #plt.savefig(fig_dir + '/weight_ori_{}_{}.png'.format(id_tmp, n_e))
+    
     ####
     plt.figure()
     plt.imshow(obs_dict_mcal['noshear'][n_e].image)
     plt.colorbar()
+    plt.suptitle('Metacal noshear gal {} epoch {}'.format(id_tmp, n_e))
     plt.savefig(fig_dir + '/gal_metacal_{}_{}.png'.format(id_tmp, n_e))
     ####
     plt.figure()
@@ -1273,29 +1330,31 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
     plt.colorbar()
     plt.savefig(fig_dir + '/gal_1p_{}_{}.png'.format(id_tmp, n_e))
     ####
-    plt.figure()
-    plt.imshow(gal_img[0]-gal_img[-1])
-    plt.colorbar()
-    plt.savefig(fig_dir + '/gal_ori_stack_{}_{}.png'.format(id_tmp, n_e))
+    #plt.figure()
+    #plt.imshow(gal_img[0]-gal_img[-1])
+    #plt.colorbar()
+    #plt.savefig(fig_dir + '/gal_ori_stack_{}_{}.png'.format(id_tmp, n_e))
     ####
     for n_e in range(n_epoch):
         fig, ax = plt.subplots()
-        ax.imshow(gals[n_e])
+        im = ax.imshow(gals[n_e])
+        fig.colorbar(im)
         s = galsim.Shear(g1=res['noshear']['pars'][2], g2=res['noshear']['pars'][3])
-        e = Ellipse(xy=(25.5, 25.5),
-                width=6.,
-                height=6*s.q,
-                angle=s.beta.deg)
+        e = Ellipse(xy=((gals[0].shape[0]-1)/2. + offset_list[n_e][0] + res['noshear']['pars'][0], 
+                        (gals[0].shape[1]-1)/2. + offset_list[n_e][1] + res['noshear']['pars'][1]),
+                    width=6.,
+                    height=6*s.q,
+                    angle=s.beta.deg)
         e.set_facecolor('none')
         e.set_edgecolor('red')
         ax.add_artist(e)
-        ax.plot(25.5+offset_list[n_e][0], 25.5+offset_list[n_e][1], 'k+')
-        ax.plot(25.5, 25.5, 'r+')
-        #plt.colorbar()
+        ax.plot((gals[0].shape[0]-1)/2.+offset_list[n_e][0], (gals[0].shape[1]-1)/2.+offset_list[n_e][1], 'k+')
+        #ax.plot(25., 25., 'r+')
+        fig.suptitle('Original gal {} epoch {}'.format(id_tmp, n_e))
         plt.savefig(fig_dir + '/gal_ori_{}_{}.png'.format(id_tmp, n_e))
     ####
     fig, ax = plt.subplots()
-    ax.imshow(gal_masked)
+    ax.imshow(gal_masked, cmap='gist_stern')
     s = galsim.Shear(g1=res['noshear']['pars'][2], g2=res['noshear']['pars'][3])
     e = Ellipse(xy=(25.5+res['noshear']['pars'][0], 25.5+res['noshear']['pars'][1]),
                 width=6.,
@@ -1312,7 +1371,6 @@ def do_ngmix_metacal(gals, psfs, psfs_sigma, weights, flags, jacob_list, offset_
     # result dictionary, keyed by the types in metacal_pars above
     metacal_res = res
     metacal_res.update(psf_res_gT)
-    metacal_res['moments_fail'] = fail_get_guess
 
     return metacal_res
 
@@ -1376,14 +1434,13 @@ def compile_results(results, ZP):
     """
 
     names = ['1m', '1p', '2m', '2p', 'noshear']
-    names2 = ['id', 'n_epoch_model', 'moments_fail', 'ntry_fit',
+    names2 = ['id', 'n_epoch_model',
               'g1_psfo_ngmix', 'g2_psfo_ngmix', 'T_psfo_ngmix',
-              'g1_err_psfo_ngmix', 'g2_err_psfo_ngmix', 'T_err_psfo_ngmix',
               'g1', 'g1_err', 'g2', 'g2_err',
               'T', 'T_err', 'Tpsf', 'g1_psf', 'g2_psf',
               'flux', 'flux_err', 's2n',
               'mag', 'mag_err',
-              'flags', 'mcal_flags']
+              'flags']
     output_dict = {k: {kk: [] for kk in names2} for k in names}
     for i in range(len(results)):
         for name in names:
@@ -1393,14 +1450,14 @@ def compile_results(results, ZP):
 
             output_dict[name]['id'].append(results[i]['obj_id'])
             output_dict[name]['n_epoch_model'].append(results[i]['n_epoch_model'])
-            output_dict[name]['moments_fail'].append(results[i]['moments_fail'])
-            output_dict[name]['ntry_fit'].append(results[i][name]['ntry'])
+            #©
+            #output_dict[name]['ntry_fit'].append(results[i][name]['ntry'])
             output_dict[name]['g1_psfo_ngmix'].append(results[i]['g_PSFo'][0])
             output_dict[name]['g2_psfo_ngmix'].append(results[i]['g_PSFo'][1])
-            output_dict[name]['g1_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][0])
-            output_dict[name]['g2_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][1])
+            #output_dict[name]['g1_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][0])
+            #output_dict[name]['g2_err_psfo_ngmix'].append(results[i]['g_err_PSFo'][1])
             output_dict[name]['T_psfo_ngmix'].append(results[i]['T_PSFo'])
-            output_dict[name]['T_err_psfo_ngmix'].append(results[i]['T_err_PSFo'])
+            #output_dict[name]['T_err_psfo_ngmix'].append(results[i]['T_err_PSFo'])
             output_dict[name]['g1'].append(results[i][name]['g'][0])
             output_dict[name]['g1_err'].append(results[i][name]['pars_err'][2])
             output_dict[name]['g2'].append(results[i][name]['g'][1])
@@ -1415,12 +1472,15 @@ def compile_results(results, ZP):
             output_dict[name]['mag'].append(mag)
             output_dict[name]['mag_err'].append(mag_err)
 
+            #output_dict[name]['true_g1'].append(results[i]['true_g'][0])
+            #output_dict[name]['true_g2'].append(results[i]['true_g'][1])
+
             try:
                 output_dict[name]['s2n'].append(results[i][name]['s2n'])
             except:
                 output_dict[name]['s2n'].append(results[i][name]['s2n_r'])
             output_dict[name]['flags'].append(results[i][name]['flags'])
-            output_dict[name]['mcal_flags'].append(results[i]['mcal_flags'])
+            #output_dict[name]['mcal_flags'].append(results[i]['mcal_flags'])
 
     return output_dict
 
@@ -1516,9 +1576,16 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
 
     tmp_g1 = []
     tmp_g2 = []
+    R11 = []
+    R22 = []
     tmp_g1_err = []
     tmp_g2_err = []
+    tmp_g1_true = []
+    tmp_g2_true = []
+    tmp_g1_true_err = []
+    tmp_g2_true_err = []
     psf_hsm_shapes = []
+    #w = 1
 
     #for i_tile, id_tmp in tqdm(enumerate(obj_id), total=len(obj_id[:2000])):
     for i_tile, id_tmp in enumerate(obj_id):
@@ -1631,15 +1698,22 @@ def process(tile_cat_path, gal_vignet_path, bkg_vignet_path,
         #except Exception as ee:
         #    w_log.info('ngmix failed for object ID={}.\nMessage: {}'.format(id_tmp, ee))
         #    continue
-        """
+        
         if (res['noshear']['T']/res['noshear']['Tpsf']>0.5) & (res['noshear']['pars'][-1]/res['noshear']['pars_err'][-1]>10):
             tmp_g1.append(res['noshear']['pars'][2])
             tmp_g2.append(res['noshear']['pars'][3])
+            R11.append((res['1p']['pars'][2] - res['1m']['pars'][2])/0.02)
+            R22.append((res['2p']['pars'][3] - res['2m']['pars'][3])/0.02)
             tmp_g1_err.append(res['noshear']['pars_err'][2])
             tmp_g2_err.append(res['noshear']['pars_err'][3])
+            tmp_g1_true.append(res['no_mcal']['pars'][2])
+            tmp_g2_true.append(res['no_mcal']['pars'][3])
+            tmp_g1_true_err.append(res['no_mcal']['pars_err'][2])
+            tmp_g2_true_err.append(res['no_mcal']['pars_err'][3])
             w = 1/(2*0.34**2 + np.array(tmp_g1_err) + np.array(tmp_g2_err))
-        print('\n\n############\nCURRENT G1 : {:.5}   {:.5}    {:.3}\nCURRENT G2 : {:.5}   {:.5}    {:.3}\n############\n\n'.format(np.average(tmp_g1, weights=w), np.median(tmp_g1), np.std(tmp_g1), np.average(tmp_g2, weights=w), np.median(tmp_g2), np.std(tmp_g2)))
-        """
+            w_true = 1/(2*0.34**2 + np.array(tmp_g1_true_err) + np.array(tmp_g2_true_err))
+        print('\n\n############\nN objects : {}\n                WAM          AM          WA        Rxx        std\nCURRENT G1 : {:.5}   {:.5}   {:.5}   {:.5}    {:.3}\nCURRENT G2 : {:.5}   {:.5}   {:.5}   {:.5}    {:.3}\n############\n\n'.format(len(tmp_g1), np.average(tmp_g1, weights=w)/np.mean(R11), np.mean(tmp_g1)/np.mean(R11), np.average(tmp_g1_true, weights=w_true), np.mean(R11), np.std(tmp_g1), np.average(tmp_g2, weights=w)/np.mean(R22), np.mean(tmp_g2)/np.mean(R22), np.average(tmp_g2_true, weights=w_true), np.mean(R22), np.std(tmp_g2)))
+        
         res['obj_id'] = id_tmp
         res['n_epoch_model'] = len(gal_vign)
         final_res.append(res)

@@ -256,9 +256,9 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
     ngmix_cat_file = io.FITSCatalog(ngmix_cat_path)
     ngmix_cat_file.open()
     ngmix_n_epoch = ngmix_cat_file.get_data()['n_epoch_model']
-    ngmix_mcal_flags = ngmix_cat_file.get_data()['mcal_flags']
+    #ngmix_mcal_flags = ngmix_cat_file.get_data()['mcal_flags']
 
-    ngmix_mom_fail = ngmix_cat_file.get_data()['moments_fail']
+    #ngmix_mom_fail = ngmix_cat_file.get_data()['moments_fail']
 
     ngmix_id = ngmix_cat_file.get_data()['id']
     # max_epoch = np.max(ngmix_n_epoch)
@@ -307,8 +307,8 @@ def save_ngmix_data(final_cat_file, ngmix_cat_path):
                 output_dict['NGMIX_T_PSFo_{}'.format(key)][i] = ngmix_cat_file.get_data(key)['T_psfo_ngmix'][ind[0]]
 
             output_dict['NGMIX_N_EPOCH'][i] = ngmix_n_epoch[ind[0]]
-            output_dict['NGMIX_MCAL_FLAGS'][i] = ngmix_mcal_flags[ind[0]]
-            output_dict['NGMIX_MOM_FAIL'][i] = ngmix_mom_fail[ind[0]]
+            #output_dict['NGMIX_MCAL_FLAGS'][i] = ngmix_mcal_flags[ind[0]]
+            #output_dict['NGMIX_MOM_FAIL'][i] = ngmix_mom_fail[ind[0]]
 
     for key in output_dict.keys():
         final_cat_file.add_col(key, output_dict[key])
