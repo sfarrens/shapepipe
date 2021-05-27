@@ -32,6 +32,8 @@ else:
 from shapepipe.pipeline import file_io as sc
 from sqlitedict import SqliteDict
 
+import piff
+
 
 NOT_ENOUGH_STARS = 'Fail_stars'
 BAD_CHI2 = 'Fail_chi2'
@@ -101,6 +103,42 @@ def interpsfex(dotpsfpath, pos, thresh_star, thresh_chi2):
     return PSFs
 
 
+def interpiff(dotpiffpath, pos, thresh_star, stamp_size=51):
+    """Use PSFEx generated model to perform spatial PSF interpolation.
+
+        Parameters
+        ----------
+        dotpiffpath : string
+            Path to .piff file (Piff output).
+
+        pos : np.ndaray
+            Positions where the PSF model should be evaluated.
+
+        thresh : int
+            Threshold of stars under which the PSF is not interpolated
+
+        Returns
+        -------
+        PSFs : np.ndarray
+            Each row is the PSF imagette at the corresponding asked position.
+
+    """
+
+    if not os.path.exists(dotpiffpath):
+        return FILE_NOT_FOUND
+
+    # read PSF model and extract basis and polynomial degree and scale position
+    PSF_model = piff.read(dotpiffpath)
+
+    # Check number of stars used to compute the PSF
+    if len(PSF_model.stars) < thresh_star:
+        return NOT_ENOUGH_STARS
+    
+    PSFs = np.array([PSF_model.draw(x=pos[i, 0], y=pos[i, 1], stamp_size=51).array for i in range(len(pos))])
+
+    return PSFs
+
+
 class PSFExInterpolator(object):
     """Interpolator class.
 
@@ -127,7 +165,7 @@ class PSFExInterpolator(object):
     """
 
     def __init__(self, dotpsf_path, galcat_path, output_path, img_number, w_log,
-                 pos_params=None, get_shapes=True, star_thresh=20, chi2_thresh=2):
+                 pos_params=None, get_shapes=True, star_thresh=20, chi2_thresh=2, piffpsf=False):
 
         # Path to PSFEx output file
         self._dotpsf_path = dotpsf_path
@@ -143,6 +181,8 @@ class PSFExInterpolator(object):
         self._star_thresh = star_thresh
 
         self._chi2_thresh = chi2_thresh
+
+        self._piffpsf = piffpsf
 
         # Logging
         self._w_log = w_log
@@ -232,8 +272,10 @@ class PSFExInterpolator(object):
         # self.interp_PSFs = np.array([pex.get_rec(x,y) for x,y in
         # zip(self.gal_pos[:,0],
         #                              self.gal_pos[:,1])])
-
-        self.interp_PSFs = interpsfex(self._dotpsf_path, self.gal_pos, self._star_thresh, self._chi2_thresh)
+        if not self._piffpsf:
+            self.interp_PSFs = interpsfex(self._dotpsf_path, self.gal_pos, self._star_thresh, self._chi2_thresh)
+        else:
+            self.interp_PSFs = interpiff(self._dotpsf_path, self.gal_pos, self._star_thresh)
 
     def _get_psfshapes(self):
         """ Compute shapes of PSF at galaxy positions using HSM.
@@ -302,7 +344,11 @@ class PSFExInterpolator(object):
 
             self._get_psfshapes()
             self._get_starshapes(star_vign)
-            psfex_cat_dict = self._get_psfexcatdict(psfex_cat_path)
+
+            if not self._piffpsf:
+                psfex_cat_dict = self._get_psfexcatdict(psfex_cat_path)
+            else:
+                psfex_cat_dict = None
 
             self._write_output_validation(star_dict, psfex_cat_dict)
 
@@ -381,11 +427,13 @@ class PSFExInterpolator(object):
         data = {**data, **star_dict}
 
         data['ACCEPTED'] = np.ones_like(data['NUMBER'], dtype='int16')
-        star_used = psfex_cat_dict.pop('SOURCE_NUMBER')
 
-        for i in range(len(data['NUMBER'])):
-            if i+1 not in star_used:
-                data['ACCEPTED'][i] = 0
+        if not self._piffpsf:
+            star_used = psfex_cat_dict.pop('SOURCE_NUMBER')
+
+            for i in range(len(data['NUMBER'])):
+                if i+1 not in star_used:
+                    data['ACCEPTED'][i] = 0
 
         output.save_as_fits(data, sex_cat_path=self._galcat_path)
 
@@ -447,7 +495,10 @@ class PSFExInterpolator(object):
                 obj_id = all_id[ind_obj]
                 gal_pos = np.array(self._f_wcs_file[exp_name][ccd]['WCS'].all_world2pix(self.gal_pos[:, 0][ind_obj], self.gal_pos[:, 1][ind_obj], 0)).T
 
-                self.interp_PSFs = interpsfex(dot_psf_path, gal_pos, self._star_thresh, self._chi2_thresh)
+                if not self._piffpsf:
+                    self.interp_PSFs = interpsfex(self._dotpsf_path, self.gal_pos, self._star_thresh, self._chi2_thresh)
+                else:
+                    self.interp_PSFs = interpiff(self._dotpsf_path, self.gal_pos, self._star_thresh)
 
                 if isinstance(self.interp_PSFs, str) and self.interp_PSFs == NOT_ENOUGH_STARS:
                     self._w_log.info('Not enough stars find in the ccd'
