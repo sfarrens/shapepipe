@@ -133,8 +133,11 @@ def interpiff(dotpiffpath, pos, thresh_star, stamp_size=51):
     # Check number of stars used to compute the PSF
     if len(PSF_model.stars) < thresh_star:
         return NOT_ENOUGH_STARS
+
+    # Get chip num
+    chipnum = list(PSF_model.psf_by_chip.keys())[0]
     
-    PSFs = np.array([PSF_model.draw(x=pos[i, 0], y=pos[i, 1], stamp_size=51).array for i in range(len(pos))])
+    PSFs = np.array([PSF_model.draw(x=pos[i, 0], y=pos[i, 1], chipnum=chipnum, stamp_size=51).array for i in range(len(pos))])
 
     return PSFs
 

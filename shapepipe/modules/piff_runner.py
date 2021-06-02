@@ -48,6 +48,14 @@ def piff_runner(input_file_list, run_dirs, file_number_string,
     hdu_list.append(flag_hdu)
     hdu_list.writeto(full_tmp_path)
 
+    img_file.close()
+    weight_file.close()
+    flag_file.close()
+    del(img_hdu)
+    del(weight_hdu)
+    del(flag_hdu)
+    del(hdu_list)
+
     # Run Piff
     cmd_line = "{} {} input.dir={} input.image_file_name={} input.cat_file_name={} output.dir={} output.file_name={}".format(
                exec_path, piff_config, 

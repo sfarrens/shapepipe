@@ -14,7 +14,7 @@
 # Set maximum computing time (e.g. 5min)
 #PBS -l walltime=48:00:00
 # Request number of cores
-#PBS -l nodes=n01:ppn=48
+#PBS -l nodes=n17:ppn=48
 
 # Full path to environment
 #export SPENV="$HOME/.conda/envs/shapepipe"
@@ -26,7 +26,9 @@ module load intelpython/3
 
 # Run ShapePipe using full paths to executables
 #python $HOME/ShapePipe_github/shapepipe/shapepipe_run.py -c $HOME/ShapePipe_github/shapepipe/example/W3_simu/config_exp_psfex.ini
-python $HOME/ShapePipe_github/shapepipe/shapepipe_run.py -c $HOME/ShapePipe_github/shapepipe/example/W3_simu/config_exp_mccd.ini
+#python $HOME/ShapePipe_github/shapepipe/shapepipe_run.py -c $HOME/ShapePipe_github/shapepipe/example/W3_simu/config_exp_mccd.ini
+#python $HOME/ShapePipe_github/shapepipe/shapepipe_run.py -c $HOME/ShapePipe_github/shapepipe/example/W3_simu/config_piff.ini
+python $HOME/ShapePipe_github/shapepipe/shapepipe_run.py -c $HOME/ShapePipe_github/shapepipe/example/W3_simu/config_piff_int.ini
 
 # Return exit code
 exit 0
