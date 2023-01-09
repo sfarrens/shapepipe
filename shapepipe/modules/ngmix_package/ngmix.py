@@ -13,7 +13,6 @@ import ngmix
 import numpy as np
 from astropy.io import fits
 from modopt.math.stats import sigma_mad
-from ngmix.fitting import LMSimple
 from ngmix.observation import MultiBandObsList, Observation, ObsList
 from numpy.random import uniform as urand
 from sqlitedict import SqliteDict
@@ -134,13 +133,14 @@ class Ngmix(object):
         Returns
         -------
         ngmix.priors
-            Priors for the different parameters
+            Priors for the different parameters (ellipticity,center, size, flux)
 
         """
         # Prior on ellipticity. Details do not matter, as long
         # as it regularizes the fit. From Bernstein & Armstrong 2014
         g_sigma = 0.4
-        g_prior = ngmix.priors.GPriorBA(g_sigma)
+        rng = np.random.RandomState(932)
+        g_prior = ngmix.priors.GPriorBA(g_sigma,rng)
 
         # 2-d Gaussian prior on the center row and column center
         # (relative to the center of the jacobian, which
@@ -148,19 +148,19 @@ class Ngmix(object):
         # Units same as jacobian, probably arcsec
         row, col = 0.0, 0.0
         row_sigma, col_sigma = self._pixel_scale, self._pixel_scale
-        cen_prior = ngmix.priors.CenPrior(row, col, row_sigma, col_sigma)
+        cen_prior = ngmix.priors.CenPrior(row, col, row_sigma, col_sigma, rng)
 
         # Size prior. Instead of flat, two-sided error function (TwoSidedErf)
         # could be used
         Tminval = -10.0  # arcsec squared
         Tmaxval = 1.e6
-        T_prior = ngmix.priors.FlatPrior(Tminval, Tmaxval)
+        T_prior = ngmix.priors.FlatPrior(Tminval, Tmaxval, rng)
 
         # Flux prior. Bounds need to make sense for
         # images in question
         Fminval = -1.e4
         Fmaxval = 1.e9
-        F_prior = ngmix.priors.FlatPrior(Fminval, Fmaxval)
+        F_prior = ngmix.priors.FlatPrior(Fminval, Fmaxval, rng)
 
         # Joint prior, combine all individual priors
         prior = ngmix.joint_prior.PriorSimpleSep(
@@ -640,7 +640,7 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
         guess[5:] *= (1 + urand(low=-limit, high=limit))
         fres['flags'] = 1
         try:
-            fitter = ngmix.galsimfit.GalsimSimple(
+            fitter = ngmix.fitting.GalsimFitter(
                 obs,
                 model,
                 prior=prior,
