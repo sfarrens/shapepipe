@@ -2,33 +2,27 @@
 
 # -*- coding: utf-8 -*-
 
-"""Script merge_final_cat.py
+"""Script get_number_objects.py
 
-Merge all final catalogues, created by ShapePipe module
-``make_catalogue_runner``, into a joined numpy binary file.
+Get number of objects in a (last-run SExtractor) catalogue.
 
-:Authors: Axel Guinot, Martin Kilbinger
+:Author: Martin Kilbinger <martin.kilblinger@cea.fr>
 
 """
 
-from astropy.io import fits
-import numpy as np
-import os
 import sys
-import re
 import copy
+import glob
 
-from optparse import OptionParser
+from optparse import OptionParser                                               
+from astropy.io import fits
 
-from tqdm import tqdm
-
-from shapepipe.utilities import cfis
+from shapepipe.pipeline.run_log import get_last_dir                             
+from shapepipe.utilities import cfis                                            
 
 
 class param:
-    """General class to store (default) variables
-
-    """
+    """General class to store (default) variables"""
     def __init__(self, **kwds):
         self.__dict__.update(kwds)
 
@@ -40,9 +34,7 @@ class param:
 
 
 def params_default():
-    """Params Default.
-    
-    Set default parameter values.
+    """Set default parameter values.
 
     Returns
     -------
@@ -51,18 +43,16 @@ def params_default():
 
     """
     p_def = param(
-        input_path  = '.',
-        input_name_base = 'final_cat',
-        hdu_num = 1,
+        input_path='.',
+        input_name_base='final_cat',
+        hdu_num=1,
     )
 
     return p_def
 
 
 def parse_options(p_def):
-    """Parse Options.
-    
-    Parse command line options.
+    """Parse command line options.
 
     Parameters
     ----------
@@ -138,9 +128,7 @@ def parse_options(p_def):
 
 
 def check_options(options):
-    """Check Options.
-    
-    Check command line options.
+    """Check command line options.
 
     Parameters
     ----------
@@ -157,9 +145,7 @@ def check_options(options):
 
 
 def update_param(p_def, options):
-    """Update Param.
-    
-    Return default parameter, updated and complemented according to options.
+    """Return default parameter, updated and complemented according to options.
 
     Parameters
     ----------
@@ -192,9 +178,7 @@ def update_param(p_def, options):
 
 
 def read_param_file(path, verbose=False):
-    """Read Param File.
-    
-    Return parameter list read from file.
+    """Return parameter list read from file
 
     Parameters
     ----------
@@ -247,9 +231,7 @@ def read_param_file(path, verbose=False):
                             
 
 def get_data(path, hdu_num, param_list):
-    """Get Data.
-    
-    Return data of selected columns from FITS file.
+    """Return data of selected columns from FITS file.
 
     Parameters
     ----------
@@ -299,88 +281,25 @@ def main(argv=None):
     # Save command line arguments to log file
     f_log = cfis.log_command(argv, close_no_return=False)
 
-    path = param.input_path
+    module = 'sextractor_runner_run_1'
+    pattern = 'sexcat'
+    run_log_file = 'output/log_run_sp.txt'
+    last_dir = get_last_dir(run_log_file, module)
 
-    param.param_list = read_param_file(param.param_path, verbose=param.verbose)
+    file_list = glob.glob(f'{last_dir}/{pattern}*.fits')
+    if len(file_list) == 0:
+        raise ValueError(f'No files {last_dir}/{pattern}*.fits found')
 
-    # read (optional) input tile ID file
-    if param.tile_ID_list_path:
-        tile_ID_list = cfis.read_list(param.tile_ID_list_path)
+    n_obj = 0
+    hdu_no = -1
+    for fpath in file_list:
+        hdu_list = fits.open(fpath)
+        header = hdu_list[-1].header
+        n_obj += int(header['NAXIS2'])
 
-    # find input catalogue FITS files
-    l = os.listdir(path=path)
-    ext = 'fits'
-    lpath = []
-    for this_l in l:
+    n_obj = int(n_obj / len(file_list))
 
-        add_this_l = False
-
-        # mark to add if correct extension, matches input pattern,
-        not `.npy` file
-        if (
-            this_l.endswith(ext)
-            and (f'{param.input_name_base}' in this_l)
-            and ('.npy' not in this_l)
-        ):
-            add_this_l = True
-
-            # unmark to add if no in (optional) input tile ID file
-            if param.tile_ID_list_path: 
-                nix, niy = cfis.get_tile_number(this_l)
-                tile_ID = f'{nix}.{niy}'
-                if tile_ID not in tile_ID_list:
-                    add_this_l = False
-            if add_this_l:
-                lpath.append(os.path.join(path, this_l))
-
-    if param.verbose:
-        print(f'{len(lpath)} files files to merge found')
-
-    count = 0
-
-    # Determine number of columns and keys from first catalogue file
-    d_tmp = get_data(lpath[0], param.hdu_num, param.param_list)
-    d = np.zeros(d_tmp.shape, dtype=d_tmp.dtype)
-    for key in d_tmp.dtype.names:
-        d[key] = d_tmp[key]
-    count = count + 1
-    if param.verbose:
-        print(f'File \'{lpath[0]}\' copied ({count}/{len(lpath)})')
-
-    # merge remaining catalogue files
-    for fname in lpath[1:]:
-
-        try:
-            d_tmp = get_data(fname, param.hdu_num, param.param_list)
-            dd = np.zeros(d_tmp.shape, dtype=d.dtype)
-
-            for key in d_tmp.dtype.names:
-                dd[key] = d_tmp[key]
-
-            count = count + 1
-            if param.verbose:
-                print(f'File \'{fname}\' copied ({count}/{len(lpath)})')
-
-            d = np.concatenate((d, dd))
-        except:
-            print(
-                f'Error while adding file \'{fname}\', {len(dd)} objects'
-                ' not in final cat'
-            )
-
-    # Save merged catalogue as numpy binary file
-    if param.verbose:
-        print('Saving merged catalogue')
-    np.save(f'{param.input_name_base}.npy', d)
-
-    msg = f'{count} catalog files merged with success'
-    if param.verbose:
-        print(msg)
-    print(msg, file=f_log)
-
-    f_log.close()
-
-    return 0
+    print(n_obj)
 
 
 if __name__ == "__main__":
