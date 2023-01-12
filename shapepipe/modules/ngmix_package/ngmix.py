@@ -102,8 +102,9 @@ class Ngmix(object):
     def MegaCamFlip(self, vign, ccd_nb):
         """Flip for MegaCam.
 
-        MegaCam has CCDs that are upside down. This function flips the
-        postage stamps in these CCDs.
+        MegaPipe has CCDs that are upside down. This function flips the
+        postage stamps in these CCDs. TO DO: This will give incorrect results
+        when used with THELI ccds.  Fix this.
 
         Parameters
         ----------
@@ -121,6 +122,7 @@ class Ngmix(object):
         if ccd_nb < 18 or ccd_nb in [36, 37]:
             # swap x axis so origin is on top-right
             return np.rot90(vign, k=2)
+            print('rotating megapipe image')
         else:
             # swap y axis so origin is on bottom-left
             return vign
@@ -129,19 +131,22 @@ class Ngmix(object):
         """Get Prior.
 
         Return prior for the different parameters.
+        Prior on ellipticity is from Bernstein and Armstrong 2014.
+        Prior on centers is a 2d gaussian.
+        Priors on size and flux are flat.
+         
 
         Returns
         -------
         ngmix.priors
             Priors for the different parameters (ellipticity,center, size, flux)
-
         """
         # Prior on ellipticity. Details do not matter, as long
         # as it regularizes the fit. From Bernstein & Armstrong 2014
         g_sigma = 0.4
         rng = np.random.RandomState(932)
         g_prior = ngmix.priors.GPriorBA(g_sigma,rng)
-
+        print('getting prior')
         # 2-d Gaussian prior on the center row and column center
         # (relative to the center of the jacobian, which
         # would be zero) and the sigma of the Gaussians.
@@ -175,7 +180,7 @@ class Ngmix(object):
     def compile_results(self, results):
         """Compile Results.
 
-        Prepare the results of NGMIX before saving.
+        Prepare the results of NGMIX before saving. TODO: add snr_r and T_r
 
         Parameters
         ----------
@@ -186,6 +191,7 @@ class Ngmix(object):
         -------
         dict
             Compiled results ready to be written to a file
+            note: psfo is the original image psf from psfex or mccd
 
         Raises
         ------
@@ -330,13 +336,20 @@ class Ngmix(object):
         """Process.
 
         Funcion to processs NGMIX.
-
+        organizes object cutouts from detection catalog in image, 
+        weight, and flag files
+        per object: 
+            gathers wcs and psf info from exposures
+            background subtracts
+            scales by relative zeropoints
+            runs metacal convolutions and ngmix fitting
         Returns
         -------
         dict
             Dictionary containing the NGMIX metacal results
 
         """
+        # sextractor detection catalog for the tile
         tile_cat = file_io.FITSCatalogue(
             self._tile_cat_path,
             SEx_catalogue=True,
@@ -363,7 +376,6 @@ class Ngmix(object):
         id_last = -1
 
         for i_tile, id_tmp in enumerate(obj_id):
-
             if self._id_obj_min > 0 and id_tmp < self._id_obj_min:
                 continue
             if self._id_obj_max > 0 and id_tmp > self._id_obj_max:
@@ -386,6 +398,7 @@ class Ngmix(object):
                 or (gal_vign_cat[str(id_tmp)] == 'empty')
             ):
                 continue
+            #identify exposure and ccd number from psf catalog
             psf_expccd_name = list(psf_vign_cat[str(id_tmp)].keys())
             for expccd_name_tmp in psf_expccd_name:
                 exp_name, ccd_n = re.split('-', expccd_name_tmp)
@@ -395,12 +408,12 @@ class Ngmix(object):
                 )
                 if len(np.where(gal_vign_tmp.ravel() == 0)[0]) != 0:
                     continue
-
+                # background subtraction
                 bkg_vign_tmp = (
                     bkg_vign_cat[str(id_tmp)][expccd_name_tmp]['VIGNET']
                 )
                 gal_vign_sub_bkg = gal_vign_tmp - bkg_vign_tmp
-
+                # skip this step for THELI
                 tile_vign_tmp = (
                     Ngmix.MegaCamFlip(np.copy(tile_vign[i_tile]), int(ccd_n))
                 )
@@ -426,6 +439,7 @@ class Ngmix(object):
                 header_tmp = fits.Header.fromstring(
                     f_wcs_file[exp_name][int(ccd_n)]['header']
                 )
+                #rescale images and weights by relative flux scale
                 Fscale = header_tmp['FSCALE']
 
                 gal_vign_scaled = gal_vign_sub_bkg * Fscale
@@ -443,10 +457,13 @@ class Ngmix(object):
                 weight_vign.append(weight_vign_scaled)
                 flag_vign.append(flag_vign_tmp)
                 jacob_list.append(jacob_tmp)
-
+                
+            #if object is observed, carry out metacal operations and run ngmix
             if len(gal_vign) == 0:
+                print('gal_vign vanishes')
                 continue
             try:
+                print('gal_vign exists')
                 res = do_ngmix_metacal(
                     gal_vign,
                     psf_vign,
@@ -457,6 +474,7 @@ class Ngmix(object):
                     prior,
                     self._pixel_scale
                 )
+
             except Exception as ee:
                 self._w_log.info(
                     f'ngmix failed for object ID={id_tmp}.\nMessage: {ee}'
@@ -495,7 +513,7 @@ def get_guess(
     guess_centroid=True,
     guess_centroid_unit='sky'
 ):
-    r"""Get Guess.
+    r"""Get Guess using galsim hsm shapes.
 
     Get the guess vector for the NGMIX shape measurement
     ``[center_x, center_y, g1, g2, size_T, flux]``.
@@ -542,7 +560,7 @@ def get_guess(
     hsm_shape = galsim.hsm.FindAdaptiveMom(galsim_img, strict=False)
 
     error_msg = hsm_shape.error_message
-
+                
     if error_msg != '':
         raise galsim.hsm.GalSimHSMError(
             f'Error in adaptive moments :\n{error_msg}'
@@ -605,7 +623,7 @@ def get_guess(
 def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
     """Make GalSim Fit.
 
-    Fit image using simple GalSim model.
+    wrapper for ngmix image fit using simple GalSim model.
 
     Parameters
     ----------
@@ -616,7 +634,7 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
     guess0 : numpy.ndarray
         Parameters of first model guess
     prior : ngmix.prior, optional
-        Prior for fit paraemeters
+        Prior for fit parameters
     ntry : int, optional
         Number of tries for fit, the default is ``5``
 
@@ -631,26 +649,33 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
         Failure to bootstrap galaxy
 
     """
+    print('running make_galsimfit')
     limit = 0.1
 
     guess = np.copy(guess0)
+    print('here is the guess')
+    print(guess)
     fres = {}
     for it in range(ntry):
         guess[0:5] += urand(low=-limit, high=limit)
         guess[5:] *= (1 + urand(low=-limit, high=limit))
         fres['flags'] = 1
-        try:
-            fitter = ngmix.fitting.GalsimFitter(
-                obs,
-                model,
+        OLD_LM_PARS = {"maxfev": 1000, "ftol": 1.0e6, "xtol": 1.0e-6}
+        #try:
+        fitter = ngmix.fitting.GalsimFitter(
+                model=model,
                 prior=prior,
+                fit_pars=OLD_LM_PARS
             )
-            fitter.go(guess)
-            fres = fitter.get_result()
-        except Exception:
-            continue
+        print('testing fitter')
+        fres = fitter.go(obs=obs,guess=guess)
+        print(fres)
+        #except Exception:
+        #    print('bwahahahaha galsimfitter is failing bad')
+        #    continue
 
         if fres['flags'] == 0:
+            print('ohno')
             break
 
     if fres['flags'] != 0:
@@ -659,7 +684,7 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
         )
 
     fres['ntry'] = it + 1
-
+    print(fres['flags'])
     return fres
 
 
@@ -722,7 +747,6 @@ def get_noise(gal, weight, guess, pixel_scale, thresh=1.2):
 
     """
     img_shape = gal.shape
-
     m_weight = weight != 0
 
     sig_tmp = sigma_mad(gal[m_weight])
@@ -738,7 +762,8 @@ def get_noise(gal, weight, guess, pixel_scale, thresh=1.2):
     m_weight = weight[gauss_win < thresh * sig_tmp] != 0
 
     sig_noise = sigma_mad(gal[gauss_win < thresh * sig_tmp][m_weight])
-
+    print('this is the noise')
+    print( sig_noise)
     return sig_noise
 
 
@@ -754,13 +779,13 @@ def do_ngmix_metacal(
 ):
     """Do Ngmix Metacal.
 
-    Perform the metacalibration on a multi-epoch object and return the joint
+    Performs  metacalibration on a multi-epoch object and return the joint
     shape measurement with NGMIX.
 
     Parameters
     ----------
     gals : list
-        List of the galaxy vignets
+        List of the galaxy vignets.  List indices run over epochs
     psfs : list
         List of the PSF vignets
     psfs_sigma : list
@@ -787,7 +812,7 @@ def do_ngmix_metacal(
     if n_epoch == 0:
         raise ValueError("0 epoch to process")
 
-    # Make observation
+    # Construct observation objects to pass to ngmix 
     gal_obs_list = ObsList()
     T_guess_psf = []
     psf_res_gT = {
@@ -806,23 +831,29 @@ def do_ngmix_metacal(
             col=(psfs[0].shape[1] - 1) / 2,
             wcs=jacob_list[n_e]
         )
-
+        # psf observation is part of ngmix observation
         psf_obs = Observation(psfs[n_e], jacobian=psf_jacob)
-
+        # convert sigma to T
         psf_T = psfs_sigma[n_e] * 1.17741 * pixel_scale
 
         weight_map = np.copy(weights[n_e])
         weight_map[np.where(flags[n_e] != 0)] = 0.
         weight_map[weight_map != 0] = 1
 
+        # fit gaussian to psf
         psf_guess = np.array([0., 0., 0., 0., psf_T, 1.])
+        print('psfguess')
         try:
+            print('run galsimfit for psf')
             psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess)
-        except Exception:
-            continue
+            print('galsimfit ran')
+        except Exception as e: print(e)
+            #print('galsimfit failed')
+            #continue
 
         # Gal guess
         try:
+            print('gal_guess_tmp defined')
             gal_guess_tmp = get_guess(
                 gals[n_e],
                 pixel_scale,
@@ -840,6 +871,9 @@ def do_ngmix_metacal(
         )
 
         # Noise handling
+        # Megapipe noise images are somewhat mysterious? This code combines
+        # the flag information, then sets all non-zero weights to 1.  It then
+        # rescales the weights by the inverse variance.  
         if gal_guess_flag:
             sig_noise = get_noise(
                 gals[n_e],
@@ -849,7 +883,7 @@ def do_ngmix_metacal(
             )
         else:
             sig_noise = sigma_mad(gals[n_e])
-
+            print('sig_noise')
         noise_img = np.random.randn(*gals[n_e].shape) * sig_noise
         noise_img_gal = np.random.randn(*gals[n_e].shape) * sig_noise
 
@@ -861,6 +895,7 @@ def do_ngmix_metacal(
 
         # Original PSF fit
         w_tmp = np.sum(weight_map)
+        print(w_tmp)
         psf_res_gT['g_PSFo'] += psf_res['g'] * w_tmp
         psf_res_gT['g_err_PSFo'] += np.array([
             psf_res['pars_err'][2],
