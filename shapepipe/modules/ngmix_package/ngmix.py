@@ -146,7 +146,7 @@ class Ngmix(object):
         g_sigma = 0.4
         rng = np.random.RandomState(932)
         g_prior = ngmix.priors.GPriorBA(g_sigma,rng)
-        print('getting prior')
+
         # 2-d Gaussian prior on the center row and column center
         # (relative to the center of the jacobian, which
         # would be zero) and the sigma of the Gaussians.
@@ -156,7 +156,7 @@ class Ngmix(object):
         cen_prior = ngmix.priors.CenPrior(row, col, row_sigma, col_sigma, rng)
 
         # Size prior. Instead of flat, two-sided error function (TwoSidedErf)
-        # could be used
+        # could be used, though they are not used here
         r50minval = -10.0  # arcsec squared
         r50maxval = 1.e6
         r50_prior = ngmix.priors.FlatPrior(r50minval, r50maxval, rng)
@@ -192,7 +192,6 @@ class Ngmix(object):
         dict
             Compiled results ready to be written to a file
             note: psfo is the original image psf from psfex or mccd
-            T is NOT 2*sigma^2, T is r50!
 
         Raises
         ------
@@ -278,8 +277,8 @@ class Ngmix(object):
                 output_dict[name]['g2_err'].append(
                     results[idx][name]['pars_err'][3]
                 )
-                output_dict[name]['r50'].append(results[idx][name]['r50'])
-                output_dict[name]['r50_err'].append(results[idx][name]['r50_err'])
+                output_dict[name]['r50'].append(results[idx][name]['pars'][4])
+                output_dict[name]['r50_err'].append(results[idx][name]['pars_err'][4])
                 output_dict[name]['r50psf'].append(results[idx][name]['r50psf'])
                 output_dict[name]['g1_psf'].append(
                     results[idx][name]['gpsf'][0]
@@ -341,7 +340,7 @@ class Ngmix(object):
         weight, and flag files
         per object: 
             gathers wcs and psf info from exposures
-            background subtracts
+            background subtracts (make this an option)
             scales by relative zeropoints
             runs metacal convolutions and ngmix fitting
         Returns
@@ -656,32 +655,27 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
         Failure to bootstrap galaxy
 
     """
-    print('running make_galsimfit')
+
     limit = 0.1
 
     guess = np.copy(guess0)
-    print('here is the guess')
-    print(guess)
     fres = {}
     for it in range(ntry):
         guess[0:5] += urand(low=-limit, high=limit)
         guess[5:] *= (1 + urand(low=-limit, high=limit))
         fres['flags'] = 1
         #OLD_LM_PARS = {"maxfev": 1000, "ftol": 1.0e6, "xtol": 1.0e-6}
-        #try:
-        fitter = ngmix.fitting.GalsimFitter(
+        try:
+            fitter = ngmix.fitting.GalsimFitter(
                 model=model,
                 prior=prior
             )
-        print('testing fitter')
-        fres = fitter.go(obs=obs,guess=guess)
-        print(fres)
-        #except Exception:
-        #    print('bwahahahaha galsimfitter is failing bad')
-        #    continue
+            fres = fitter.go(obs=obs,guess=guess)
+            print(fres.items())
+        except Exception:
+            continue
 
         if fres['flags'] == 0:
-            print('ohno')
             break
 
     if fres['flags'] != 0:
@@ -690,7 +684,6 @@ def make_galsimfit(obs, model, guess0, prior=None, ntry=5):
         )
 
     fres['ntry'] = it + 1
-    print(fres['flags'])
     return fres
 
 
@@ -768,8 +761,7 @@ def get_noise(gal, weight, guess, pixel_scale, thresh=1.2):
     m_weight = weight[gauss_win < thresh * sig_tmp] != 0
 
     sig_noise = sigma_mad(gal[gauss_win < thresh * sig_tmp][m_weight])
-    print('this is the noise')
-    print( sig_noise)
+
     return sig_noise
 
 
@@ -850,18 +842,13 @@ def do_ngmix_metacal(
 
         # fit gaussian to psf
         psf_guess = np.array([0., 0., 0., 0., psf_r50, 1.])
-        print('psfguess')
         try:
-            print('run galsimfit for psf')
             psf_res = make_galsimfit(psf_obs, 'gauss', psf_guess)
-            print('galsimfit ran')
-        except Exception as e: print(e)
-            #print('galsimfit failed')
-            #continue
+        except Exception:
+            continue
 
         # Gal guess
         try:
-            print('gal_guess_tmp defined')
             gal_guess_tmp = get_guess_shapeHSM(
                 gals[n_e],
                 pixel_scale,
@@ -891,7 +878,7 @@ def do_ngmix_metacal(
             )
         else:
             sig_noise = sigma_mad(gals[n_e])
-            print('sig_noise')
+
         noise_img = np.random.randn(*gals[n_e].shape) * sig_noise
         noise_img_gal = np.random.randn(*gals[n_e].shape) * sig_noise
 
@@ -901,16 +888,17 @@ def do_ngmix_metacal(
 
         weight_map *= 1 / sig_noise ** 2
 
-        # Original PSF fit
+        # gaussian fit to the original psf 
+        #(pre-counterfactual image operations)
         w_tmp = np.sum(weight_map)
-        print(w_tmp)
+
         psf_res_gT['g_PSFo'] += psf_res['g'] * w_tmp
         psf_res_gT['g_err_PSFo'] += np.array([
             psf_res['pars_err'][2],
             psf_res['pars_err'][3]
         ]) * w_tmp
-        psf_res_gT['r50_PSFo'] += psf_res['r50'] * w_tmp
-        psf_res_gT['r50_err_PSFo'] += psf_res['r50_err'] * w_tmp
+        psf_res_gT['r50_PSFo'] += psf_res['pars'][4] * w_tmp
+        psf_res_gT['r50_err_PSFo'] += psf_res['pars_err'][4] * w_tmp
         wsum += w_tmp
 
         gal_obs = Observation(
@@ -953,8 +941,6 @@ def do_ngmix_metacal(
         'step': 0.01,
         'psf': 'gauss',
         'fixnoise': True,
-        'cheatnoise': False,
-        'symmetrize_psf': False,
         'use_noise_image': True
     }
 
@@ -991,7 +977,7 @@ def do_ngmix_metacal(
         tres['flags'] = fres['flags']
 
         wsum = 0
-        Tpsf_sum = 0
+        r50psf_sum = 0
         gpsf_sum = np.zeros(2)
         npsf = 0
         for obs in obs_dict_mcal[key]:
@@ -1007,7 +993,7 @@ def do_ngmix_metacal(
                 except Exception:
                     continue
                 g1, g2 = psf_res['g']
-                r50 = psf_res['r50']
+                r50 = psf_res['pars'][4]
             else:
                 try:
                     psf_res = make_galsimfit(
@@ -1018,7 +1004,7 @@ def do_ngmix_metacal(
                 except Exception:
                     continue
                 g1, g2 = psf_res['g']
-                r50 = psf_res['r50']
+                r50 = psf_res['pars'][4]
 
             # TODO we sometimes use other weights
             twsum = obs.weight.sum()
