@@ -530,8 +530,8 @@ def get_guess_shapeHSM(
         returns the flux in :math:`{\rm arcsec}^{-2}`
     guess_size_type : str
         If ``T`` returns the size in quadrupole moments definition
-        :math:`2\sigma^2`, otherwise if ``sigma`` returns the moments
-        :math:`\sigma`
+        :math:`2\sigma^2`, if ``sigma`` returns the moments
+        :math:`\sigma`, if ``r50`` returns the half light radius
     guess_size_unit : str
         If ``img`` returns the size in pixel units, otherwise if ``sky``
         returns the size in arcsec
@@ -590,6 +590,13 @@ def get_guess_shapeHSM(
         guess_size = hsm_shape.moments_sigma * size_unit
     elif guess_size_type == 'T':
         guess_size = 2 * (hsm_shape.moments_sigma * size_unit) ** 2
+    elif guess_size_type == 'r50':
+        guess_size = hsm_shape.moments_sigma * size_unit * 1.17741002252
+    else:
+        raise ValueError(
+            'invalid guess_size_type \'{guess_size_type}\','
+            + 'must be one of \'sigma\', \'T\', or \'r50\''
+        )
 
     if guess_centroid_unit == 'img':
         centroid_unit = 1
@@ -858,7 +865,7 @@ def do_ngmix_metacal(
             gal_guess_tmp = get_guess_shapeHSM(
                 gals[n_e],
                 pixel_scale,
-                guess_size_type='sigma'
+                guess_size_type='r50'
             )
         except Exception:
             gal_guess_flag = False
